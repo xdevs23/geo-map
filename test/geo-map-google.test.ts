@@ -1,7 +1,6 @@
 import * as Fs from 'fs';
 import * as http from 'http';
-import * as TestEntry from '../src/test/test-entry';
-import * as Tests from '../src/test';
+import * as TestEntry from '../src/test';
 import * as Types from '../src/types';
 import * as Util from '../src/test/util';
 import * as Constants from '../src/test/constants';
@@ -12,7 +11,8 @@ beforeAll(() => {
   if (!Fs.existsSync('./screenshots')) {
     Fs.mkdirSync('./screenshots');
   }
-  testServer = Tests.startServer(ServerPort);
+  testServer = TestEntry.startServer(ServerPort);
+  // page.on('console', (e) => console.log(e));
 });
 
 afterAll(() => {
@@ -111,7 +111,6 @@ test('Click events with Google carry appropriate lat/lng data', async () => {
 });
 
 test('Geocoding works as expected', async () => {
-  page.on('console', (e) => console.log(e));
 
   await page.goto(`http://localhost:${ServerPort}/test?integration=true`);
   await page.evaluate((input) => TestEntry.Tests.geocodeGoogle(input), Constants.S2_BER);

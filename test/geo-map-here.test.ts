@@ -1,7 +1,6 @@
 import * as Fs from 'fs';
 import * as http from 'http';
-import * as TestEntry from '../src/test/test-entry';
-import * as Test from '../src/test';
+import * as TestEntry from '../src/test';
 import * as Types from '../src/types';
 import * as Util from '../src/test/util';
 import * as Constants from '../src/test/constants';
@@ -12,7 +11,8 @@ beforeAll(() => {
   if (!Fs.existsSync('./screenshots')) {
     Fs.mkdirSync('./screenshots');
   }
-  testServer = Test.startServer(ServerPort);
+  testServer = TestEntry.startServer(ServerPort);
+  // page.on('console', (e) => console.log(e));
 });
 
 afterAll(() => {
@@ -116,24 +116,24 @@ test('Click events with HERE carry appropriate lat/lng data', async () => {
 });
 
 test('Geocoding works as expected', async () => {
-  page.on('console', (e) => console.log(e));
+  // page.on('console', (e) => console.log(e));
 
   await page.goto(`http://localhost:${ServerPort}/test?integration=true`);
-  await page.evaluate((input) => TestEntry.Tests.geocodeGoogle(input), Constants.S2_BER);
+  await page.evaluate((input) => TestEntry.Tests.geocodeHere(input), Constants.S2_BER);
   await page.mouse.click(400, 300); // click on center
   await page.waitForSelector('[data-dump="data-dump"]');
 
   const data = JSON.parse(String(await page.evaluate(() => document.querySelector('[data-dump="data-dump"]').textContent)));
 
   expect(data).toEqual(expect.objectContaining({
-    provider: Types.GeoMapProvider.Google,
-    formattedAddress: 'Boxhagener Str. 76, 10245 Berlin, Germany',
+    provider: Types.GeoMapProvider.Here,
+    formattedAddress: 'Boxhagener Straße 75, 10245 Berlin, Deutschland',
     address: {
-      country: 'Germany',
+      country: 'DEU',
       postalCode: '10245',
       locality: 'Berlin',
       route: 'Boxhagener Straße',
-      streetNumber: '76'
+      streetNumber: '75'
     }
   }));
 });

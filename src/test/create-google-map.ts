@@ -12,8 +12,9 @@ export async function createGoogleMap(config?: Partial<Types.GeoMapConfig>, moun
     config: {
       provider,
       auth: {
-        clientId: Constants.GOOGLE_MAP_CLIENT_ID,
-        channel: Constants.GOOGLE_MAP_CHANNEL
+        apiKey: Constants.GOOGLE_MAP_API,
+        // clientId: Constants.GOOGLE_MAP_CLIENT_ID,
+        // channel: Constants.GOOGLE_MAP_CHANNEL
       },
       language: config ? config.language : undefined,
       viewport: config ? config.viewport : undefined

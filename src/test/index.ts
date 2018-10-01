@@ -14,3 +14,4 @@ export * from './create-here-map';
 export * from './create-mock-map-implementation';
 
 export * from './start-server';
+export * from './integration-tests';
