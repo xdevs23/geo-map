@@ -6,4 +6,5 @@ yarn.lock
 .DS_Store
 /*.tgz
 .vscode
-screenshots/
+/screenshots
+/lib
