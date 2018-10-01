@@ -1,7 +1,4 @@
 module.exports = {
-  launch: {
-    flags: ["–no-sandbox", "–disable-setuid-sandbox"]
-  },
   globals: {
      'ts-jest': {
        diagnostics: false
