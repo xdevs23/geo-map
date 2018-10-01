@@ -95,7 +95,6 @@ test('Traffic Layer with HERE changes display', async () => {
   expect(before).not.toEqual(after);
 });
 
-
 test('Click events with HERE trigger call on event handler', async () => {
   await page.goto(`http://localhost:${ServerPort}/test`);
   await page.evaluate(() => TestEntry.Tests.eventHere('click-id'));
@@ -136,5 +135,5 @@ test('Geocoding works as expected', async () => {
       route: 'Boxhagener Straße',
       streetNumber: '76'
     }
-  }))
+  }));
 });
