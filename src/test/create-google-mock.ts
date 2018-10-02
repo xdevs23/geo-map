@@ -151,6 +151,11 @@ export const createGoogleMock = (): any => {
   }
 
   return {
+    event: {
+      addListenerOnce(map: any, event: string, cb: () => void) {
+        setTimeout(() => cb(), 100);
+      }
+    },
     LatLng: GoogleMockLatLng,
     LatLngBounds: GoogleMockLatLngBounds,
     Map: GoogleMockMap,
