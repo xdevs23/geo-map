@@ -79,7 +79,10 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
       ? this.context.loaded(this.map, { api: this.api, context: this.context })
       : googleMapLoaded(this.map, { api: this.api, context: this.context }));
 
-    this.phases.resolve(Types.GeoMapPhase.Layouted);
+    this.api.event.addListenerOnce(this.map, 'tilesloaded', () => {
+      this.phases.resolve(Types.GeoMapPhase.Layouted);
+    });
+
     return;
   }
 
@@ -289,6 +292,8 @@ function geoToGoogleEvent(input: Types.GeoEvent): string | undefined {
       return 'click';
     case Types.GeoEvent.Changed:
       return 'idle';
+    case Types.GeoEvent.Loaded:
+      return 'tilesloaded';
     default:
       return;
   }

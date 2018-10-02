@@ -39,9 +39,6 @@ module.exports =   {
   ],
   devServer: {
     hot: true,
-    port: 1338,
-    proxy: {
-      '**': 'http://localhost:1337',
-    },
+    port: 1338
   },
 };

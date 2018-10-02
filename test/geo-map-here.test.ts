@@ -1,22 +1,19 @@
 import * as Fs from 'fs';
-import * as http from 'http';
-import * as TestEntry from '../src/test';
+import * as TestEntry from '../src/test/integration-tests';
 import * as Types from '../src/types';
 import * as Util from '../src/test/util';
 import * as Constants from '../src/test/constants';
 
-const ServerPort = 4712;
-let testServer: http.Server;
 beforeAll(() => {
   if (!Fs.existsSync('./screenshots')) {
     Fs.mkdirSync('./screenshots');
   }
-  testServer = TestEntry.startServer(ServerPort);
-  // page.on('console', (e) => console.log(e));
-});
-
-afterAll(() => {
-  testServer.close();
+  page.on("console", e => {
+    if (e.text().startsWith('[HMR]') || e.text().startsWith('[WDS]')) {
+      return;
+    }
+    console.log(e)
+  });
 });
 
 beforeEach(async () => {
@@ -24,7 +21,7 @@ beforeEach(async () => {
 });
 
 test('GeoMap with HERE', async () => {
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
 
   await page.evaluate(() => TestEntry.Tests.basicHere());
 
@@ -33,7 +30,7 @@ test('GeoMap with HERE', async () => {
 });
 
 test('Zoom with Here', async () => {
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
 
   const input = 1;
   const actual = await page.evaluate((factor) => TestEntry.Tests.zoomHere(factor), input);
@@ -45,7 +42,7 @@ test('Zoom with Here', async () => {
 test('Repeated zoom factor with Here', async () => {
   const repeated = 2;
 
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
   const actual = await page.evaluate((zoom) => TestEntry.Tests.zoomSameHere(zoom), repeated);
 
   await page.screenshot({ path: './screenshots/repeated-zoom-here.png' });
@@ -53,7 +50,7 @@ test('Repeated zoom factor with Here', async () => {
 });
 
 test('Type with Here', async () => {
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
 
   const input = Types.GeoMapType.Hybrid;
   const actual = await page.evaluate((type) => TestEntry.Tests.typeHere(type), input);
@@ -63,7 +60,7 @@ test('Type with Here', async () => {
 });
 
 test('Marker with HERE has red marker at center', async () => {
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(() => TestEntry.Tests.markerHere());
 
   const screenshot = await page.screenshot({  path: './screenshots/marker-here.png' });
@@ -74,7 +71,7 @@ test('Marker with HERE has red marker at center', async () => {
 test('Viewport with HERE has red marker at offset center', async () => {
   const offset = 300;
 
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate((left: number) => TestEntry.Tests.viewportHere({ top: 0, right: 0, bottom: 0, left }), offset);
 
   const screenshot = await page.screenshot({ path: './screenshots/viewport-here.png' });
@@ -84,7 +81,7 @@ test('Viewport with HERE has red marker at offset center', async () => {
 });
 
 test('Traffic Layer with HERE changes display', async () => {
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
 
   await page.evaluate((layer: Types.GeoLayer) => TestEntry.Tests.layerHere(layer), Types.GeoLayer.None);
   const before = await page.screenshot({ path: './screenshots/layer-traffic-here-before.png' });
@@ -96,7 +93,7 @@ test('Traffic Layer with HERE changes display', async () => {
 });
 
 test('Click events with HERE trigger call on event handler', async () => {
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(() => TestEntry.Tests.eventHere('click-id'));
   await page.click('[data-map="Here"]');
   const data = JSON.parse(String(await page.evaluate(() => document.querySelector('[data-dump="data-dump"]').textContent)));
@@ -106,7 +103,7 @@ test('Click events with HERE trigger call on event handler', async () => {
 test('Click events with HERE carry appropriate lat/lng data', async () => {
   const center = { lat: 7.5, lng: 10 };
 
-  await page.goto(`http://localhost:${ServerPort}/test`);
+  await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate((input) => TestEntry.Tests.eventPayloadHere(input), center);
   await page.mouse.click(400, 300); // click on center
   const {position} = JSON.parse(String(await page.evaluate(() => document.querySelector('[data-dump="data-dump"]').textContent)));
@@ -116,9 +113,7 @@ test('Click events with HERE carry appropriate lat/lng data', async () => {
 });
 
 test('Geocoding works as expected', async () => {
-  // page.on('console', (e) => console.log(e));
-
-  await page.goto(`http://localhost:${ServerPort}/test?integration=true`);
+  await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate((input) => TestEntry.Tests.geocodeHere(input), Constants.S2_BER);
   await page.mouse.click(400, 300); // click on center
   await page.waitForSelector('[data-dump="data-dump"]');

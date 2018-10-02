@@ -139,7 +139,7 @@ export class GeoMap {
     handler: Types.GeoEventHandler<Types.GeoClickPayload>,
   ): Promise<void>;
   public async addEventListener(
-    eventName: Types.GeoEvent.Changed,
+    eventName: Types.GeoEvent.Changed | Types.GeoEvent.Loaded,
     handler: Types.GeoEventHandler<void>,
   ): Promise<void>;
   public async addEventListener(

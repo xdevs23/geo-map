@@ -195,6 +195,7 @@ export const Tests = {
 
   markerGoogle: async (icon: string = Constants.ICON, center = Constants.S2_HAM) => {
     const gmap = await createGoogleMap({}, { zoom: 10, center });
+    await gmap.phase(Types.GeoMapPhase.Layouted);
 
     return await gmap.createMarker({
       icon,
@@ -428,8 +429,9 @@ export const Tests = {
     );
   },
 
-  layerGoogle: (layer: Types.GeoLayer = Types.GeoLayer.None) => {
-    return createGoogleMap({}, { center: Constants.S2_HAM, zoom: 13, layer });
+  layerGoogle: async (layer: Types.GeoLayer = Types.GeoLayer.None) => {
+    const googleMap = await createGoogleMap({}, { center: Constants.S2_HAM, zoom: 13, layer });
+    await googleMap.phase(Types.GeoMapPhase.Layouted);
   },
 
   layerHere: (layer: Types.GeoLayer = Types.GeoLayer.None) => {

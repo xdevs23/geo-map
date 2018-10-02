@@ -12,6 +12,3 @@ export * from './create-h-mock';
 export * from './create-here-map-implementation';
 export * from './create-here-map';
 export * from './create-mock-map-implementation';
-
-export * from './start-server';
-export * from './integration-tests';

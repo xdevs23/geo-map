@@ -95,7 +95,6 @@ function getAnchor(anchor: Types.GeoMarkerAnchor, icon: string): { x: number, y:
   const parser = new DOMParser();
 
   const doc = parser.parseFromString(icon, 'image/svg+xml');
-  // const rootElement = (doc.rootElement || doc.documentElement);
   const rootElement = doc.documentElement;
 
   if (!rootElement) {

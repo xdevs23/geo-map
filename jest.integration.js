@@ -1,20 +1,8 @@
+const ts = require("ts-jest");
+const puppeteer = require("jest-puppeteer/jest-preset");
+
 module.exports = {
-  globals: {
-     'ts-jest': {
-       diagnostics: false
-     }
-  },
-  preset: 'jest-puppeteer',
-  testRegex: 'test/.*.*(\\.)test\\.tsx?$',
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest'
-  },
-  moduleFileExtensions: [
-    'ts',
-    'tsx',
-    'js',
-    'jsx',
-    'json',
-    'node'
-  ]
+  ...ts.jestPreset,
+  ...puppeteer,
+  testMatch: ["<rootDir>/test/*.test.ts"]
 };

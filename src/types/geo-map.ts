@@ -354,6 +354,7 @@ export interface GeoCircleConfig {
 export enum GeoEvent {
   Click = 'click',
   Changed = 'changed',
+  Loaded = 'tilesloaded'
 }
 
 // tslint:disable-next-line:no-empty-interface
