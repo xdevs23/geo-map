@@ -1,12 +1,38 @@
+# geo-map
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/marionebl/geo-map)](https://greenkeeper.io/)
+> A facade that abstracts over the Google and HERE map JavaScript SDKs
 
-![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)
+## Install
 
-![CircleCI (all branches)](https://img.shields.io/circleci/project/git/marionebl/geo-map.svg)
+```sh
+npm install geo-map
+```
 
-Todo 
-  - Geo-Map design goals
-  - usage example
+## Usage
 
-Thx to sinnerschrader
+```ts
+import { GeoMap } from "geo-map";
+
+async function main() {
+  const element = document.getElementById('map');
+
+  const map = GeoMap.create({
+    config: {
+      provder: Types.GeoMapProvider.Google,
+      auth: {
+        apiKey: '',
+      }
+    }
+  });
+
+  await map.mount(element, { center: { lat: 0, lng: 0 } })
+}
+
+main().catch(err => {
+  throw err;
+})
+```
+
+## License
+
+Apache License 2.0
