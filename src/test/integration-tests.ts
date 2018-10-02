@@ -19,7 +19,8 @@ export const Tests = {
   },
 
   basicGoogle: async () => {
-    return await createGoogleMap();
+    const gmap = await createGoogleMap();
+    await gmap.phase(Types.GeoMapPhase.Layouted);
   },
 
   zoomGoogle: async (zoom = 10) => {
