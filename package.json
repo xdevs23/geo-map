@@ -11,7 +11,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rimraf lib",
     "build": "tsc",
     "test": "jest -c jest.unit.js",
     "test:integration": "jest -c jest.integration.js",
@@ -50,6 +50,7 @@
     "png.js": "^0.2.1",
     "prettier": "^1.13.7",
     "puppeteer": "^1.6.1",
+    "rimraf": "^2.6.2",
     "ts-jest": "^23.10.3",
     "ts-loader": "^4.4.2",
     "tslint": "^5.11.0",
