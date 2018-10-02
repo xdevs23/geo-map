@@ -1,30 +1,13 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
 version: 2
 jobs:
-  unit:
+  build:
     docker:
-      - image: circleci/node:8.11
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-dependencies-{{ checksum "package.json" }}
-          - v1-dependencies-
-
-      - run: npm install
-
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
-        
-      - run: npm test
-
-  integration:
-    docker:
+      # specify the version you desire here
+      # - image: circleci/node:8.11
       - image: circleci/node:latest-browsers
 
     working_directory: ~/repo
@@ -32,9 +15,11 @@ jobs:
     steps:
       - checkout
 
+      # Download and cache dependencies
       - restore_cache:
           keys:
           - v1-dependencies-{{ checksum "package.json" }}
+          # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
       - run: npm install
@@ -44,6 +29,8 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
         
+      # run tests!
+      - run: npm test
       - run: npm run test:integration
 
 
