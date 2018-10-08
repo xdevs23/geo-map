@@ -17,6 +17,7 @@
     "sourceMap": true,
     "declaration": true,
     "experimentalDecorators": true,
+    "moduleResolution": "node",
     "stripInternal": true
   },
   "include": [
