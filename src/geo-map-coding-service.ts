@@ -25,13 +25,18 @@ export interface GeoMapCodingServiceInit {
 export class GeoMapCodingService {
   private implementation: Types.GeoMapCodingServiceImplementation;
 
-  public static create(init: GeoMapCodingServiceCreateInit): GeoMapCodingService {
+  public static create(
+    init: GeoMapCodingServiceCreateInit
+  ): GeoMapCodingService {
     if (init.type === Types.GeoMapProvider.Here) {
       const hereApi = init.api as Types.HereApi;
 
       return new GeoMapCodingService({
         type: init.type,
-        implementation: GeoMapCodingServiceHere.create({ api: hereApi, platform: init.platform })
+        implementation: GeoMapCodingServiceHere.create({
+          api: hereApi,
+          platform: init.platform
+        })
       });
     }
 
@@ -47,7 +52,9 @@ export class GeoMapCodingService {
     this.implementation = init.implementation;
   }
 
-  public async reverse(location: Types.GeoPoint): Promise<Types.Result<Types.GeoPlace[]>> {
+  public async reverse(
+    location: Types.GeoPoint
+  ): Promise<Types.Result<Types.GeoPlace[]>> {
     return this.implementation.reverse(location);
   }
 }

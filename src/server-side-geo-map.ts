@@ -9,7 +9,10 @@ export class ServerSideGeoMap implements Types.GeoMapImplementation {
     // tslint:disable-next-line:no-any
     return {} as any;
   }
-  public async mount(el: HTMLElement, mountInit: Types.GeoMapMountInit): Promise<void> {
+  public async mount(
+    el: HTMLElement,
+    mountInit: Types.GeoMapMountInit
+  ): Promise<void> {
     /** */
   }
   public async phase(phase: Types.GeoMapPhase): Promise<void> {

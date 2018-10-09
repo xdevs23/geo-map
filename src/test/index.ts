@@ -1,6 +1,6 @@
 import * as Constants from './constants';
 
-export { Constants };
+export { Constants };
 export * from './create-window';
 export * from './util';
 export * from './ensure-element';

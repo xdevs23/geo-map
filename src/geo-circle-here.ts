@@ -1,15 +1,21 @@
-import { GeoMapHere } from './geo-map-here';
+import { GeoMapHere } from './geo-map-here';
 import * as Types from './types';
 
 export class GeoCircleHere implements Types.GeoCircleImplementation {
   private api: Types.HereApi;
   private circle: H.map.Circle;
 
-  public static create(config: Types.GeoCircleConfig, context: Types.CircleContext): GeoCircleHere {
+  public static create(
+    config: Types.GeoCircleConfig,
+    context: Types.CircleContext
+  ): GeoCircleHere {
     return new GeoCircleHere(config, context);
   }
 
-  private constructor(config: Types.GeoCircleConfig, context: Types.CircleContext) {
+  private constructor(
+    config: Types.GeoCircleConfig,
+    context: Types.CircleContext
+  ) {
     const implementation = context.mapImplementation as GeoMapHere;
     this.api = implementation.api;
 

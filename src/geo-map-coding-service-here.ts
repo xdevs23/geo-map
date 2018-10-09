@@ -2,7 +2,8 @@ import * as Result from './result';
 import * as Types from './types';
 import * as HereTypes from './here-types';
 
-export class GeoMapCodingServiceHere implements Types.GeoMapCodingServiceImplementation {
+export class GeoMapCodingServiceHere
+  implements Types.GeoMapCodingServiceImplementation {
   private platform: H.service.Platform;
 
   public static create(init: {
@@ -12,12 +13,17 @@ export class GeoMapCodingServiceHere implements Types.GeoMapCodingServiceImpleme
     return new GeoMapCodingServiceHere(init);
   }
 
-  private constructor(init: { api: Types.HereApi; platform: H.service.Platform }) {
+  private constructor(init: {
+    api: Types.HereApi;
+    platform: H.service.Platform;
+  }) {
     this.platform = init.platform;
   }
 
-  public async reverse(location: Types.GeoPoint): Promise<Types.Result<Types.GeoPlace[]>> {
-    return new Promise<Types.Result<Types.GeoPlace[]>>((resolve) => {
+  public async reverse(
+    location: Types.GeoPoint
+  ): Promise<Types.Result<Types.GeoPlace[]>> {
+    return new Promise<Types.Result<Types.GeoPlace[]>>(resolve => {
       const service = this.platform.getGeocodingService();
 
       service.reverseGeocode(
@@ -26,9 +32,9 @@ export class GeoMapCodingServiceHere implements Types.GeoMapCodingServiceImpleme
           locationattributes: 'ar',
           mode: 'retrieveAddresses',
           prox: `${location.lat},${location.lng},0`,
-          jsonattributes: '1',
+          jsonattributes: '1'
         },
-        (serviceResult) => {
+        serviceResult => {
           if (!serviceResult.response) {
             resolve(Result.createFailure(new Error(serviceResult.details)));
           }
@@ -47,12 +53,12 @@ export class GeoMapCodingServiceHere implements Types.GeoMapCodingServiceImpleme
             Result.createSuccess(
               container.result
                 .map(herePlaceToGeoPlace)
-                .filter(place => typeof place.id === 'string'),
-            ),
+                .filter(place => typeof place.id === 'string')
+            )
           );
         },
-        serviceError => resolve(Result.createFailure(serviceError),
-      ));
+        serviceError => resolve(Result.createFailure(serviceError))
+      );
     });
   }
 }
@@ -67,7 +73,7 @@ function herePlaceToGeoPlace(herePlace: HereTypes.Place): Types.GeoPlace {
       locality: herePlace.location.address.city,
       route: herePlace.location.address.street,
       streetNumber: herePlace.location.address.houseNumber,
-      postalCode: herePlace.location.address.postalCode,
-    },
+      postalCode: herePlace.location.address.postalCode
+    }
   };
 }

@@ -19,7 +19,7 @@ export class GeoMarker {
     return new GeoMarker({
       provider: Types.GeoMapProvider.Google,
       implementation: GeoMarkerGoogle.create(
-        { position: init.position, icon: init.icon, anchor: init.anchor  },
+        { position: init.position, icon: init.icon, anchor: init.anchor },
         { mapImplementation: init.mapImplementation, context: init.context }
       )
     });

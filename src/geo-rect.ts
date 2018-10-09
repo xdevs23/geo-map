@@ -5,8 +5,11 @@ import * as Types from './types';
 export class GeoRect {
   private implementation: Types.GeoRectImplementation;
 
-  public static create(init: Types.GeoRectCreateInit, context: Types.RectContext): GeoRect {
-    const { north, east, south, west } = init;
+  public static create(
+    init: Types.GeoRectCreateInit,
+    context: Types.RectContext
+  ): GeoRect {
+    const { north, east, south, west } = init;
     const data = { north, east, south, west };
 
     if (init.provider === Types.GeoMapProvider.Here) {

@@ -12,11 +12,17 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
     horizontal: Types.GeoMarkerOrientation.Middle
   };
 
-  public static create(config: Types.GeoMarkerConfig, context: Types.GoogleMarkerContext): GeoMarkerGoogle {
+  public static create(
+    config: Types.GeoMarkerConfig,
+    context: Types.GoogleMarkerContext
+  ): GeoMarkerGoogle {
     return new GeoMarkerGoogle(config, context);
   }
 
-  private constructor(config: Types.GeoMarkerConfig, context: Types.GoogleMarkerContext) {
+  private constructor(
+    config: Types.GeoMarkerConfig,
+    context: Types.GoogleMarkerContext
+  ) {
     this.implementation = context.mapImplementation as GeoMapGoogle;
     this.iconMarkup = config.icon;
 
@@ -30,7 +36,9 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
       position: config.position,
       map: this.implementation.map,
       icon: {
-        anchor: iconAnchor ? new this.implementation.api.Point(iconAnchor.x, iconAnchor.y) : undefined,
+        anchor: iconAnchor
+          ? new this.implementation.api.Point(iconAnchor.x, iconAnchor.y)
+          : undefined,
         url: `data:image/svg+xml;utf-8,${encodeURIComponent(config.icon)}`
       }
     });
@@ -68,7 +76,9 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
 
   public async remove(): Promise<void> {
     this.marker.setMap(null);
-    this.implementation.markers.splice(this.implementation.markers.indexOf(this));
+    this.implementation.markers.splice(
+      this.implementation.markers.indexOf(this)
+    );
     this.implementation.fire(Types.GeoEvent.Changed);
   }
 }
@@ -76,7 +86,7 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
 function getOrientationRatio(orientation: Types.GeoMarkerOrientation): number {
   switch (orientation) {
     case Types.GeoMarkerOrientation.Start:
-    return 0;
+      return 0;
     case Types.GeoMarkerOrientation.End:
       return 1;
     case Types.GeoMarkerOrientation.Middle:
@@ -85,7 +95,10 @@ function getOrientationRatio(orientation: Types.GeoMarkerOrientation): number {
   }
 }
 
-function getAnchor(anchor: Types.GeoMarkerAnchor, icon: string): { x: number, y: number } | undefined {
+function getAnchor(
+  anchor: Types.GeoMarkerAnchor,
+  icon: string
+): { x: number; y: number } | undefined {
   if (typeof window === 'undefined') {
     return;
   }

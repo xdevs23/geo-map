@@ -2,21 +2,26 @@ import { GeoMarkerHere } from './geo-marker-here';
 import * as Test from './test';
 
 test('respects initial icon', async () => {
-  const {map: mapImplementation} = await Test.createHereMapImplementation();
+  const { map: mapImplementation } = await Test.createHereMapImplementation();
   const icon = '<svg><text>Hello</text></svg>';
 
-  const marker = GeoMarkerHere.create({ icon, position: Test.Constants.S2_HAM
-  }, { mapImplementation });
+  const marker = GeoMarkerHere.create(
+    {
+      icon,
+      position: Test.Constants.S2_HAM
+    },
+    { mapImplementation }
+  );
 
   expect(await marker.getIcon()).toBe(icon);
 });
 
 test('may set icon', async () => {
-  const {map: mapImplementation} = await Test.createHereMapImplementation();
+  const { map: mapImplementation } = await Test.createHereMapImplementation();
   const icon = '<svg><text>Hello</text></svg>';
 
   const marker = GeoMarkerHere.create(
-    { icon: '', position: Test.Constants.S2_HAM},
+    { icon: '', position: Test.Constants.S2_HAM },
     { mapImplementation }
   );
 
@@ -25,7 +30,7 @@ test('may set icon', async () => {
 });
 
 test('map hosts marker', async () => {
-  const {map: mapImplementation} = await Test.createHereMapImplementation();
+  const { map: mapImplementation } = await Test.createHereMapImplementation();
 
   const marker = GeoMarkerHere.create(
     { icon: '', position: Test.Constants.S2_HAM },
@@ -36,7 +41,7 @@ test('map hosts marker', async () => {
 });
 
 test('map looses removed marker', async () => {
-  const {map: mapImplementation} = await Test.createHereMapImplementation();
+  const { map: mapImplementation } = await Test.createHereMapImplementation();
 
   const marker = GeoMarkerHere.create(
     { icon: '', position: Test.Constants.S2_HAM },

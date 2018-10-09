@@ -1,5 +1,5 @@
-import { GeoMarkerGoogle } from './geo-marker-google';
-import { GeoMapPhases } from './geo-map-phases';
+import { GeoMarkerGoogle } from './geo-marker-google';
+import { GeoMapPhases } from './geo-map-phases';
 import { GeoRectGoogle } from './geo-rect-google';
 import { loadMapApi } from './load-map-api';
 import * as Types from './types';
@@ -16,7 +16,10 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   public map: google.maps.Map;
   public markers: GeoMarkerGoogle[] = [];
 
-  private layer: [Types.GeoLayer, google.maps.TrafficLayer | google.maps.TransitLayer | undefined] = [Types.GeoLayer.None, undefined];
+  private layer: [
+    Types.GeoLayer,
+    google.maps.TrafficLayer | google.maps.TransitLayer | undefined
+  ] = [Types.GeoLayer.None, undefined];
   private loadResult: Promise<Types.LoadGoogleMapResult>;
   private context: Types.GeoMapContext;
   private config: Types.LoadGoogleMapConfig;
@@ -32,15 +35,13 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
 
   public fire(eventName: Types.GeoEvent): void {
     const handlers = this.handlers.get(eventName) || [];
-    handlers.forEach((h) => h());
+    handlers.forEach(h => h());
   }
 
   public async load(): Promise<Types.LoadGoogleMapResult> {
     this.phases.resolve(Types.GeoMapPhase.Loading);
 
-    const load = this.context.load
-      ? this.context.load
-      : loadMapApi;
+    const load = this.context.load ? this.context.load : loadMapApi;
 
     this.loadResult = this.loadResult || load(this.config, this.context);
     const mapResult = await this.loadResult;
@@ -53,13 +54,19 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     return mapResult;
   }
 
-  public async mount(el: HTMLElement, mountInit: Types.GeoMapMountInit): Promise<void> {
+  public async mount(
+    el: HTMLElement,
+    mountInit: Types.GeoMapMountInit
+  ): Promise<void> {
     this.phases.resolve(Types.GeoMapPhase.Mounting);
 
     this.map = new this.api.Map(el, {
       center: mountInit.center,
       zoom: mountInit.zoom || 1,
-      mapTypeId: typeToGoogleMapTypeId(mountInit.type || Types.GeoMapType.Roadmap, this.api),
+      mapTypeId: typeToGoogleMapTypeId(
+        mountInit.type || Types.GeoMapType.Roadmap,
+        this.api
+      ),
       disableDefaultUI: true
     });
 
@@ -73,7 +80,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     await this.setCenter(mountInit.center);
 
     // Disable default POI click handling
-    this.map.addListener('click', (e) => e.placeId && e.stop());
+    this.map.addListener('click', e => e.placeId && e.stop());
 
     await (this.context.loaded
       ? this.context.loaded(this.map, { api: this.api, context: this.context })
@@ -91,7 +98,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   }
 
   public async getCenter(): Promise<Types.GeoPoint> {
-    const { viewport = DEFAULT_VIEWPORT } = this.config;
+    const { viewport = DEFAULT_VIEWPORT } = this.config;
     await this.phase(Types.GeoMapPhase.Mounted);
     const projection = await getProjection(this.map, this.api);
     const apparentCenter = this.map.getCenter();
@@ -108,7 +115,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   }
 
   public async setCenter(center: Types.GeoPoint): Promise<void> {
-    const { viewport = DEFAULT_VIEWPORT } = this.config;
+    const { viewport = DEFAULT_VIEWPORT } = this.config;
     await this.phase(Types.GeoMapPhase.Mounted);
     const projection = await getProjection(this.map, this.api);
     const latlng = new this.api.LatLng(center.lat, center.lng);
@@ -183,13 +190,13 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   public async getViewBounds(): Promise<Types.GeoBounds> {
     await this.phase(Types.GeoMapPhase.Mounted);
     const bounds = this.map.getBounds() as google.maps.LatLngBounds;
-    const rect = GeoRectGoogle.from(bounds, { mapImplementation: this });
+    const rect = GeoRectGoogle.from(bounds, { mapImplementation: this });
     return rect.getBounds();
   }
 
   public async setViewBounds(bounds: Types.GeoBounds): Promise<void> {
     await this.phase(Types.GeoMapPhase.Mounted);
-    const rect = GeoRectGoogle.create(bounds, { mapImplementation: this });
+    const rect = GeoRectGoogle.create(bounds, { mapImplementation: this });
     this.map.fitBounds(rect.toBounds(), this.config.viewport);
     this.fire(Types.GeoEvent.Changed);
   }
@@ -211,9 +218,18 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     this.map.setZoom(factor);
   }
 
-  public async addEventListener(eventName: Types.GeoEvent.Click, handler: Types.GeoEventHandler<Types.GeoClickPayload>): Promise<void>;
-  public async addEventListener(eventName: Types.GeoEvent.Changed, handler: Types.GeoEventHandler<void>): Promise<void>;
-  public async addEventListener(eventName: Types.GeoEvent, handler: Types.GeoEventHandler): Promise<void> {
+  public async addEventListener(
+    eventName: Types.GeoEvent.Click,
+    handler: Types.GeoEventHandler<Types.GeoClickPayload>
+  ): Promise<void>;
+  public async addEventListener(
+    eventName: Types.GeoEvent.Changed,
+    handler: Types.GeoEventHandler<void>
+  ): Promise<void>;
+  public async addEventListener(
+    eventName: Types.GeoEvent,
+    handler: Types.GeoEventHandler
+  ): Promise<void> {
     const previous = this.handlers.get(eventName) || [];
     this.handlers.set(eventName, [...previous, handler]);
 
@@ -240,7 +256,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
           lng: e.latLng.lng()
         };
 
-        handler({position});
+        handler({ position });
         return;
       }
 
@@ -249,21 +265,26 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   }
 
   public async coversLocation(point: Types.GeoPoint): Promise<boolean> {
-    const rect = GeoRectGoogle.create(await this.getViewBounds(), { mapImplementation: this });
+    const rect = GeoRectGoogle.create(await this.getViewBounds(), {
+      mapImplementation: this
+    });
     return rect.coversLocation(point);
   }
 }
 
 function googleMapLoaded(
   map: google.maps.Map,
-  { api }: { api: typeof google.maps; context: Types.GeoMapContext; }
+  { api }: { api: typeof google.maps; context: Types.GeoMapContext }
 ): Promise<void> {
-  return new Promise((resolve) =>
+  return new Promise(resolve =>
     api.event.addListenerOnce(map, 'idle', () => resolve())
   );
 }
 
-function typeToGoogleMapTypeId(type: Types.GeoMapType, api: typeof google.maps): google.maps.MapTypeId {
+function typeToGoogleMapTypeId(
+  type: Types.GeoMapType,
+  api: typeof google.maps
+): google.maps.MapTypeId {
   switch (type) {
     case Types.GeoMapType.Hybrid:
       return api.MapTypeId.HYBRID;
@@ -273,11 +294,16 @@ function typeToGoogleMapTypeId(type: Types.GeoMapType, api: typeof google.maps):
   }
 }
 
-function getProjection(map: google.maps.Map, api: Types.GoogleApi): Promise<google.maps.MapCanvasProjection> {
+function getProjection(
+  map: google.maps.Map,
+  api: Types.GoogleApi
+): Promise<google.maps.MapCanvasProjection> {
   return new Promise((resolve, reject) => {
     try {
       const overlayView = new api.OverlayView();
-      overlayView.draw = () => { /** */ };
+      overlayView.draw = () => {
+        /** */
+      };
       overlayView.onAdd = () => resolve(overlayView.getProjection());
       overlayView.setMap(map);
     } catch (err) {
