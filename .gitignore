@@ -1,11 +1,8 @@
 /node_modules
 *.log
-dist
 package-lock.json
-yarn.lock
 .DS_Store
 /*.tgz
-.vscode
 /screenshots
 /lib
 esm/
