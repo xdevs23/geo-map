@@ -16,9 +16,13 @@ test('HERE geo map succeeds loading', async () => {
     },
     context: {
       window,
-      changed: async () => { /** */ },
+      changed: async () => {
+        /** */
+      },
       init: () => Test.createHMock(),
-      loaded: async () => { /** */ }
+      loaded: async () => {
+        /** */
+      }
     }
   });
 
@@ -27,7 +31,9 @@ test('HERE geo map succeeds loading', async () => {
 });
 
 test('HERE map respects initial zoom', async () => {
-  const hereMap = await Test.createHereMapImplementation({mount: { zoom: 2, center: Test.Constants.S2_HAM }});
+  const hereMap = await Test.createHereMapImplementation({
+    mount: { zoom: 2, center: Test.Constants.S2_HAM }
+  });
   expect(await hereMap.map.getZoom()).toBe(2);
 });
 
@@ -128,22 +134,24 @@ test('HERE click carries lat/lng payload', async () => {
 
   simulant.fire(el, event);
 
-  expect(onClick).toHaveBeenCalledWith(expect.objectContaining({
-    position: {
-      lat: 0,
-      lng: 0
-    }
-  }));
+  expect(onClick).toHaveBeenCalledWith(
+    expect.objectContaining({
+      position: {
+        lat: 0,
+        lng: 0
+      }
+    })
+  );
 });
 
 test('GeoMapHere.coversLocation returns true for location in view bounds', async () => {
-  const {map} = await Test.createHereMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
+  const { map } = await Test.createHereMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
   const covered = await map.coversLocation({ lat: 0, lng: 0 });
   expect(covered).toBe(true);
 });
 
 test('GeoMapHere.coversLocation returns false for location outside view bounds', async () => {
-  const {map} = await Test.createHereMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
+  const { map } = await Test.createHereMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
   const covered = await map.coversLocation({ lat: 2, lng: 2 });
   expect(covered).toBe(false);
 });

@@ -2,18 +2,20 @@
 // tslint:disable:no-any
 
 export const createGoogleMock = (): any => {
-
   class GoogleMockProjection {
     public fromContainerPixelToLatLng(pixel: { x: number; y: number }): any {
       return {
         lat: () => pixel.x / 10,
-        lng: () => pixel.y / 10,
+        lng: () => pixel.y / 10
       };
     }
-    public fromLatLngToContainerPixel(latlng: { lat(): number; lng(): number }): any {
+    public fromLatLngToContainerPixel(latlng: {
+      lat(): number;
+      lng(): number;
+    }): any {
       return {
         x: latlng.lng() * 10,
-        y: latlng.lat() * 10,
+        y: latlng.lat() * 10
       };
     }
   }
@@ -54,7 +56,12 @@ export const createGoogleMock = (): any => {
     }
 
     public toJSON(): any {
-      return { north: this.north, east: this.east, south: this.south, west: this.west };
+      return {
+        north: this.north,
+        east: this.east,
+        south: this.south,
+        west: this.west
+      };
     }
 
     public contains(point: { lat: number; lng: number }): boolean {
@@ -99,7 +106,7 @@ export const createGoogleMock = (): any => {
     }
 
     private fire(eventName: string, e?: Event): void {
-      (this.handlers.get(eventName) || []).forEach((h) => h(e));
+      (this.handlers.get(eventName) || []).forEach(h => h(e));
     }
 
     public addListener(eventName: string, handler: () => void): void {
@@ -122,8 +129,14 @@ export const createGoogleMock = (): any => {
 
     public getCenter(): { lat(): number; lng(): number } {
       return {
-        lat: typeof this.center.lat === 'function' ? this.center.lat : () => this.center.lat,
-        lng: typeof this.center.lng === 'function' ? this.center.lng : () => this.center.lng,
+        lat:
+          typeof this.center.lat === 'function'
+            ? this.center.lat
+            : () => this.center.lat,
+        lng:
+          typeof this.center.lng === 'function'
+            ? this.center.lng
+            : () => this.center.lng
       };
     }
 
@@ -146,7 +159,10 @@ export const createGoogleMock = (): any => {
     }
 
     public getBounds(): GoogleMockLatLngBounds {
-      return new GoogleMockLatLngBounds(new GoogleMockLatLng(-1, 1), new GoogleMockLatLng(1, -1));
+      return new GoogleMockLatLngBounds(
+        new GoogleMockLatLng(-1, 1),
+        new GoogleMockLatLng(1, -1)
+      );
     }
   }
 
@@ -161,11 +177,11 @@ export const createGoogleMock = (): any => {
     Map: GoogleMockMap,
     OverlayView: GoogleMockOverlayView,
     MapTypeId: {
-      ROADMAP: 'ROADMAP',
+      ROADMAP: 'ROADMAP'
     },
     TransitLayer: GoogleMockLayer,
     TrafficLayer: GoogleMockLayer,
     Point: GoogleMockPoint,
-    Marker: GoogleMockMarker,
+    Marker: GoogleMockMarker
   };
 };

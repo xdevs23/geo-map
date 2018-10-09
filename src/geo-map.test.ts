@@ -4,15 +4,15 @@ import * as Types from './types';
 
 const auth = {
   clientId: Test.Constants.GOOGLE_MAP_CLIENT_ID,
-  channel: Test.Constants.GOOGLE_MAP_CHANNEL,
+  channel: Test.Constants.GOOGLE_MAP_CHANNEL
 };
 
 test('Google geo map exposes expected provider', async () => {
   const googleMap = GeoMap.create({
     config: {
       provider: Types.GeoMapProvider.Google,
-      auth,
-    },
+      auth
+    }
   });
 
   expect(googleMap.provider).toBe(Types.GeoMapProvider.Google);
@@ -23,8 +23,8 @@ test('HERE geo map exposes expected provider', async () => {
     config: {
       provider: Types.GeoMapProvider.Here,
       appCode: Test.Constants.HERE_APP_CODE,
-      appId: Test.Constants.HERE_APP_ID,
-    },
+      appId: Test.Constants.HERE_APP_ID
+    }
   });
 
   expect(googleMap.provider).toBe(Types.GeoMapProvider.Here);
@@ -35,8 +35,8 @@ test('faulty geo map fails loading', async () => {
     config: {
       provider: 'Algolia' as Types.GeoMapProvider.Here,
       appCode: Test.Constants.HERE_APP_CODE,
-      appId: Test.Constants.HERE_APP_ID,
-    },
+      appId: Test.Constants.HERE_APP_ID
+    }
   });
 
   const loadResult = await faultyMap.load();
@@ -50,12 +50,12 @@ test('Google geo map loads automatically when mounting', async () => {
   const googleMap = GeoMap.create({
     config: {
       provider: Types.GeoMapProvider.Google,
-      auth,
+      auth
     },
     context: {
       window,
-      loaded,
-    },
+      loaded
+    }
   });
 
   const el = Test.ensureElement(Types.GeoMapProvider.Google, { window });
@@ -72,7 +72,7 @@ test('HERE geo map loads automatically when mounting', async () => {
     config: {
       provider: Types.GeoMapProvider.Here,
       appCode: Test.Constants.HERE_APP_CODE,
-      appId: Test.Constants.HERE_APP_ID,
+      appId: Test.Constants.HERE_APP_ID
     },
     context: {
       window,
@@ -80,8 +80,8 @@ test('HERE geo map loads automatically when mounting', async () => {
         /** */
       },
       init: () => Test.createHMock(),
-      loaded,
-    },
+      loaded
+    }
   });
 
   const el = Test.ensureElement(Types.GeoMapProvider.Google, { window });
@@ -96,7 +96,7 @@ test('Geo map exposes getLayer', async () => {
   const expected = Types.GeoLayer.Traffic;
 
   const mock = await Test.createMockMapImplementation({
-    getLayer: jest.fn().mockImplementation(() => expected),
+    getLayer: jest.fn().mockImplementation(() => expected)
   });
 
   const map = GeoMap.from(mock);
@@ -128,7 +128,7 @@ test('Geo createMarker triggers change event with Google', async () => {
 
   await googleMap.createMarker({
     icon: '',
-    position: Test.Constants.S2_HAM,
+    position: Test.Constants.S2_HAM
   });
 
   expect(onChange).toHaveBeenCalledTimes(1);
@@ -142,7 +142,7 @@ test('Geo createMarker triggers change event with HERE', async () => {
 
   await hereMap.createMarker({
     icon: '',
-    position: Test.Constants.S2_HAM,
+    position: Test.Constants.S2_HAM
   });
 
   expect(onChange).toHaveBeenCalledTimes(1);
@@ -154,7 +154,7 @@ test('GeoMarker.remove triggers change event with Google', async () => {
 
   const marker = await googleMap.createMarker({
     icon: '',
-    position: Test.Constants.S2_HAM,
+    position: Test.Constants.S2_HAM
   });
 
   googleMap.addEventListener(Types.GeoEvent.Changed, onChange);
@@ -169,7 +169,7 @@ test('GeoMarker.remove triggers change event with HERE', async () => {
 
   const marker = await hereMap.createMarker({
     icon: '',
-    position: Test.Constants.S2_HAM,
+    position: Test.Constants.S2_HAM
   });
 
   hereMap.addEventListener(Types.GeoEvent.Changed, onChange);

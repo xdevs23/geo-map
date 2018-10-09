@@ -59,7 +59,10 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     return mapResult;
   }
 
-  public async mount(el: HTMLElement, mountInit: Types.GeoMapMountInit): Promise<void> {
+  public async mount(
+    el: HTMLElement,
+    mountInit: Types.GeoMapMountInit
+  ): Promise<void> {
     this.phases.resolve(Types.GeoMapPhase.Mounting);
 
     const { api } = this;
@@ -67,7 +70,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     this.platform = new this.api.service.Platform({
       app_code: this.config.appCode,
       app_id: this.config.appId,
-      useHTTPS: true,
+      useHTTPS: true
     });
 
     this.mapType = mountInit.type || Types.GeoMapType.Roadmap;
@@ -77,17 +80,17 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       {
         type: this.mapType,
         layer: this.layer,
-        language: this.config.language,
+        language: this.config.language
       },
       {
         platform: this.platform,
-        window: this.context.window,
-      },
+        window: this.context.window
+      }
     );
 
     this.map = new api.Map(el, layer, {
       center: mountInit.center,
-      zoom: mountInit.zoom,
+      zoom: mountInit.zoom
     });
 
     this.phases.resolve(Types.GeoMapPhase.Mounted);
@@ -96,11 +99,13 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     // tslint:disable-next-line:no-unused-expression
     new api.mapevents.Behavior(new api.mapevents.MapEvents(this.map));
 
-    this.context.window.addEventListener('resize', () => this.map.getViewPort().resize());
+    this.context.window.addEventListener('resize', () =>
+      this.map.getViewPort().resize()
+    );
 
     if (this.config.viewport) {
       const {
-        viewport: { top, right, bottom, left },
+        viewport: { top, right, bottom, left }
       } = this.config;
 
       this.map.getViewPort().setPadding(top, right, bottom, left);
@@ -155,13 +160,13 @@ export class GeoMapHere implements Types.GeoMapImplementation {
         {
           type: this.mapType,
           layer: this.layer,
-          language: this.config.language,
+          language: this.config.language
         },
         {
           platform: this.platform,
-          window: this.context.window,
-        },
-      ),
+          window: this.context.window
+        }
+      )
     );
 
     this.fire(Types.GeoEvent.Changed);
@@ -208,15 +213,15 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   public async addEventListener(
     eventName: Types.GeoEvent.Click,
-    handler: Types.GeoEventHandler<Types.GeoClickPayload>,
+    handler: Types.GeoEventHandler<Types.GeoClickPayload>
   ): Promise<void>;
   public async addEventListener(
     eventName: Types.GeoEvent.Changed,
-    handler: Types.GeoEventHandler<void>,
+    handler: Types.GeoEventHandler<void>
   ): Promise<void>;
   public async addEventListener(
     eventName: Types.GeoEvent,
-    handler: Types.GeoEventHandler,
+    handler: Types.GeoEventHandler
   ): Promise<void> {
     const previous = this.handlers.get(eventName) || [];
     this.handlers.set(eventName, [...previous, handler]);
@@ -234,7 +239,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       if (eventName === Types.GeoEvent.Click) {
         const position = this.map.screenToGeo(
           e.currentPointer.viewportX,
-          e.currentPointer.viewportY,
+          e.currentPointer.viewportY
         );
         handler({ position });
         return;
@@ -249,21 +254,23 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       provider: Types.GeoMapProvider.Here,
       mapImplementation: this,
       position: config.position,
-      icon: config.icon,
+      icon: config.icon
     });
   }
 
   public async coversLocation(point: Types.GeoPoint): Promise<boolean> {
-    const viewBounds = GeoRectHere.create(await this.getViewBounds(), { mapImplementation: this });
+    const viewBounds = GeoRectHere.create(await this.getViewBounds(), {
+      mapImplementation: this
+    });
     return viewBounds.coversLocation(point);
   }
 }
 
 function hereMapLoaded(
   map: H.Map,
-  _: { api: typeof H; context: Types.GeoMapContext },
+  _: { api: typeof H; context: Types.GeoMapContext }
 ): Promise<void> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     map.addEventListener('mapviewchangeend', () => {
       resolve();
     });
@@ -271,7 +278,7 @@ function hereMapLoaded(
 }
 
 function hereMapChanged(map: H.Map): Promise<void> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     const onChanged = () => {
       resolve();
       map.removeEventListener('mapviewchangeend', onChanged);
@@ -283,13 +290,13 @@ function hereMapChanged(map: H.Map): Promise<void> {
 
 function getHereMapLayer(
   config: { language?: string; type: Types.GeoMapType; layer: Types.GeoLayer },
-  context: { platform: H.service.Platform; window: Window },
+  context: { platform: H.service.Platform; window: Window }
 ): H.map.layer.TileLayer {
   const defaultLayers = context.platform.createDefaultLayers({
     tileSize: 256,
     lg: isoToHereLanguage(config.language || 'en'),
     ppi: getOptimalHerePixelDensity(),
-    pois: true,
+    pois: true
   });
 
   const key = getHereMapKey(config.layer);
@@ -317,15 +324,18 @@ function getHereMapKey(layer: Types.GeoLayer): 'map' | 'traffic' | 'transit' {
 
 function isoToHereLanguage(isoCode: string): Types.HereLanguage {
   // tslint:disable-next-line:no-any
-  return (Types.HereLanguage[isoCode as any] || Types.HereLanguage.en) as Types.HereLanguage;
+  return (Types.HereLanguage[isoCode as any] ||
+    Types.HereLanguage.en) as Types.HereLanguage;
 }
 
 function getOptimalHerePixelDensity(): number {
   // tslint:disable:no-any
   const keys = Object.keys(Types.HerePixelDensity).filter(
-    k => typeof Types.HerePixelDensity[k as any] === 'number',
+    k => typeof Types.HerePixelDensity[k as any] === 'number'
   );
-  const scale = (keys.map(k => Types.HerePixelDensity[k as any]) as any[]) as number[];
+  const scale = (keys.map(
+    k => Types.HerePixelDensity[k as any]
+  ) as any[]) as number[];
   const devicePpi = (window.devicePixelRatio || 1) * 72;
   return scale.find(ppi => ppi > devicePpi) || scale[scale.length - 1];
 }

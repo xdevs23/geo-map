@@ -6,18 +6,27 @@ import * as Types from '../types';
 const PNGReader = require('png.js');
 
 // tslint:disable-next-line:no-any
-export const div = (fragments: TemplateStringsArray, ...interpolations: any[]) => {
-  const parts = fragments.reduce((result, part, i) => [...result, part, interpolations[i]], []);
+export const div = (
+  fragments: TemplateStringsArray,
+  ...interpolations: any[]
+) => {
+  const parts = fragments.reduce(
+    (result, part, i) => [...result, part, interpolations[i]],
+    []
+  );
 
   const el = document.createElement('div');
 
-  el.setAttribute('style', parts
-    .join('')
-    .split('\n')
-    .join('')
-    .split(';')
-    .map((i) => i.trim())
-    .join('; '));
+  el.setAttribute(
+    'style',
+    parts
+      .join('')
+      .split('\n')
+      .join('')
+      .split(';')
+      .map(i => i.trim())
+      .join('; ')
+  );
 
   return el;
 };
@@ -27,8 +36,13 @@ export const parsePng = (image: Buffer) => {
   return Util.promisify(reader.parse.bind(reader))();
 };
 
-export function paintViewport({ container, viewport }:
-  { container: HTMLElement; viewport: Types.GeoMapViewport } ): void {
+export function paintViewport({
+  container,
+  viewport
+}: {
+  container: HTMLElement;
+  viewport: Types.GeoMapViewport;
+}): void {
   const els = [];
 
   if (viewport.top > 0) {
@@ -79,7 +93,7 @@ export function paintViewport({ container, viewport }:
   `);
   }
 
-  els.forEach((el) => container.appendChild(el));
+  els.forEach(el => container.appendChild(el));
 }
 
 // tslint:disable-next-line:no-any

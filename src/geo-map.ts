@@ -23,32 +23,32 @@ export class GeoMap {
     if (typeof window === 'undefined') {
       return new GeoMap({
         implementation: new ServerSideGeoMap(init.config),
-        provider: Types.GeoMapProvider.Custom,
+        provider: Types.GeoMapProvider.Custom
       });
     }
     if (init.config.provider === Types.GeoMapProvider.Here) {
       return new GeoMap({
         implementation: new GeoMapHere({
           config: init.config as Types.LoadHereMapConfig,
-          context: init.context,
+          context: init.context
         }),
-        provider: init.config.provider,
+        provider: init.config.provider
       });
     }
 
     return new GeoMap({
       implementation: new GeoMapGoogle({
         config: init.config as Types.LoadGoogleMapConfig,
-        context: init.context,
+        context: init.context
       }),
-      provider: init.config.provider,
+      provider: init.config.provider
     });
   }
 
   public static from(implementation: Types.GeoMapImplementation): GeoMap {
     return new GeoMap({
       implementation,
-      provider: Types.GeoMapProvider.Custom,
+      provider: Types.GeoMapProvider.Custom
     });
   }
 
@@ -63,21 +63,23 @@ export class GeoMap {
       provider: this.provider,
       mapImplementation: this.implementation,
       position: config.position,
-      icon: config.icon,
+      icon: config.icon
     });
   }
 
   public async createGeoRect(config: Types.GeoBounds): Promise<GeoRect> {
     return GeoRect.create(
       { provider: this.provider, ...config },
-      { mapImplementation: this.implementation },
+      { mapImplementation: this.implementation }
     );
   }
 
-  public async createGeoCircle(config: Types.GeoCircleConfig): Promise<GeoCircle> {
+  public async createGeoCircle(
+    config: Types.GeoCircleConfig
+  ): Promise<GeoCircle> {
     return GeoCircle.create(
       { provider: this.provider, ...config },
-      { mapImplementation: this.implementation },
+      { mapImplementation: this.implementation }
     );
   }
 
@@ -85,7 +87,10 @@ export class GeoMap {
     return this.implementation.load();
   }
 
-  public async mount(el: HTMLElement, init: Types.GeoMapMountInit): Promise<void> {
+  public async mount(
+    el: HTMLElement,
+    init: Types.GeoMapMountInit
+  ): Promise<void> {
     await this.implementation.load();
     await this.implementation.mount(el, init);
   }
@@ -140,15 +145,15 @@ export class GeoMap {
 
   public async addEventListener(
     eventName: Types.GeoEvent.Click,
-    handler: Types.GeoEventHandler<Types.GeoClickPayload>,
+    handler: Types.GeoEventHandler<Types.GeoClickPayload>
   ): Promise<void>;
   public async addEventListener(
     eventName: Types.GeoEvent.Changed | Types.GeoEvent.Loaded,
-    handler: Types.GeoEventHandler<void>,
+    handler: Types.GeoEventHandler<void>
   ): Promise<void>;
   public async addEventListener(
     event: Types.GeoEvent,
-    handler: Types.GeoEventHandler,
+    handler: Types.GeoEventHandler
   ): Promise<void> {
     return this.implementation.addEventListener(event, handler);
   }
@@ -157,7 +162,9 @@ export class GeoMap {
   //   return this.implementation.coversLocation(point);
   // }
 
-  public async reverseGeocode(point: Types.GeoPoint): Promise<Types.Result<Types.GeoPlace[]>> {
+  public async reverseGeocode(
+    point: Types.GeoPoint
+  ): Promise<Types.Result<Types.GeoPlace[]>> {
     await this.phase(Types.GeoMapPhase.Loaded);
 
     // TODO: Move out of here when splitting GeoMap into Geo -> Map, Geo -> Code, Geo -> ...
@@ -165,7 +172,7 @@ export class GeoMap {
       const hereService = GeoMapCodingService.create({
         type: this.provider as Types.GeoMapProvider.Here,
         api: (this.implementation as GeoMapHere).api,
-        platform: (this.implementation as GeoMapHere).platform,
+        platform: (this.implementation as GeoMapHere).platform
       });
 
       return hereService.reverse(point);
@@ -173,7 +180,7 @@ export class GeoMap {
 
     const googleService = GeoMapCodingService.create({
       type: this.provider as Types.GeoMapProvider.Google,
-      api: (this.implementation as GeoMapGoogle).api,
+      api: (this.implementation as GeoMapGoogle).api
     });
 
     return googleService.reverse(point);
@@ -187,7 +194,7 @@ export class GeoMap {
       const hereService = GeoMapPlacesService.create({
         type: this.provider as Types.GeoMapProvider.Here,
         api: (this.implementation as GeoMapHere).api,
-        platform: (this.implementation as GeoMapHere).platform,
+        platform: (this.implementation as GeoMapHere).platform
       });
 
       return hereService.get(id);
@@ -195,7 +202,7 @@ export class GeoMap {
 
     const googleService = GeoMapPlacesService.create({
       type: this.provider as Types.GeoMapProvider.Google,
-      api: (this.implementation as GeoMapGoogle).api,
+      api: (this.implementation as GeoMapGoogle).api
     });
 
     return googleService.get(id);

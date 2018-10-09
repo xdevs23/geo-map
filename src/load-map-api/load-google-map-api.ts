@@ -13,9 +13,9 @@ let memoizedGoogleMapResult: Types.LoadGoogleMapResult;
 export function loadGoogleMapApi(
   result: Types.LoadGoogleMapResult,
   config: Types.LoadGoogleMapConfig,
-  context: Types.LoadMapContext,
+  context: Types.LoadMapContext
 ): Promise<Types.LoadGoogleMapResult> {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // tslint:disable-next-line:no-any
     const win = (context.window as any) as Window & { google: typeof google };
 
@@ -23,13 +23,21 @@ export function loadGoogleMapApi(
       callback: GOOGLE_MAP_CALLBACK_ID,
       language: config.language || 'en',
       region: config.region || null,
-      libraries: 'places',
+      libraries: 'places'
     };
 
-    if (isAuthType<Types.GoogleMapApiKeyAuth>(config.auth, Types.GoogleMapAuthType.ApiKey)) {
+    if (
+      isAuthType<Types.GoogleMapApiKeyAuth>(
+        config.auth,
+        Types.GoogleMapAuthType.ApiKey
+      )
+    ) {
       params.key = config.auth.apiKey;
     } else if (
-      isAuthType<Types.GoogleMapClientIdAuth>(config.auth, Types.GoogleMapAuthType.ClientId)
+      isAuthType<Types.GoogleMapClientIdAuth>(
+        config.auth,
+        Types.GoogleMapAuthType.ClientId
+      )
     ) {
       params.client = config.auth.clientId;
       params.channel = config.auth.channel || null;
@@ -38,9 +46,11 @@ export function loadGoogleMapApi(
       console.warn(`Could not configure Google Maps authentication.`);
     }
 
-    const url = `https://maps.googleapis.com/maps/api/js?${QueryString.stringify(params)}`;
+    const url = `https://maps.googleapis.com/maps/api/js?${QueryString.stringify(
+      params
+    )}`;
     const previous = win.document.querySelector(
-      `[data-map-provider=${Types.GeoMapProvider.Google}]`,
+      `[data-map-provider=${Types.GeoMapProvider.Google}]`
     );
 
     if (previous && memoizedGoogleMapResult) {
@@ -57,7 +67,10 @@ export function loadGoogleMapApi(
 
     // tslint:disable-next-line:no-any
     (win as any)[GOOGLE_MAP_CALLBACK_ID] = () => {
-      Result.toSuccess(result.result, context.init ? context.init() : win.google.maps);
+      Result.toSuccess(
+        result.result,
+        context.init ? context.init() : win.google.maps
+      );
       resolve(result);
     };
   });
@@ -65,7 +78,7 @@ export function loadGoogleMapApi(
 
 function isAuthType<T extends Types.GoogleMapAuth>(
   auth: Types.GoogleMapAuth,
-  type: Types.GoogleMapAuthType,
+  type: Types.GoogleMapAuthType
 ): auth is T {
   if (type === Types.GoogleMapAuthType.ApiKey) {
     return auth.hasOwnProperty('apiKey');

@@ -115,14 +115,14 @@ export interface Place {
       mapReleaseDate: string;
       mapId: string;
       spot: number;
-      sideOfStreet: 'left' | 'right' | 'neither';
+      sideOfStreet: 'left' | 'right' | 'neither';
       countryId: string;
       stateId: string;
       cityId: string;
       districtId: string;
       buildingId: string;
       addressId: string;
-    }
+    };
   };
 }
 

@@ -13,18 +13,22 @@ let memoizedHereMapResult: Types.LoadHereMapResult;
 export async function loadHereMapApi(
   result: Types.LoadHereMapResult,
   config: Types.LoadHereMapConfig,
-  context: Types.LoadMapContext,
+  context: Types.LoadMapContext
 ): Promise<Types.LoadHereMapResult> {
   // tslint:disable-next-line:no-any
   const win = (context.window as any) as { H: typeof H };
 
-  const load = (src: string) => loadScript(src, { 'map-provider': config.provider }, context);
+  const load = (src: string) =>
+    loadScript(src, { 'map-provider': config.provider }, context);
   const previous = context.window.document.querySelectorAll(
-    `[data-map-provider=${config.provider}]`,
+    `[data-map-provider=${config.provider}]`
   );
   const previousSources = Array.from(previous).map(p => p.getAttribute('src'));
 
-  if (memoizedHereMapResult && SCRIPTS.every(s => previousSources.indexOf(s) > -1)) {
+  if (
+    memoizedHereMapResult &&
+    SCRIPTS.every(s => previousSources.indexOf(s) > -1)
+  ) {
     return memoizedHereMapResult;
   }
 

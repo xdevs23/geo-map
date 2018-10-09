@@ -1,7 +1,8 @@
 import * as Result from './result';
 import * as Types from './types';
 
-export class GeoMapPlacesServiceHere implements Types.GeoMapPlacesServiceImplementation {
+export class GeoMapPlacesServiceHere
+  implements Types.GeoMapPlacesServiceImplementation {
   private platform: H.service.Platform;
 
   public static create(init: {
@@ -11,22 +12,25 @@ export class GeoMapPlacesServiceHere implements Types.GeoMapPlacesServiceImpleme
     return new GeoMapPlacesServiceHere(init);
   }
 
-  private constructor(init: { api: Types.HereApi; platform: H.service.Platform }) {
+  private constructor(init: {
+    api: Types.HereApi;
+    platform: H.service.Platform;
+  }) {
     this.platform = init.platform;
   }
 
   public async get(id: string): Promise<Types.Result<Types.GeoPlace>> {
-    return new Promise<Types.Result<Types.GeoPlace>>((resolve) => {
+    return new Promise<Types.Result<Types.GeoPlace>>(resolve => {
       const service = this.platform.getPlacesService();
 
       // tslint:disable-line:no-any
       service.request(
-        'places/lookup' as any as H.service.PlacesService.EntryPoint,
+        ('places/lookup' as any) as H.service.PlacesService.EntryPoint,
         { id, source: 'pvid' },
-        (result) => {
+        result => {
           // TODO: transform to facade result
         },
-        serviceError => resolve(Result.createFailure(serviceError)),
+        serviceError => resolve(Result.createFailure(serviceError))
       );
     });
   }

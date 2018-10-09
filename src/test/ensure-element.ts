@@ -1,6 +1,9 @@
 import * as Types from '../types';
 
-export function ensureElement(provider: Types.GeoMapProvider, { window }: { window: Window } = { window }): HTMLDivElement {
+export function ensureElement(
+  provider: Types.GeoMapProvider,
+  { window }: { window: Window } = { window }
+): HTMLDivElement {
   const rootEl = window.document.getElementById('root') as HTMLElement;
   const previous = window.document.querySelector(`[data-map="${provider}"]`);
 

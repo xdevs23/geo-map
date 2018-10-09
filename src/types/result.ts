@@ -1,8 +1,7 @@
-
 export enum ResultType {
   Queued = 'queued',
   Failure = 'failure',
-  Success = 'success',
+  Success = 'success'
 }
 
 export type Result<T> = QueuedResult | SuccessResult<T> | FailureResult;

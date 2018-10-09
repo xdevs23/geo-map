@@ -46,14 +46,16 @@
     "@types/uuid": "^3.4.3",
     "execa": "^1.0.0",
     "express": "^4.16.3",
+    "husky": "^1.1.1",
     "jest": "^23.4.1",
     "jest-canvas-mock": "^1.1.0",
     "jest-cli": "^23.4.1",
     "jest-puppeteer": "^3.4.0",
     "jsdom": "^11.11.0",
     "jsdom-simulant": "^1.1.2",
+    "lint-staged": "^7.3.0",
     "png.js": "^0.2.1",
-    "prettier": "^1.13.7",
+    "prettier": "^1.14.3",
     "puppeteer": "^1.6.1",
     "rimraf": "^2.6.2",
     "ts-jest": "^23.10.3",
@@ -71,5 +73,19 @@
     "ts-enum-util": "^3.1.0",
     "tslib": "1.9.0",
     "uuid": "^3.3.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true
   }
 }

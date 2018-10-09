@@ -1,4 +1,4 @@
-  // tslint:disable:no-any
+// tslint:disable:no-any
 import { GeoMapGoogle } from './geo-map-google';
 import * as Test from './test';
 import * as Types from './types';
@@ -16,8 +16,8 @@ test('Google map succeeds loading', async () => {
       auth
     },
     context: {
-      window: Test.createWindow(),
-    },
+      window: Test.createWindow()
+    }
   });
 
   const loadResult = await googleMap.load();
@@ -124,22 +124,24 @@ test('Google click carries lat/lng payload', async () => {
   (event as any).latLng = { lat: () => 0, lng: () => 0 };
   simulant.fire(el, event);
 
-  expect(onClick).toHaveBeenCalledWith(expect.objectContaining({
-    position: {
-      lat: 0,
-      lng: 0
-    }
-  }));
+  expect(onClick).toHaveBeenCalledWith(
+    expect.objectContaining({
+      position: {
+        lat: 0,
+        lng: 0
+      }
+    })
+  );
 });
 
 test('GeoMapGoogle.coversLocation returns true for location in view bounds', async () => {
-  const {map} = await Test.createGoogleMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
+  const { map } = await Test.createGoogleMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
   const covered = await map.coversLocation({ lat: 0, lng: 0 });
   expect(covered).toBe(true);
 });
 
 test('GeoMapGoogle.coversLocation false for location outside view bounds', async () => {
-  const {map} = await Test.createGoogleMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
+  const { map } = await Test.createGoogleMapImplementation(); // Mock bounds are n: 1, east: -1, south: -1, west: 1
   const covered = await map.coversLocation({ lat: 2, lng: 2 });
   expect(covered).toBe(false);
 });

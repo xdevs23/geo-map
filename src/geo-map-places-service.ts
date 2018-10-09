@@ -25,7 +25,9 @@ export interface GeoMapPlacesServiceInit {
 export class GeoMapPlacesService {
   private implementation: Types.GeoMapPlacesServiceImplementation;
 
-  public static create(init: GeoMapPlacesServiceCreateInit): GeoMapPlacesService {
+  public static create(
+    init: GeoMapPlacesServiceCreateInit
+  ): GeoMapPlacesService {
     if (init.type === Types.GeoMapProvider.Here) {
       const hereApi = init.api as Types.HereApi;
 
@@ -33,8 +35,8 @@ export class GeoMapPlacesService {
         type: init.type,
         implementation: GeoMapPlacesServiceHere.create({
           api: hereApi,
-          platform: init.platform,
-        }),
+          platform: init.platform
+        })
       });
     }
 
@@ -43,8 +45,8 @@ export class GeoMapPlacesService {
     return new GeoMapPlacesService({
       type: init.type,
       implementation: GeoMapPlacesServiceGoogle.create({
-        api: googleApi,
-      }),
+        api: googleApi
+      })
     });
   }
 

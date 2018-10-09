@@ -1,13 +1,13 @@
 import { createWindow } from './create-window';
-import { createHMock } from './create-h-mock';
-import { ensureElement } from './ensure-element';
+import { createHMock } from './create-h-mock';
+import { ensureElement } from './ensure-element';
 import * as Constants from './constants';
 import { GeoMapHere } from '../geo-map-here';
 import * as Types from '../types';
 
 export async function createHereMapImplementation(opts?: {
-  config?: Partial<Types.LoadHereMapConfig>,
-  mount?: Types.GeoMapMountInit
+  config?: Partial<Types.LoadHereMapConfig>;
+  mount?: Types.GeoMapMountInit;
 }): Promise<Types.TestImplementation<GeoMapHere>> {
   try {
     const window = createWindow();
@@ -22,17 +22,24 @@ export async function createHereMapImplementation(opts?: {
       },
       context: {
         window,
-        changed: async () => { /** */ },
+        changed: async () => {
+          /** */
+        },
         init: () => createHMock(),
-        loaded: async () => { /** */ }
+        loaded: async () => {
+          /** */
+        }
       }
     });
 
     const el = ensureElement(Types.GeoMapProvider.Here, { window });
 
     await map.load();
-    await map.mount(el, { center: Constants.S2_HAM, ...(opts && opts.mount || {}) });
-    return {window, map, el};
+    await map.mount(el, {
+      center: Constants.S2_HAM,
+      ...((opts && opts.mount) || {})
+    });
+    return { window, map, el };
   } catch (err) {
     console.error(err);
     throw err;

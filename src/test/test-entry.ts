@@ -1,5 +1,5 @@
 // Entry file for integration testing purposes
-import { Tests } from './integration-tests';
+import { Tests } from './integration-tests';
 import * as QueryString from 'query-string';
 
 export { Tests };
@@ -13,7 +13,7 @@ async function main(): Promise<void> {
   }
 
   // tslint:disable-next-line:no-any
-  (window as any).results = Object.keys(params).map(async (testName) => {
+  (window as any).results = Object.keys(params).map(async testName => {
     const param = params[testName];
     const input = typeof param === 'string' ? param : '';
 

@@ -1,6 +1,6 @@
 import * as Result from './result';
 import * as Types from './types';
-import { GeoMapHere } from './geo-map-here';
+import { GeoMapHere } from './geo-map-here';
 
 export class GeoMarkerHere implements Types.GeoMarkerImplementation {
   private implementation: GeoMapHere;
@@ -15,11 +15,17 @@ export class GeoMarkerHere implements Types.GeoMarkerImplementation {
     horizontal: Types.GeoMarkerOrientation.Middle
   };
 
-  public static create(config: Types.GeoMarkerConfig, context: Types.HereMarkerContext): GeoMarkerHere {
+  public static create(
+    config: Types.GeoMarkerConfig,
+    context: Types.HereMarkerContext
+  ): GeoMarkerHere {
     return new GeoMarkerHere(config, context);
   }
 
-  private constructor(config: Types.GeoMarkerConfig, context: Types.HereMarkerContext) {
+  private constructor(
+    config: Types.GeoMarkerConfig,
+    context: Types.HereMarkerContext
+  ) {
     this.implementation = context.mapImplementation as GeoMapHere;
 
     this.marker = new this.implementation.api.map.Marker(config.position);
@@ -40,13 +46,14 @@ export class GeoMarkerHere implements Types.GeoMarkerImplementation {
   }
 
   public setIcon(icon: string): Promise<Types.Result<void>> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       this.iconMarkup = icon;
       this.icon = new this.implementation.api.map.Icon(icon);
       this.marker.setIcon(this.icon);
 
       // tslint:disable-next-line:no-any
-      const IconState = (this.implementation.api.map.Icon.prototype as any as typeof H.map.Icon).State;
+      const IconState = ((this.implementation.api.map.Icon
+        .prototype as any) as typeof H.map.Icon).State;
 
       const onChange = () => {
         const result = Result.createResult();
@@ -86,7 +93,9 @@ export class GeoMarkerHere implements Types.GeoMarkerImplementation {
 
   public async remove(): Promise<void> {
     this.implementation.map.removeObject(this.marker);
-    this.implementation.markers.splice(this.implementation.markers.indexOf(this));
+    this.implementation.markers.splice(
+      this.implementation.markers.indexOf(this)
+    );
     this.implementation.fire(Types.GeoEvent.Changed);
   }
 }
@@ -94,7 +103,7 @@ export class GeoMarkerHere implements Types.GeoMarkerImplementation {
 function getOrientationRatio(orientation: Types.GeoMarkerOrientation): number {
   switch (orientation) {
     case Types.GeoMarkerOrientation.Start:
-    return 0;
+      return 0;
     case Types.GeoMarkerOrientation.End:
       return 1;
     case Types.GeoMarkerOrientation.Middle:

@@ -3,7 +3,7 @@ import * as Types from '.';
 export enum GeoMapProvider {
   Google = 'Google',
   Here = 'Here',
-  Custom = 'Custom',
+  Custom = 'Custom'
 }
 
 export type LoadMapConfig = LoadGoogleMapConfig | LoadHereMapConfig;
@@ -12,13 +12,11 @@ export type LoadGoogleMapConfig =
   | LoadGoogleMapConfigBase<GoogleMapApiKeyAuth>
   | LoadGoogleMapConfigBase<GoogleMapClientIdAuth>;
 
-export type GoogleMapAuth =
-  | GoogleMapApiKeyAuth
-  | GoogleMapClientIdAuth;
+export type GoogleMapAuth = GoogleMapApiKeyAuth | GoogleMapClientIdAuth;
 
 export enum GoogleMapAuthType {
   ApiKey = 'ApiKey',
-  ClientId = 'ClientId',
+  ClientId = 'ClientId'
 }
 
 export interface GoogleMapApiKeyAuth {
@@ -122,11 +120,16 @@ export interface GeoMapImplementation {
 
   addEventListener(
     eventName: Types.GeoEvent.Click,
-    handler: Types.GeoEventHandler<Types.GeoClickPayload>,
+    handler: Types.GeoEventHandler<Types.GeoClickPayload>
   ): Promise<void>;
-  addEventListener(eventName: Types.GeoEvent.Changed, handler: Types.GeoEventHandler<void>):
-    Promise<void>;
-  addEventListener(name: GeoEvent, handler: Types.GeoEventHandler): Promise<void>;
+  addEventListener(
+    eventName: Types.GeoEvent.Changed,
+    handler: Types.GeoEventHandler<void>
+  ): Promise<void>;
+  addEventListener(
+    name: GeoEvent,
+    handler: Types.GeoEventHandler
+  ): Promise<void>;
 
   coversLocation(point: Types.GeoPoint): Promise<boolean>;
 }
@@ -136,7 +139,7 @@ export enum PlaceType {
   Removed = 0x1,
   Car = 0x2,
   Favorit = 0x4,
-  LastUsed = 0x8,
+  LastUsed = 0x8
 }
 
 export interface PlaceInit {
@@ -164,7 +167,7 @@ export interface GeoMapContext extends LoadMapContext {
   load?(config: GeoMapConfig, ctx?: GeoMapContext): Promise<any>;
   loaded?(
     geoMapApi: google.maps.Map | H.Map,
-    ctx: { api: GeoMapApi; context: GeoMapContext; },
+    ctx: { api: GeoMapApi; context: GeoMapContext }
   ): Promise<void>;
 }
 
@@ -183,13 +186,13 @@ export interface GeoMapMountInit {
 export enum GeoMapType {
   Roadmap = 'Roadmap',
   Hybrid = 'Hybrid',
-  Unknown = 'Unknown',
+  Unknown = 'Unknown'
 }
 
 export enum GeoLayer {
   Transit = 'Transit',
   Traffic = 'Traffic',
-  None = 'None',
+  None = 'None'
 }
 
 export interface GeoMarkerImplementation {
@@ -208,7 +211,7 @@ export interface GeoMarkerInit {
 export enum GeoMarkerOrientation {
   Start,
   Middle,
-  End,
+  End
 }
 
 export interface GeoMarkerAnchor {
@@ -243,7 +246,7 @@ export type GeoMarkerContext = HereMarkerContext | GoogleMarkerContext;
 export enum HerePixelDensity {
   Default = 72,
   HighRes = 320,
-  UltraHighRes = 500,
+  UltraHighRes = 500
 }
 export enum HereLanguage {
   ar = 'ara',
@@ -277,7 +280,7 @@ export enum HereLanguage {
   ur = 'urd',
   vi = 'vie',
   cy = 'wel',
-  Multiple = 'mul',
+  Multiple = 'mul'
 }
 
 export interface GeoBounds {
@@ -292,7 +295,8 @@ export interface GeoRectInit {
   provider: GeoMapProvider;
 }
 
-export interface GeoRectCreateInit<T extends GeoMapProvider = GeoMapProvider> extends GeoBounds {
+export interface GeoRectCreateInit<T extends GeoMapProvider = GeoMapProvider>
+  extends GeoBounds {
   provider: T;
 }
 
@@ -324,7 +328,7 @@ export enum GeoMapPhase {
   Mounting = 'mounting',
   Mounted = 'mounted',
   Layouting = 'layouting',
-  Layouted = 'layouted',
+  Layouted = 'layouted'
 }
 
 export interface GeoCircleImplementation {
@@ -358,8 +362,7 @@ export enum GeoEvent {
 }
 
 // tslint:disable-next-line:no-empty-interface
-export type GeoEventPayload =
-  | GeoClickPayload;
+export type GeoEventPayload = GeoClickPayload;
 
 export interface GeoClickPayload {
   position: {
@@ -369,7 +372,9 @@ export interface GeoClickPayload {
 }
 
 // tslint:disable-next-line:no-any
-export type GeoEventHandler<T extends GeoEventPayload | void = any> = (e?: T) => void;
+export type GeoEventHandler<T extends GeoEventPayload | void = any> = (
+  e?: T
+) => void;
 
 export interface GeoMapCodingServiceImplementation {
   reverse(point: GeoPoint): Promise<Types.Result<GeoPlace[]>>;

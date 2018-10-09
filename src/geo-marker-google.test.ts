@@ -2,11 +2,11 @@ import { GeoMarkerGoogle } from './geo-marker-google';
 import * as Test from './test';
 
 test('respects initial icon', async () => {
-  const {map: mapImplementation} = await Test.createGoogleMapImplementation();
+  const { map: mapImplementation } = await Test.createGoogleMapImplementation();
   const marker = GeoMarkerGoogle.create(
     {
       icon: Test.Constants.ICON,
-      position: Test.Constants.S2_HAM,
+      position: Test.Constants.S2_HAM
     },
     { mapImplementation }
   );
@@ -15,7 +15,7 @@ test('respects initial icon', async () => {
 });
 
 test('may set icon', async () => {
-  const {map: mapImplementation} = await Test.createGoogleMapImplementation();
+  const { map: mapImplementation } = await Test.createGoogleMapImplementation();
 
   const marker = GeoMarkerGoogle.create(
     { icon: '', position: Test.Constants.S2_HAM },
@@ -27,7 +27,7 @@ test('may set icon', async () => {
 });
 
 test('map hosts marker', async () => {
-  const {map: mapImplementation} = await Test.createGoogleMapImplementation();
+  const { map: mapImplementation } = await Test.createGoogleMapImplementation();
 
   const marker = GeoMarkerGoogle.create(
     { icon: '', position: Test.Constants.S2_HAM },
@@ -38,7 +38,7 @@ test('map hosts marker', async () => {
 });
 
 test('map looses removed marker', async () => {
-  const {map: mapImplementation} = await Test.createGoogleMapImplementation();
+  const { map: mapImplementation } = await Test.createGoogleMapImplementation();
 
   const marker = GeoMarkerGoogle.create(
     { icon: '', position: Test.Constants.S2_HAM },
