@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/marionebl/geo-map/compare/v1.1.0...v1.2.0) (2018-10-10)
+
+
+### Features
+
+* remove mobx as dependency ([#28](https://github.com/marionebl/geo-map/issues/28)) ([15a1478](https://github.com/marionebl/geo-map/commit/15a1478))
+* use text search instead of place-query ([#27](https://github.com/marionebl/geo-map/issues/27)) ([138bf4a](https://github.com/marionebl/geo-map/commit/138bf4a))
+
+
+
 <a name="1.1.0"></a>
 # 1.1.0 (2018-10-10)
 
