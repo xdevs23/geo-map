@@ -186,9 +186,7 @@ export class GeoMap {
     return googleService.reverse(point);
   }
 
-  public async getPlace(
-    id: string
-  ): Promise<Types.Result<Types.GeoMapPlaceDetails>> {
+  private async getPlacesService(): Promise<GeoMapPlacesService> {
     await this.phase(Types.GeoMapPhase.Loaded);
 
     // TODO: Move out of here when splitting GeoMap into Geo -> Map, Geo -> Code, Geo -> ...
@@ -199,7 +197,7 @@ export class GeoMap {
         platform: (this.implementation as GeoMapHere).platform
       });
 
-      return hereService.get(id);
+      return hereService;
     }
 
     const googleService = GeoMapPlacesService.create({
@@ -207,6 +205,27 @@ export class GeoMap {
       api: (this.implementation as GeoMapGoogle).api
     });
 
-    return googleService.get(id);
+    return googleService;
+  }
+
+  public async getPlace(
+    id: string
+  ): Promise<Types.Result<Types.GeoMapPlaceDetails>> {
+    const service = await this.getPlacesService();
+    return service.get(id);
+  }
+
+  /**
+   * @param needle Phrase to search for
+   * @param center Center of the search operation
+   * @param radius Radius around `center` to search in. Defaults to 50000m as the whole earth radius.
+   */
+  public async search(
+    needle: string,
+    center: Types.GeoPoint,
+    radius = 50000
+  ): Promise<Types.Result<Types.GeoMapPlace[]>> {
+    const service = await this.getPlacesService();
+    return service.search(needle, center, radius);
   }
 }
