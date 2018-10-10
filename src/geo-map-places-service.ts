@@ -1,6 +1,7 @@
 import * as Types from './types';
 import { GeoMapPlacesServiceHere } from './geo-map-places-service-here';
 import { GeoMapPlacesServiceGoogle } from './geo-map-places-service-google';
+import { GeoMap } from './geo-map';
 
 export type GeoMapPlacesServiceCreateInit =
   | GeoMapPlacesServiceInitGoogle
@@ -54,7 +55,17 @@ export class GeoMapPlacesService {
     this.implementation = init.implementation;
   }
 
-  public async get(id: string): Promise<Types.Result<Types.GeoPlace>> {
+  public async get(
+    id: string
+  ): Promise<Types.Result<Types.GeoMapPlaceDetails>> {
     return this.implementation.get(id);
+  }
+
+  public async search(
+    needle: string,
+    center: Types.GeoPoint,
+    radius: number
+  ): Promise<Types.Result<Types.GeoMapPlace[]>> {
+    return this.implementation.search(needle, center, radius);
   }
 }
