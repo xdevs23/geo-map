@@ -20,7 +20,10 @@
     "build:esm": "tsc --project . --outdir esm --module esnext",
     "test": "jest -c jest.unit.js",
     "test:integration": "jest -c jest.integration.js",
-    "lint": "tslint --project ."
+    "lint": "tslint --project .",
+    "prerelease": "git checkout master && git pull --ff-only origin master && npm test && npm run build",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags origin master && npm publish"
   },
   "repository": {
     "type": "git",
@@ -58,6 +61,7 @@
     "prettier": "1.14.3",
     "puppeteer": "1.9.0",
     "rimraf": "2.6.2",
+    "standard-version": "^4.4.0",
     "ts-jest": "23.10.4",
     "ts-loader": "5.2.1",
     "tslint": "5.11.0",
