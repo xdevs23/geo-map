@@ -37,18 +37,15 @@ export class GeoMapPlacesServiceGoogle
     const container = document.createElement('div');
     const service = new this.api.places.PlacesService(container);
 
-    const request: google.maps.places.FindPlaceFromQueryRequest = {
+    const request: google.maps.places.TextSearchRequest = {
       query: needle,
-      fields: ['formatted_address', 'name', 'place_id', 'geometry'],
-      locationBias: {
-        center,
-        radius
-      }
+      location: center,
+      radius
     };
 
     return new Promise<Types.Result<Types.GeoMapPlace[]>>(resolve => {
       try {
-        service.findPlaceFromQuery(request, (results, status) => {
+        service.textSearch(request, (results, status) => {
           if (status === this.api.places.PlacesServiceStatus.OK) {
             return resolve({
               type: Types.ResultType.Success,
