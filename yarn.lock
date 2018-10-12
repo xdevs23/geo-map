@@ -78,10 +78,10 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/googlemaps@3.30.13":
-  version "3.30.13"
-  resolved "https://registry.yarnpkg.com/@types/googlemaps/-/googlemaps-3.30.13.tgz#71220c6a0ec0b39044de71ae59d696379acebcb6"
-  integrity sha512-UOjnGvO1BtQudQ+GHbH+SKkQBw48qXPDmJK6JVCUDIicSol/dYi8D/mLnplGFn94O2VaDhhOIccHjE2Po53btA==
+"@types/googlemaps@3.30.14":
+  version "3.30.14"
+  resolved "https://registry.yarnpkg.com/@types/googlemaps/-/googlemaps-3.30.14.tgz#4bfd6dd839f7d68e9589f462c1b4fca495c491c6"
+  integrity sha512-T5/zQH/qctJhHKT4gaRr4Bbe/VFgHLC+QZSiL5ApQfzikQ+RpcAu01wE6vQj1sYIpa9/EOPCoPykH31VuvIOgw==
 
 "@types/heremaps@3.0.12":
   version "3.0.12"
