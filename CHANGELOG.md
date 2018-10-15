@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/marionebl/geo-map/compare/v1.3.1...v1.4.0) (2018-10-15)
+
+
+### Features
+
+* transform place details for google api ([#40](https://github.com/marionebl/geo-map/issues/40)) ([eb369eb](https://github.com/marionebl/geo-map/commit/eb369eb))
+
+
+
 <a name="1.3.1"></a>
 ## [1.3.1](https://github.com/marionebl/geo-map/compare/v1.3.0...v1.3.1) (2018-10-15)
 
