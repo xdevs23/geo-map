@@ -400,14 +400,21 @@ export interface GeoMapPlaceDetails {
   readonly provider: Types.GeoMapProvider;
   readonly id: string;
   readonly name?: string;
-  readonly formattedAddress: string;
-  readonly address: {
+  readonly address?: {
     readonly country?: string;
     readonly postalCode?: string;
     readonly locality?: string;
     readonly route?: string;
     readonly streetNumber?: string;
   };
+  readonly formattedAddress: string;
+  readonly location?: Types.GeoPoint;
+  readonly icon?: string;
+  readonly permanentlyClosed?: boolean;
+  readonly type?: string[];
+  readonly formattedPhoneNumber?: string;
+  // readonly openingHours?: string;
+  readonly website?: string;
 }
 
 export interface GeoMapPlace {

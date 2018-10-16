@@ -23,39 +23,43 @@ export class GeoMapPlacesServiceGoogle
       const container = document.createElement('div');
       const service = new this.api.places.PlacesService(container);
 
-      service.getDetails({ placeId }, result => {
-        resolve({
-          type: Types.ResultType.Success,
-          payload: {
-            provider: Types.GeoMapProvider.Google,
-            id: result.place_id,
-            name: result.name,
-            formattedAddress: result.formatted_address,
-            address: {
-              country: this.getAddressComponentPart('country', result),
-              postalCode: this.getAddressComponentPart('postal_code', result),
-              locality: this.getAddressComponentPart('locality', result),
-              route: this.getAddressComponentPart('route', result),
-              streetNumber: this.getAddressComponentPart(
-                'street_number',
-                result
-              )
+      service.getDetails(
+        {
+          placeId,
+          fields: [
+            'formatted_address',
+            'geometry',
+            'icon',
+            'name',
+            'permanently_closed',
+            'place_id',
+            'type',
+            'formatted_phone_number',
+            'opening_hours',
+            'website'
+          ]
+        },
+        result => {
+          resolve({
+            type: Types.ResultType.Success,
+            payload: {
+              provider: Types.GeoMapProvider.Google,
+              id: result.place_id,
+              name: result.name,
+              formattedAddress: result.formatted_address,
+              location: result.geometry.location.toJSON(),
+              icon: result.icon,
+              permanentlyClosed: result.permanently_closed,
+              type: result.types,
+              formattedPhoneNumber: result.formatted_phone_number,
+              // todo: convert into valid structure
+              // openingHours: result.opening_hours,
+              website: result.website
             }
-          }
-        });
-      });
+          });
+        }
+      );
     });
-  }
-
-  private getAddressComponentPart(
-    name: string,
-    result: google.maps.places.PlaceResult
-  ): string | undefined {
-    return (
-      result.address_components.find(
-        component => component.types.indexOf(name) > -1
-      ) || { long_name: undefined }
-    ).long_name;
   }
 
   public async search(
