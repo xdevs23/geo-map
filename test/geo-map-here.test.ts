@@ -213,3 +213,22 @@ test('Search works as expected', async () => {
     })
   );
 });
+
+test('getPlace works as expected', async () => {
+  await page.goto(`http://localhost:1338/?integration=true`);
+  await page.evaluate(() => TestEntry.Tests.getHere());
+
+  const data = JSON.parse(
+    String(
+      await page.evaluate(
+        () => document.querySelector('[data-dump="data-dump"]').textContent
+      )
+    )
+  );
+
+  expect(data).toEqual(
+    expect.objectContaining({
+      name: expect.stringContaining('Hamburg')
+    })
+  );
+});

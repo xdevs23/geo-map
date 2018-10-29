@@ -1,6 +1,104 @@
 import * as Result from './result';
 import * as Types from './types';
 
+interface HerePlace {
+  name: string;
+  placeId: string;
+  view: string;
+  location: {
+    position: [number, number];
+    address: {
+      text: string;
+      city: string;
+      state: string;
+      country: string;
+      countryCode: string;
+    };
+    access: HerePlaceAccess[];
+  };
+  categories: HerePlaceCategory[];
+  icon: string;
+  media: {
+    images: Images;
+    reviews: Ratings;
+    ratings: Ratings;
+  };
+  related: Related;
+  report: {
+    title: string;
+    href: string;
+    type: string;
+  };
+}
+
+interface HerePlaceCategory {
+  id: string;
+  title: string;
+  href: string;
+  type: string;
+  system?: string;
+  icon: string;
+}
+
+export interface HerePlaceAccess {
+  position: number[];
+  accessType: string;
+}
+
+export interface Images {
+  available: number;
+  next: string;
+  items: ImagesItem[];
+}
+
+export interface ImagesItem {
+  src: string;
+  id: string;
+  href: string;
+  type: string;
+  date: string;
+  supports: string[];
+  user: {
+    id: string;
+    name: string;
+  };
+  via: {
+    href: string;
+    type: string;
+  };
+  supplier: HerePlaceCategory;
+  attribution: string;
+}
+
+export interface Ratings {
+  available: number;
+  items: RatingsItem[];
+}
+
+export interface RatingsItem {
+  count: number;
+  average: number;
+  via: {
+    href: string;
+    type: string;
+  };
+  supplier: HerePlaceCategory;
+  attribution: string;
+}
+
+export interface Related {
+  recommended: {
+    title: string;
+    href: string;
+    type: string;
+  };
+  'public-transport': {
+    title: string;
+    href: string;
+    type: string;
+  };
+}
+
 export class GeoMapPlacesServiceHere
   implements Types.GeoMapPlacesServiceImplementation {
   private platform: H.service.Platform;
@@ -29,9 +127,22 @@ export class GeoMapPlacesServiceHere
 
       service.request(
         ('places/lookup' as any) as H.service.PlacesService.EntryPoint,
-        { id, source: 'pvid' },
-        result => {
-          // TODO: transform to facade result
+        { id, source: 'sharing', tf: 'plain' },
+        (place: HerePlace) => {
+          resolve(
+            Result.createSuccess({
+              provider: Types.GeoMapProvider.Here,
+              id,
+              name: place.name,
+              formattedAddress: place.location.address.text,
+              location: {
+                lat: place.location.position[0],
+                lng: place.location.position[1]
+              },
+              icon: place.icon,
+              permanentlyClosed: false
+            })
+          );
         },
         serviceError => resolve(Result.createFailure(serviceError))
       );
@@ -43,7 +154,7 @@ export class GeoMapPlacesServiceHere
     center: Types.GeoPoint,
     radius?: number
   ): Promise<Types.Result<Types.GeoMapPlace[]>> {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       const service = this.platform.getPlacesService();
 
       const point = [center.lat, center.lng].join(',');
@@ -53,9 +164,8 @@ export class GeoMapPlacesServiceHere
           ? { in: `${point};r=${radius}` }
           : { at: point };
 
-      service.request(
-        this.api.service.PlacesService.EntryPoint.SEARCH,
-        { q: needle, ...params },
+      service.search(
+        { q: needle, tf: 'plain', ...params },
         response => {
           const { results } = response;
 
