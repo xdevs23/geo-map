@@ -1,4 +1,6 @@
 import * as Types from './types';
+import * as Util from './util';
+import * as CountryCodes from './country-codes';
 
 export class GeoMapPlacesServiceGoogle
   implements Types.GeoMapPlacesServiceImplementation {
@@ -25,6 +27,7 @@ export class GeoMapPlacesServiceGoogle
         {
           placeId,
           fields: [
+            'address_components',
             'formatted_address',
             'geometry',
             'icon',
@@ -38,20 +41,34 @@ export class GeoMapPlacesServiceGoogle
           ]
         },
         result => {
+          const get = Util.getAddressComponent(result.address_components);
+          const countryCode = get('country', {
+            variant: Util.AddressComponentVariant.Short
+          });
+
           resolve({
             type: Types.ResultType.Success,
             payload: {
               provider: Types.GeoMapProvider.Google,
               id: result.place_id,
               name: result.name,
+              address: {
+                country: get('country'),
+                countryCode: CountryCodes.alphaTwo[countryCode],
+                county: get('administrative_area_level_2'),
+                district: get('sublocality_level_1'),
+                state: get('administrative_area_level_1'),
+                postalCode: get('postal_code'),
+                locality: get('locality'),
+                route: get('route'),
+                streetNumber: get('street_number')
+              },
               formattedAddress: result.formatted_address,
               location: result.geometry.location.toJSON(),
               icon: result.icon,
               permanentlyClosed: result.permanently_closed,
               type: result.types,
               formattedPhoneNumber: result.formatted_phone_number,
-              // todo: convert into valid structure
-              // openingHours: result.opening_hours,
               website: result.website
             }
           });

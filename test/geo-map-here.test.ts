@@ -184,13 +184,13 @@ test('Geocoding works as expected', async () => {
     expect.objectContaining({
       provider: Types.GeoMapProvider.Here,
       formattedAddress: 'Boxhagener Straße 75, 10245 Berlin, Deutschland',
-      address: {
+      address: expect.objectContaining({
         country: 'DEU',
         postalCode: '10245',
         locality: 'Berlin',
         route: 'Boxhagener Straße',
         streetNumber: '75'
-      }
+      })
     })
   );
 });

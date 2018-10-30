@@ -400,12 +400,16 @@ export interface GeoMapPlaceDetails {
   readonly provider: Types.GeoMapProvider;
   readonly id: string;
   readonly name?: string;
-  readonly address?: {
-    readonly country?: string;
-    readonly postalCode?: string;
-    readonly locality?: string;
-    readonly route?: string;
-    readonly streetNumber?: string;
+  readonly address: {
+    readonly country: string | undefined;
+    readonly countryCode: string | undefined;
+    readonly county: string | undefined;
+    readonly district: string | undefined;
+    readonly state: string | undefined;
+    readonly postalCode: string | undefined;
+    readonly locality: string | undefined;
+    readonly route: string | undefined;
+    readonly streetNumber: string | undefined;
   };
   readonly formattedAddress: string;
   readonly location?: Types.GeoPoint;
@@ -413,7 +417,6 @@ export interface GeoMapPlaceDetails {
   readonly permanentlyClosed?: boolean;
   readonly type?: string[];
   readonly formattedPhoneNumber?: string;
-  // readonly openingHours?: string;
   readonly website?: string;
 }
 

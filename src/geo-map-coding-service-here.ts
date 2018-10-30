@@ -66,16 +66,22 @@ export class GeoMapCodingServiceHere
 function herePlaceToGeoPlace(
   herePlace: HereTypes.Place
 ): Types.GeoMapPlaceDetails {
+  const address = herePlace.location.address;
+
   return {
     provider: Types.GeoMapProvider.Here,
     id: herePlace.location.mapReference.addressId,
     formattedAddress: herePlace.location.address.label,
     address: {
-      country: herePlace.location.address.country,
-      locality: herePlace.location.address.city,
-      route: herePlace.location.address.street,
-      streetNumber: herePlace.location.address.houseNumber,
-      postalCode: herePlace.location.address.postalCode
+      country: address.country,
+      countryCode: undefined,
+      county: address.county,
+      district: address.district,
+      state: address.state,
+      postalCode: address.postalCode,
+      locality: address.city,
+      route: address.street,
+      streetNumber: address.houseNumber
     }
   };
 }
