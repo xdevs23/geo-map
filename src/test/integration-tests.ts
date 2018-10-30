@@ -601,5 +601,43 @@ export const Tests = {
     if (results.type === Types.ResultType.Success) {
       Util.dump(results.payload);
     }
+  },
+
+  getGoogle: async (term: string = 'Hamburg') => {
+    const center = Constants.S2_HAM;
+    const map = await createGoogleMap({}, { center, zoom: 15 });
+    const results = await map.search(term, center);
+
+    if (
+      results.type !== Types.ResultType.Success ||
+      results.payload.length === 0
+    ) {
+      return;
+    }
+
+    const details = await map.getPlace(results.payload[0].id);
+
+    if (details.type === Types.ResultType.Success) {
+      Util.dump(details.payload);
+    }
+  },
+
+  getHere: async (term: string = 'Hamburg') => {
+    const center = Constants.S2_HAM;
+    const map = await createHereMap({}, { center, zoom: 15 });
+    const results = await map.search(term, center);
+
+    if (
+      results.type !== Types.ResultType.Success ||
+      results.payload.length === 0
+    ) {
+      return;
+    }
+
+    const details = await map.getPlace(results.payload[0].id);
+
+    if (details.type === Types.ResultType.Success) {
+      Util.dump(details.payload);
+    }
   }
 };
