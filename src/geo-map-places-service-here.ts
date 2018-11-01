@@ -8,11 +8,16 @@ interface HerePlace {
   location: {
     position: [number, number];
     address: {
+      city?: string;
+      country?: string;
+      countryCode?: string;
+      county?: string;
+      district?: string;
+      house?: string;
+      postalCode?: string;
+      state?: string;
+      street?: string;
       text: string;
-      city: string;
-      state: string;
-      country: string;
-      countryCode: string;
     };
     access: HerePlaceAccess[];
   };
@@ -129,12 +134,25 @@ export class GeoMapPlacesServiceHere
         ('places/lookup' as any) as H.service.PlacesService.EntryPoint,
         { id, source: 'sharing', tf: 'plain' },
         (place: HerePlace) => {
+          const address = place.location.address;
+
           resolve(
             Result.createSuccess({
               provider: Types.GeoMapProvider.Here,
               id,
               name: place.name,
-              formattedAddress: place.location.address.text,
+              formattedAddress: address.text,
+              address: {
+                country: address.country,
+                countryCode: address.countryCode,
+                county: address.county,
+                district: address.district,
+                state: address.state,
+                postalCode: address.postalCode,
+                locality: address.city,
+                route: address.street,
+                streetNumber: address.house
+              },
               location: {
                 lat: place.location.position[0],
                 lng: place.location.position[1]
