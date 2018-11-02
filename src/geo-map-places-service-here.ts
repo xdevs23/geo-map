@@ -104,6 +104,11 @@ export interface Related {
   };
 }
 
+interface HereError {
+  status: number;
+  message: string;
+}
+
 export class GeoMapPlacesServiceHere
   implements Types.GeoMapPlacesServiceImplementation {
   private platform: H.service.Platform;
@@ -133,7 +138,14 @@ export class GeoMapPlacesServiceHere
       service.request(
         ('places/lookup' as any) as H.service.PlacesService.EntryPoint,
         { id, source: 'sharing', tf: 'plain' },
-        (place: HerePlace) => {
+        (payload: HerePlace | HereError) => {
+          if (payload.hasOwnProperty('status')) {
+            return resolve(
+              Result.createFailure(new Error((payload as HereError).message))
+            );
+          }
+
+          const place = payload as HerePlace;
           const address = place.location.address;
 
           resolve(
