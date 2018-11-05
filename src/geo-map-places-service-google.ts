@@ -41,6 +41,15 @@ export class GeoMapPlacesServiceGoogle
           ]
         },
         result => {
+          if (!result || result === null) {
+            return resolve({
+              type: Types.ResultType.Failure,
+              error: new Error(
+                `Could not fetch place data for place id ${placeId}`
+              )
+            });
+          }
+
           const get = Util.getAddressComponent(result.address_components);
           const countryCode = get('country', {
             variant: Util.AddressComponentVariant.Short
