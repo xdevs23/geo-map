@@ -1,9 +1,10 @@
+global.process.getuid = () => 0;
 module.exports = {
   server: {
-    command: "webpack-dev-server",
+    command: 'webpack-dev-server',
     port: 1338
   },
   launch: {
-    flags: ["–no-sandbox", "–disable-setuid-sandbox"]
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   }
 };
