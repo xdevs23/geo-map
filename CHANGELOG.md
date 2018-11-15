@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.8.0"></a>
+# [1.8.0](https://github.com/marionebl/geo-map/compare/v1.7.2...v1.8.0) (2018-11-15)
+
+
+### Bug Fixes
+
+* move build time type deps to dependencies ([09a3be5](https://github.com/marionebl/geo-map/commit/09a3be5))
+
+
+### Features
+
+* abstract painting of routes on the map ([f983449](https://github.com/marionebl/geo-map/commit/f983449))
+* return combined location/place object from here api ([5d6a631](https://github.com/marionebl/geo-map/commit/5d6a631))
+
+
+
 <a name="1.5.0"></a>
 # [1.5.0](https://github.com/marionebl/geo-map/compare/v1.4.0...v1.5.0) (2018-10-16)
 
