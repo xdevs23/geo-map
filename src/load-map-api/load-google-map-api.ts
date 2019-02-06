@@ -19,8 +19,10 @@ export function loadGoogleMapApi(
     // tslint:disable-next-line:no-any
     const win = (context.window as any) as Window & { google: typeof google };
 
+    const callbackFunctionName =
+      config.mapJsCallbackId || GOOGLE_MAP_CALLBACK_ID;
     const params: { [key: string]: string | null } = {
-      callback: GOOGLE_MAP_CALLBACK_ID,
+      callback: callbackFunctionName,
       language: config.language || 'en',
       region: config.region || null,
       libraries: 'places,geometry'
@@ -46,9 +48,11 @@ export function loadGoogleMapApi(
       console.warn(`Could not configure Google Maps authentication.`);
     }
 
-    const url = `https://maps.googleapis.com/maps/api/js?${QueryString.stringify(
+    const url = `${config.mapJsUrl ||
+      'https://maps.googleapis.com/maps/api/js'}?${QueryString.stringify(
       params
     )}`;
+
     const previous = win.document.querySelector(
       `[data-map-provider=${Types.GeoMapProvider.Google}]`
     );
@@ -59,20 +63,19 @@ export function loadGoogleMapApi(
 
     memoizedGoogleMapResult = result;
 
-    const script = win.document.createElement('script');
-    script.src = url;
-    script.setAttribute('data-map-provider', Types.GeoMapProvider.Google);
-
-    win.document.body.appendChild(script);
-
     // tslint:disable-next-line:no-any
-    (win as any)[GOOGLE_MAP_CALLBACK_ID] = () => {
+    (win as any)[callbackFunctionName] = () => {
       Result.toSuccess(
         result.result,
         context.init ? context.init() : win.google.maps
       );
       resolve(result);
     };
+    const script = win.document.createElement('script');
+    script.src = url;
+    script.setAttribute('data-map-provider', Types.GeoMapProvider.Google);
+
+    win.document.body.appendChild(script);
   });
 }
 

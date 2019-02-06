@@ -33,6 +33,8 @@ export interface LoadGoogleMapConfigBase<T = undefined> {
   region?: string;
   provider: GeoMapProvider.Google;
   viewport?: GeoMapViewport;
+  mapJsUrl?: string;
+  mapJsCallbackId?: string;
   auth: T;
 }
 

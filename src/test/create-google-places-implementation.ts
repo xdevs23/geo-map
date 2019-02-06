@@ -11,9 +11,10 @@ export async function createGooglePlacesImplementation(opts?: {
   config?: Partial<Types.LoadGoogleMapConfig>;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
+  ctxWindow?: Window;
 }): Promise<Types.TestServiceImplementation<GeoMapPlacesServiceGoogle>> {
   try {
-    const window = createWindow();
+    const window = createWindow(opts.ctxWindow);
 
     const map = new GeoMapGoogle({
       config: {
@@ -23,6 +24,9 @@ export async function createGooglePlacesImplementation(opts?: {
           clientId: Constants.GOOGLE_MAP_CLIENT_ID,
           channel: Constants.GOOGLE_MAP_CHANNEL
         },
+        mapJsUrl: opts && opts.config ? opts.config.mapJsUrl : undefined,
+        mapJsCallbackId:
+          opts && opts.config ? opts.config.mapJsCallbackId : undefined,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
@@ -38,7 +42,7 @@ export async function createGooglePlacesImplementation(opts?: {
       }
     });
 
-    const el = ensureElement(Types.GeoMapProvider.Here, { window });
+    const el = ensureElement(Types.GeoMapProvider.Google, { window });
 
     await map.load();
     await map.mount(el, {
