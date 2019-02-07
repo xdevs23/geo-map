@@ -1,6 +1,7 @@
 import * as Result from './result';
 import * as Types from './types';
 import { GeoMapGoogle } from './geo-map-google';
+// import * as jsdom from 'jsdom/lib/jsdom/living/domparsing';
 
 export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
   private readonly implementation: GeoMapGoogle;
@@ -30,7 +31,11 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
       this.anchor = config.anchor;
     }
 
-    const iconAnchor = getAnchor(this.anchor, config.icon);
+    const iconAnchor = getAnchor(
+      this.anchor,
+      config.icon,
+      context.context.global.DOMParser
+    );
 
     this.marker = new this.implementation.api.Marker({
       position: config.position,
@@ -97,7 +102,8 @@ function getOrientationRatio(orientation: Types.GeoMarkerOrientation): number {
 
 function getAnchor(
   anchor: Types.GeoMarkerAnchor,
-  icon: string
+  icon: string,
+  parser: DOMParser
 ): { x: number; y: number } | undefined {
   if (typeof window === 'undefined') {
     return;
@@ -105,7 +111,6 @@ function getAnchor(
 
   const wRatio = getOrientationRatio(anchor.horizontal);
   const hRatio = getOrientationRatio(anchor.vertical);
-  const parser = new DOMParser();
 
   const doc = parser.parseFromString(icon, 'image/svg+xml');
   const rootElement = doc.documentElement;

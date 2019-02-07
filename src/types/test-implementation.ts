@@ -1,11 +1,13 @@
+import { DOMContext } from './geo-map';
+
 export interface TestMapImplementation<T> {
-  window: Window;
+  context: DOMContext;
   el: HTMLElement;
   map: T;
 }
 
 export interface TestServiceImplementation<T> {
-  window: Window;
+  context: DOMContext;
   el: HTMLElement;
   service: T;
 }

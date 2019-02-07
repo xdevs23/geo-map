@@ -1,28 +1,24 @@
-import { createGoogleMock } from './create-google-mock';
+import { createHMock } from './create-h-mock';
 import * as Constants from './constants';
 import { ensureElement } from './ensure-element';
-import { GeoMapGoogle } from '../geo-map-google';
 import * as Result from '../result';
 import * as Types from '../types';
+import { GeoMapPlacesServiceHere } from '../geo-map-places-service-here';
+import { GeoMapHere } from '../geo-map-here';
 import { DOMContext } from '../types';
 
-export async function createGoogleMapImplementation(opts: {
-  config?: Partial<Types.LoadGoogleMapConfig>;
+export async function createHerePlacesImplementation(opts: {
+  config?: Partial<Types.LoadHereMapConfig>;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
   context: DOMContext;
-}): Promise<Types.TestMapImplementation<GeoMapGoogle>> {
+}): Promise<Types.TestServiceImplementation<GeoMapPlacesServiceHere>> {
   try {
-    const ctxWindow = opts.context;
-
-    const map = new GeoMapGoogle({
+    const map = new GeoMapHere({
       config: {
-        provider: Types.GeoMapProvider.Google,
-        auth: {
-          apiKey: Constants.GOOGLE_MAP_API,
-          clientId: Constants.GOOGLE_MAP_CLIENT_ID,
-          channel: Constants.GOOGLE_MAP_CHANNEL
-        },
+        provider: Types.GeoMapProvider.Here,
+        appCode: Constants.HERE_APP_CODE,
+        appId: Constants.HERE_APP_ID,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
@@ -30,7 +26,7 @@ export async function createGoogleMapImplementation(opts: {
         ...opts.context,
         load:
           !opts || opts.mock !== false
-            ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
+            ? async () => ({ result: Result.createSuccess(createHMock()) })
             : undefined,
         loaded: async () => {
           /** */
@@ -49,7 +45,10 @@ export async function createGoogleMapImplementation(opts: {
     return {
       context: opts.context,
       el,
-      map
+      service: GeoMapPlacesServiceHere.create({
+        api: map.api,
+        platform: map.platform
+      })
     };
   } catch (err) {
     console.error(err);

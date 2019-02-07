@@ -79,8 +79,14 @@ export interface LoadCustomMapResult {
   readonly provider: GeoMapProvider.Custom;
 }
 
-export interface LoadMapContext {
+export interface DOMContext {
   window: Window;
+  global: {
+    DOMParser: DOMParser;
+  };
+}
+
+export interface LoadMapContext extends DOMContext {
   init?(): GeoMapApi;
 }
 

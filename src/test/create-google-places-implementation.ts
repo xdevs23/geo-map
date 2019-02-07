@@ -1,4 +1,3 @@
-import { createWindow } from './create-window';
 import { createGoogleMock } from './create-google-mock';
 import * as Constants from './constants';
 import { ensureElement } from './ensure-element';
@@ -6,15 +5,16 @@ import { GeoMapPlacesServiceGoogle } from '../geo-map-places-service-google';
 import * as Result from '../result';
 import * as Types from '../types';
 import { GeoMapGoogle } from '../geo-map-google';
+import { DOMContext } from '../types';
 
 export async function createGooglePlacesImplementation(opts?: {
   config?: Partial<Types.LoadGoogleMapConfig>;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
-  ctxWindow?: Window;
+  context: DOMContext;
 }): Promise<Types.TestServiceImplementation<GeoMapPlacesServiceGoogle>> {
   try {
-    const window = createWindow(opts.ctxWindow);
+    const myWindow = opts.context;
 
     const map = new GeoMapGoogle({
       config: {
@@ -31,7 +31,7 @@ export async function createGooglePlacesImplementation(opts?: {
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
       context: {
-        window,
+        ...opts.context,
         load:
           !opts || opts.mock !== false
             ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
@@ -42,7 +42,7 @@ export async function createGooglePlacesImplementation(opts?: {
       }
     });
 
-    const el = ensureElement(Types.GeoMapProvider.Google, { window });
+    const el = ensureElement(Types.GeoMapProvider.Google, opts.context);
 
     await map.load();
     await map.mount(el, {
@@ -51,7 +51,7 @@ export async function createGooglePlacesImplementation(opts?: {
     });
 
     return {
-      window,
+      context: opts.context,
       el,
       service: GeoMapPlacesServiceGoogle.create({
         api: map.api

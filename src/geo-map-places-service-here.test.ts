@@ -1,21 +1,18 @@
 import * as Test from './test';
 import * as Types from './types';
 
+// TODO: Check if we can reestablish support in JSDOM
+// currently fails with "The Google Maps JavaScript API does not support this browser".
 test(
-  'Google map search result',
+  'Here map search result',
   Test.domContextify(async context => {
-    const googlePlaces = await Test.createGooglePlacesImplementation({
+    const herePlaces = await Test.createHerePlacesImplementation({
+      context,
       mock: false,
-      mount: { center: Test.Constants.S2_HAM, type: Types.GeoMapType.Hybrid },
-      config: {
-        /* helps to hack around the browser detection */
-        // mapJsUrl: 'file:///home/menabe/Software/s2/geo-map/x.js',
-        // mapJsCallbackId: 'g842a34aeb4c84c358ff3e877216c72c3'
-      },
-      context
+      mount: { center: Test.Constants.S2_HAM, type: Types.GeoMapType.Hybrid }
     });
 
-    const result = await googlePlaces.service.search(
+    const result = await herePlaces.service.search(
       'sinnerschrader',
       Test.Constants.S2_HAM,
       50000

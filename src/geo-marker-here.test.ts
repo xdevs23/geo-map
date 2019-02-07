@@ -1,56 +1,76 @@
 import { GeoMarkerHere } from './geo-marker-here';
 import * as Test from './test';
 
-test('respects initial icon', async () => {
-  const { map: mapImplementation } = await Test.createHereMapImplementation();
-  const icon = '<svg><text>Hello</text></svg>';
+test(
+  'respects initial icon',
+  Test.domContextify(async context => {
+    const { map: mapImplementation } = await Test.createHereMapImplementation({
+      context
+    });
+    const icon = '<svg><text>Hello</text></svg>';
 
-  const marker = GeoMarkerHere.create(
-    {
-      icon,
-      position: Test.Constants.S2_HAM
-    },
-    { mapImplementation }
-  );
+    const marker = GeoMarkerHere.create(
+      {
+        icon,
+        position: Test.Constants.S2_HAM
+      },
+      { mapImplementation }
+    );
 
-  expect(await marker.getIcon()).toBe(icon);
-});
+    expect(await marker.getIcon()).toBe(icon);
+  })
+);
 
-test('may set icon', async () => {
-  const { map: mapImplementation } = await Test.createHereMapImplementation();
-  const icon = '<svg><text>Hello</text></svg>';
+test(
+  'may set icon',
+  Test.domContextify(async context => {
+    const { map: mapImplementation } = await Test.createHereMapImplementation({
+      context
+    });
+    const icon = '<svg><text>Hello</text></svg>';
 
-  const marker = GeoMarkerHere.create(
-    { icon: '', position: Test.Constants.S2_HAM },
-    { mapImplementation }
-  );
+    const marker = GeoMarkerHere.create(
+      { icon: '', position: Test.Constants.S2_HAM },
+      { mapImplementation }
+    );
 
-  marker.setIcon(icon);
-  expect(await marker.getIcon()).toBe(icon);
-});
+    marker.setIcon(icon);
+    expect(await marker.getIcon()).toBe(icon);
+  })
+);
 
-test('map hosts marker', async () => {
-  const { map: mapImplementation } = await Test.createHereMapImplementation();
+test(
+  'map hosts marker',
+  Test.domContextify(async context => {
+    const { map: mapImplementation } = await Test.createHereMapImplementation({
+      context
+    });
 
-  const marker = GeoMarkerHere.create(
-    { icon: '', position: Test.Constants.S2_HAM },
-    { mapImplementation }
-  );
+    const marker = GeoMarkerHere.create(
+      { icon: '', position: Test.Constants.S2_HAM },
+      { mapImplementation }
+    );
 
-  expect(await mapImplementation.getMarkers()).toContain(marker);
-});
+    expect(await mapImplementation.getMarkers()).toContain(marker);
+  })
+);
 
-test('map looses removed marker', async () => {
-  const { map: mapImplementation } = await Test.createHereMapImplementation();
+test(
+  'map looses removed marker',
+  Test.domContextify(async context => {
+    const { map: mapImplementation } = await Test.createHereMapImplementation({
+      context
+    });
 
-  const marker = GeoMarkerHere.create(
-    { icon: '', position: Test.Constants.S2_HAM },
-    { mapImplementation }
-  );
+    const marker = GeoMarkerHere.create(
+      { icon: '', position: Test.Constants.S2_HAM },
+      { mapImplementation }
+    );
 
-  expect(await mapImplementation.getMarkers()).toContain(marker);
+    expect(await mapImplementation.getMarkers()).toContain(marker);
 
-  await marker.remove();
+    await marker.remove();
 
-  expect(await mapImplementation.getMarkers()).not.toContain(marker);
-});
+    expect(await mapImplementation.getMarkers()).not.toContain(marker);
+  })
+);

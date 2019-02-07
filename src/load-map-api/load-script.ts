@@ -10,7 +10,7 @@ export function loadScript(
   } = context;
 
   return new Promise(resolve => {
-    const script = document.createElement('script');
+    const script = context.window.document.createElement('script');
     script.src = src;
 
     Object.keys(data).map(key => script.setAttribute(`data-${key}`, data[key]));

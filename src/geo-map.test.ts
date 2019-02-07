@@ -45,141 +45,175 @@ test('faulty geo map fails loading', async () => {
 
 // TODO: Check if we can reestablish support in JSDOM
 // currently fails with "The Google Maps JavaScript API does not support this browser".
-test.skip('Google geo map loads automatically when mounting', async () => {
-  const window = Test.createWindow();
-  const loaded = jest.fn();
+test(
+  'Google geo map loads automatically when mounting',
+  Test.domContextify(async context => {
+    const loaded = jest.fn();
 
-  const googleMap = GeoMap.create({
-    config: {
-      provider: Types.GeoMapProvider.Google,
-      auth
-    },
-    context: {
-      window,
-      loaded
-    }
-  });
-
-  const el = Test.ensureElement(Types.GeoMapProvider.Google, { window });
-  await googleMap.mount(el, { center: Test.Constants.S2_HAM });
-
-  expect(loaded).toHaveBeenCalledTimes(1);
-});
-
-test('HERE geo map loads automatically when mounting', async () => {
-  const window = Test.createWindow();
-  const loaded = jest.fn();
-
-  const hereMap = GeoMap.create({
-    config: {
-      provider: Types.GeoMapProvider.Here,
-      appCode: Test.Constants.HERE_APP_CODE,
-      appId: Test.Constants.HERE_APP_ID
-    },
-    context: {
-      window,
-      changed: async () => {
-        /** */
+    const googleMap = GeoMap.create({
+      config: {
+        provider: Types.GeoMapProvider.Google,
+        auth
       },
-      init: () => Test.createHMock(),
-      loaded
-    }
-  });
+      context: {
+        ...context,
+        loaded
+      }
+    });
 
-  const el = Test.ensureElement(Types.GeoMapProvider.Google, { window });
-  await hereMap.mount(el, { center: Test.Constants.S2_HAM });
+    const el = Test.ensureElement(Types.GeoMapProvider.Google, context);
+    await googleMap.mount(el, { center: Test.Constants.S2_HAM });
 
-  expect(loaded).toHaveBeenCalledTimes(1);
-});
+    expect(loaded).toHaveBeenCalledTimes(1);
+  })
+);
 
-test('Geo map exposes getLayer', async () => {
-  const window = Test.createWindow();
-  const el = Test.ensureElement(Types.GeoMapProvider.Custom, { window });
-  const expected = Types.GeoLayer.Traffic;
+test(
+  'HERE geo map loads automatically when mounting',
+  Test.domContextify(async context => {
+    const loaded = jest.fn();
 
-  const mock = await Test.createMockMapImplementation({
-    getLayer: jest.fn().mockImplementation(() => expected)
-  });
+    const hereMap = GeoMap.create({
+      config: {
+        provider: Types.GeoMapProvider.Here,
+        appCode: Test.Constants.HERE_APP_CODE,
+        appId: Test.Constants.HERE_APP_ID
+      },
+      context: {
+        ...context,
+        changed: async () => {
+          /** */
+        },
+        init: () => Test.createHMock(),
+        loaded
+      }
+    });
 
-  const map = GeoMap.from(mock);
-  await map.mount(el, { center: Test.Constants.S2_HAM });
+    const el = Test.ensureElement(Types.GeoMapProvider.Here, context);
+    await hereMap.mount(el, { center: Test.Constants.S2_HAM });
 
-  expect(await map.getLayer()).toBe(expected);
-  expect(mock.getLayer).toHaveBeenCalledTimes(1);
-});
+    expect(loaded).toHaveBeenCalledTimes(1);
+  })
+);
 
-test('Geo map exposes setLayer', async () => {
-  const window = Test.createWindow();
-  const el = Test.ensureElement(Types.GeoMapProvider.Custom, { window });
-  const expected = Types.GeoLayer.Transit;
+test(
+  'Geo map exposes getLayer',
+  Test.domContextify(async context => {
+    const el = Test.ensureElement(Types.GeoMapProvider.Custom, context);
+    const expected = Types.GeoLayer.Traffic;
 
-  const mock = await Test.createMockMapImplementation({ setLayer: jest.fn() });
+    const mock = await Test.createMockMapImplementation(
+      {
+        getLayer: jest.fn().mockImplementation(() => expected)
+      },
+      context
+    );
 
-  const map = GeoMap.from(mock);
-  await map.mount(el, { center: Test.Constants.S2_HAM });
-  await map.setLayer(expected);
+    const map = GeoMap.from(mock);
+    await map.mount(el, { center: Test.Constants.S2_HAM });
 
-  expect(mock.setLayer).toHaveBeenCalledWith(expected);
-});
+    expect(await map.getLayer()).toBe(expected);
+    expect(mock.getLayer).toHaveBeenCalledTimes(1);
+  })
+);
+
+test(
+  'Geo map exposes setLayer',
+  Test.domContextify(async context => {
+    const el = Test.ensureElement(Types.GeoMapProvider.Custom, context);
+    const expected = Types.GeoLayer.Transit;
+
+    const mock = await Test.createMockMapImplementation(
+      { setLayer: jest.fn() },
+      context
+    );
+
+    const map = GeoMap.from(mock);
+    await map.mount(el, { center: Test.Constants.S2_HAM });
+    await map.setLayer(expected);
+
+    expect(mock.setLayer).toHaveBeenCalledWith(expected);
+  })
+);
 
 // TODO: Check if we can reestablish support in JSDOM
 // currently fails with "The Google Maps JavaScript API does not support this browser".
-test.skip('Geo createMarker triggers change event with Google', async () => {
-  const googleMap = await Test.createGoogleMap();
-  const onChange = jest.fn();
+test.only(
+  'Geo createMarker triggers change event with Google',
+  Test.domContextify(async context => {
+    const googleMap = await Test.createGoogleMap({
+      context
+    });
+    const onChange = jest.fn();
 
-  googleMap.addEventListener(Types.GeoEvent.Changed, onChange);
+    googleMap.addEventListener(Types.GeoEvent.Changed, onChange);
 
-  await googleMap.createMarker({
-    icon: '',
-    position: Test.Constants.S2_HAM
-  });
+    await googleMap.createMarker({
+      icon: '',
+      position: Test.Constants.S2_HAM
+    });
 
-  expect(onChange).toHaveBeenCalledTimes(1);
-});
+    expect(onChange).toHaveBeenCalledTimes(1);
+  })
+);
 
-test('Geo createMarker triggers change event with HERE', async () => {
-  const hereMap = await Test.createHereMap();
-  const onChange = jest.fn();
+test(
+  'Geo createMarker triggers change event with HERE',
+  Test.domContextify(async context => {
+    const hereMap = await Test.createHereMap({
+      context
+    });
+    const onChange = jest.fn();
 
-  hereMap.addEventListener(Types.GeoEvent.Changed, onChange);
+    hereMap.addEventListener(Types.GeoEvent.Changed, onChange);
 
-  await hereMap.createMarker({
-    icon: '',
-    position: Test.Constants.S2_HAM
-  });
+    await hereMap.createMarker({
+      icon: '',
+      position: Test.Constants.S2_HAM
+    });
 
-  expect(onChange).toHaveBeenCalledTimes(1);
-});
+    expect(onChange).toHaveBeenCalledTimes(1);
+  })
+);
 
 // TODO: Check if we can reestablish support in JSDOM
 // currently fails with "The Google Maps JavaScript API does not support this browser".
-test.skip('GeoMarker.remove triggers change event with Google', async () => {
-  const googleMap = await Test.createGoogleMap();
-  const onChange = jest.fn();
+test(
+  'GeoMarker.remove triggers change event with Google',
+  Test.domContextify(async context => {
+    const googleMap = await Test.createGoogleMap({
+      context
+    });
+    const onChange = jest.fn();
 
-  const marker = await googleMap.createMarker({
-    icon: '',
-    position: Test.Constants.S2_HAM
-  });
+    const marker = await googleMap.createMarker({
+      icon: '',
+      position: Test.Constants.S2_HAM
+    });
 
-  googleMap.addEventListener(Types.GeoEvent.Changed, onChange);
+    googleMap.addEventListener(Types.GeoEvent.Changed, onChange);
 
-  await marker.remove();
-  expect(onChange).toHaveBeenCalledTimes(1);
-});
+    await marker.remove();
+    expect(onChange).toHaveBeenCalledTimes(1);
+  })
+);
 
-test('GeoMarker.remove triggers change event with HERE', async () => {
-  const hereMap = await Test.createHereMap();
-  const onChange = jest.fn();
+test(
+  'GeoMarker.remove triggers change event with HERE',
+  Test.domContextify(async context => {
+    const hereMap = await Test.createHereMap({
+      context
+    });
+    const onChange = jest.fn();
 
-  const marker = await hereMap.createMarker({
-    icon: '',
-    position: Test.Constants.S2_HAM
-  });
+    const marker = await hereMap.createMarker({
+      icon: '',
+      position: Test.Constants.S2_HAM
+    });
 
-  hereMap.addEventListener(Types.GeoEvent.Changed, onChange);
+    hereMap.addEventListener(Types.GeoEvent.Changed, onChange);
 
-  await marker.remove();
-  expect(onChange).toHaveBeenCalledTimes(1);
-});
+    await marker.remove();
+    expect(onChange).toHaveBeenCalledTimes(1);
+  })
+);

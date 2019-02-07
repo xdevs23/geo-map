@@ -1,15 +1,16 @@
 import { createHMock } from './create-h-mock';
-import { createWindow } from './create-window';
 import { ensureElement } from './ensure-element';
 import * as Constants from './constants';
 import * as GeoMap from '../geo-map';
 import * as Types from '../types';
+import { DOMContext } from '../types';
 
-export async function createHereMap(
-  config?: Partial<Types.GeoMapConfig>,
-  mountInit?: Types.GeoMapMountInit
-): Promise<GeoMap.GeoMap> {
-  const window = createWindow();
+export async function createHereMap(opts: {
+  config?: Partial<Types.GeoMapConfig>;
+  mountInit?: Types.GeoMapMountInit;
+  context: DOMContext;
+}): Promise<GeoMap.GeoMap> {
+  const myWindow = opts.context;
   const provider = Types.GeoMapProvider.Here;
 
   const hereMap = GeoMap.GeoMap.create({
@@ -17,25 +18,18 @@ export async function createHereMap(
       provider,
       appCode: Constants.HERE_APP_CODE,
       appId: Constants.HERE_APP_ID,
-      language: config ? config.language : undefined,
-      viewport: config ? config.viewport : undefined
+      language: opts && opts.config ? opts.config.language : undefined,
+      viewport: opts && opts.config ? opts.config.viewport : undefined
     },
-    context:
-      window.name === 'nodejs'
-        ? {
-            window,
-            changed: async () => {
-              /** */
-            },
-            init: () => createHMock(),
-            loaded: async () => {
-              /** */
-            }
-          }
-        : undefined
+    context: {
+      ...opts.context
+    }
   });
 
-  const el = ensureElement(provider, { window });
-  await hereMap.mount(el, mountInit || { center: Constants.S2_HAM });
+  const el = ensureElement(provider, opts.context);
+  await hereMap.mount(
+    el,
+    (opts && opts.mountInit) || { center: Constants.S2_HAM }
+  );
   return hereMap;
 }

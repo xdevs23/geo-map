@@ -1,7 +1,6 @@
 import * as Types from './types';
 import { GeoMapPlacesServiceHere } from './geo-map-places-service-here';
 import { GeoMapPlacesServiceGoogle } from './geo-map-places-service-google';
-import { GeoMap } from './geo-map';
 
 export type GeoMapPlacesServiceCreateInit =
   | GeoMapPlacesServiceInitGoogle

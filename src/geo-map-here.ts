@@ -6,7 +6,7 @@ import { loadMapApi } from './load-map-api';
 import * as Types from './types';
 
 export interface GeoMapHereInit {
-  context?: Types.GeoMapContext;
+  context: Types.GeoMapContext;
   config: Types.LoadHereMapConfig;
 }
 
@@ -26,7 +26,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
   private handlers: Map<Types.GeoEvent, ((e?: Event) => void)[]> = new Map();
 
   public constructor(init: GeoMapHereInit) {
-    this.context = init.context || { window };
+    this.context = init.context;
     this.config = init.config;
     this.phases.resolve(Types.GeoMapPhase.Pristine);
   }

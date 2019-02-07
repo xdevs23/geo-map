@@ -5,7 +5,7 @@ import { loadMapApi } from './load-map-api';
 import * as Types from './types';
 
 export interface GeoMapGoogleInit {
-  context?: Types.GeoMapContext;
+  context: Types.GeoMapContext;
   config: Types.LoadGoogleMapConfig;
 }
 
@@ -28,7 +28,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   private handlers: Map<Types.GeoEvent, Types.GeoEventHandler[]> = new Map();
 
   public constructor(init: GeoMapGoogleInit) {
-    this.context = init.context || { window };
+    this.context = init.context;
     this.config = init.config;
     this.phases.resolve(Types.GeoMapPhase.Pristine);
   }

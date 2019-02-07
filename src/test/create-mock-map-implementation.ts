@@ -1,7 +1,7 @@
-import { createWindow } from './create-window';
 import * as Constants from './constants';
 import { ensureElement } from './ensure-element';
 import * as Types from '../types';
+import { DOMContext } from '../types';
 
 // tslint:disable-next-line:no-any
 const createGeoMock = (mixin?: any) => {
@@ -21,12 +21,12 @@ const createGeoMock = (mixin?: any) => {
 
 // tslint:disable-next-line:no-any
 export async function createMockMapImplementation(
-  mixin?: any
+  mixin: any,
+  context: DOMContext
 ): Promise<Types.GeoMapImplementation> {
-  const window = createWindow();
   const GeoMock = createGeoMock(mixin);
   const map = GeoMock();
-  const el = ensureElement(Types.GeoMapProvider.Custom, { window });
+  const el = ensureElement(Types.GeoMapProvider.Custom, context);
   await map.load();
   await map.mount(el, { center: Constants.S2_HAM });
   return map;
