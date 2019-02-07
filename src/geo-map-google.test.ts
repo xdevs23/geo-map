@@ -14,10 +14,13 @@ test(
   Test.domContextify(async context => {
     const googleMap = new GeoMapGoogle({
       config: {
+        browserCtx: context,
         provider: Types.GeoMapProvider.Google,
         auth
       },
-      context
+      geoMapCtx: {
+        browserCtx: context
+      }
     });
 
     const loadResult = await googleMap.load();

@@ -1,5 +1,6 @@
 import * as Result from './result';
 import * as Types from './types';
+import { DOMContext } from './types';
 
 interface HerePlace {
   name: string;
@@ -109,22 +110,24 @@ interface HereError {
   message: string;
 }
 
+export interface GeoMapPlacesServiceHereProps {
+  api: Types.HereApi;
+  platform: H.service.Platform;
+  context: DOMContext;
+}
+
 export class GeoMapPlacesServiceHere
   implements Types.GeoMapPlacesServiceImplementation {
   private platform: H.service.Platform;
   private api: Types.HereApi;
 
-  public static create(init: {
-    api: Types.HereApi;
-    platform: H.service.Platform;
-  }): GeoMapPlacesServiceHere {
+  public static create(
+    init: GeoMapPlacesServiceHereProps
+  ): GeoMapPlacesServiceHere {
     return new GeoMapPlacesServiceHere(init);
   }
 
-  private constructor(init: {
-    api: Types.HereApi;
-    platform: H.service.Platform;
-  }) {
+  private constructor(init: GeoMapPlacesServiceHereProps) {
     this.platform = init.platform;
     this.api = init.api;
   }

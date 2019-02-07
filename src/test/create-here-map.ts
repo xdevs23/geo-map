@@ -10,19 +10,19 @@ export async function createHereMap(opts: {
   mountInit?: Types.GeoMapMountInit;
   context: DOMContext;
 }): Promise<GeoMap.GeoMap> {
-  const myWindow = opts.context;
   const provider = Types.GeoMapProvider.Here;
 
   const hereMap = GeoMap.GeoMap.create({
     config: {
       provider,
+      browserCtx: opts.context,
       appCode: Constants.HERE_APP_CODE,
       appId: Constants.HERE_APP_ID,
       language: opts && opts.config ? opts.config.language : undefined,
       viewport: opts && opts.config ? opts.config.viewport : undefined
     },
-    context: {
-      ...opts.context
+    geoMapCtx: {
+      browserCtx: opts.context
     }
   });
 

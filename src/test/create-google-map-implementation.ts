@@ -4,19 +4,17 @@ import { ensureElement } from './ensure-element';
 import { GeoMapGoogle } from '../geo-map-google';
 import * as Result from '../result';
 import * as Types from '../types';
-import { DOMContext } from '../types';
 
 export async function createGoogleMapImplementation(opts: {
   config?: Partial<Types.LoadGoogleMapConfig>;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
-  context: DOMContext;
+  context: Types.DOMContext;
 }): Promise<Types.TestMapImplementation<GeoMapGoogle>> {
   try {
-    const ctxWindow = opts.context;
-
     const map = new GeoMapGoogle({
       config: {
+        browserCtx: opts.context,
         provider: Types.GeoMapProvider.Google,
         auth: {
           apiKey: Constants.GOOGLE_MAP_API,
@@ -26,8 +24,8 @@ export async function createGoogleMapImplementation(opts: {
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
-      context: {
-        ...opts.context,
+      geoMapCtx: {
+        browserCtx: opts.context,
         load:
           !opts || opts.mock !== false
             ? async () => ({ result: Result.createSuccess(createGoogleMock()) })

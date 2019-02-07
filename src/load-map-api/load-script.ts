@@ -3,12 +3,8 @@ import * as Types from '../types';
 export function loadScript(
   src: string,
   data: { [key: string]: string },
-  context: Types.LoadMapContext
+  context: Types.DOMContext
 ): Promise<Types.Result<void>> {
-  const {
-    window: { document }
-  } = context;
-
   return new Promise(resolve => {
     const script = context.window.document.createElement('script');
     script.src = src;

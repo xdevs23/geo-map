@@ -3,7 +3,7 @@ import { GeoMarkerHere } from './geo-marker-here';
 import * as Types from './types';
 
 export class GeoMarker {
-  private implementation: Types.GeoMarkerImplementation;
+  private readonly implementation: Types.GeoMarkerImplementation;
 
   public static create(init: Types.GeoMarkerCreateInit): GeoMarker {
     if (init.provider === Types.GeoMapProvider.Here) {
@@ -11,7 +11,7 @@ export class GeoMarker {
         provider: Types.GeoMapProvider.Here,
         implementation: GeoMarkerHere.create(
           { position: init.position, icon: init.icon, anchor: init.anchor },
-          { mapImplementation: init.mapImplementation, context: init.context }
+          { mapImplementation: init.mapImplementation, context: init.geoMapCtx }
         )
       });
     }
@@ -20,7 +20,7 @@ export class GeoMarker {
       provider: Types.GeoMapProvider.Google,
       implementation: GeoMarkerGoogle.create(
         { position: init.position, icon: init.icon, anchor: init.anchor },
-        { mapImplementation: init.mapImplementation, context: init.context }
+        { mapImplementation: init.mapImplementation, context: init.geoMapCtx }
       )
     });
   }

@@ -7,16 +7,19 @@ const auth = {
   channel: Test.Constants.GOOGLE_MAP_CHANNEL
 };
 
-test('Google geo map exposes expected provider', async () => {
-  const googleMap = GeoMap.create({
-    config: {
-      provider: Types.GeoMapProvider.Google,
-      auth
-    }
-  });
+test(
+  'Google geo map exposes expected provider',
+  Test.domContextify(async browserCtx => {
+    const googleMap = GeoMap.create({
+      config: {
+        provider: Types.GeoMapProvider.Google,
+        auth
+      }
+    });
 
-  expect(googleMap.provider).toBe(Types.GeoMapProvider.Google);
-});
+    expect(googleMap.provider).toBe(Types.GeoMapProvider.Google);
+  })
+);
 
 test('HERE geo map exposes expected provider', async () => {
   const googleMap = GeoMap.create({
@@ -55,7 +58,7 @@ test(
         provider: Types.GeoMapProvider.Google,
         auth
       },
-      context: {
+      geoMapCtx: {
         ...context,
         loaded
       }
@@ -79,7 +82,7 @@ test(
         appCode: Test.Constants.HERE_APP_CODE,
         appId: Test.Constants.HERE_APP_ID
       },
-      context: {
+      geoMapCtx: {
         ...context,
         changed: async () => {
           /** */

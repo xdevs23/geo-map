@@ -11,18 +11,17 @@ export async function createHereMapImplementation(opts: {
   context: DOMContext;
 }): Promise<Types.TestMapImplementation<GeoMapHere>> {
   try {
-    const ctxWindow = opts.context;
-
     const map = new GeoMapHere({
       config: {
+        browserCtx: opts.context,
         provider: Types.GeoMapProvider.Here,
         appCode: Constants.HERE_APP_CODE,
         appId: Constants.HERE_APP_ID,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
-      context: {
-        ...opts.context,
+      geoMapCtx: {
+        browserCtx: opts.context,
         changed: async () => {
           /** */
         },

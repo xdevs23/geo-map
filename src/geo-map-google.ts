@@ -5,7 +5,7 @@ import { loadMapApi } from './load-map-api';
 import * as Types from './types';
 
 export interface GeoMapGoogleInit {
-  context: Types.GeoMapContext;
+  geoMapCtx: Types.GeoMapContext;
   config: Types.LoadGoogleMapConfig;
 }
 
@@ -21,14 +21,14 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     google.maps.TrafficLayer | google.maps.TransitLayer | undefined
   ] = [Types.GeoLayer.None, undefined];
   private loadResult: Promise<Types.LoadGoogleMapResult>;
-  private context: Types.GeoMapContext;
+  private geoMapCtx: Types.GeoMapContext;
   private config: Types.LoadGoogleMapConfig;
   private phases: GeoMapPhases = new GeoMapPhases();
 
   private handlers: Map<Types.GeoEvent, Types.GeoEventHandler[]> = new Map();
 
   public constructor(init: GeoMapGoogleInit) {
-    this.context = init.context;
+    this.geoMapCtx = init.geoMapCtx;
     this.config = init.config;
     this.phases.resolve(Types.GeoMapPhase.Pristine);
   }
@@ -41,9 +41,9 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   public async load(): Promise<Types.LoadGoogleMapResult> {
     this.phases.resolve(Types.GeoMapPhase.Loading);
 
-    const load = this.context.load ? this.context.load : loadMapApi;
+    const load = this.geoMapCtx.load ? this.geoMapCtx.load : loadMapApi;
 
-    this.loadResult = this.loadResult || load(this.config, this.context);
+    this.loadResult = this.loadResult || load(this.config, this.geoMapCtx);
     const mapResult = await this.loadResult;
 
     if (mapResult.result.type === Types.ResultType.Success) {
@@ -82,9 +82,12 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     // Disable default POI click handling
     this.map.addListener('click', e => e.placeId && e.stop());
 
-    await (this.context.loaded
-      ? this.context.loaded(this.map, { api: this.api, context: this.context })
-      : googleMapLoaded(this.map, { api: this.api, context: this.context }));
+    await (this.geoMapCtx.loaded
+      ? this.geoMapCtx.loaded(this.map, {
+          api: this.api,
+          geoMapCtx: this.geoMapCtx
+        })
+      : googleMapLoaded(this.map, { api: this.api, context: this.geoMapCtx }));
 
     this.api.event.addListenerOnce(this.map, 'tilesloaded', () => {
       this.phases.resolve(Types.GeoMapPhase.Layouted);

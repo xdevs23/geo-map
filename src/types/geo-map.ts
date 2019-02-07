@@ -1,17 +1,26 @@
 import * as Types from '.';
 
+export interface DOMContext {
+  window: Window;
+  global: {
+    DOMParser: DOMParser;
+  };
+}
+
+export interface BrowserCtx {
+  browserCtx: DOMContext;
+}
+
 export enum GeoMapProvider {
   Google = 'Google',
   Here = 'Here',
   Custom = 'Custom'
 }
-
-export type LoadMapConfig = LoadGoogleMapConfig | LoadHereMapConfig;
-
 export type LoadGoogleMapConfig =
   | LoadGoogleMapConfigBase<GoogleMapApiKeyAuth>
   | LoadGoogleMapConfigBase<GoogleMapClientIdAuth>;
 
+export type LoadMapConfig = LoadGoogleMapConfig | LoadHereMapConfig;
 export type GoogleMapAuth = GoogleMapApiKeyAuth | GoogleMapClientIdAuth;
 
 export enum GoogleMapAuthType {
@@ -28,7 +37,7 @@ export interface GoogleMapClientIdAuth {
   channel?: string;
 }
 
-export interface LoadGoogleMapConfigBase<T = undefined> {
+export interface LoadGoogleMapConfigBase<T = undefined> extends BrowserCtx {
   language?: string;
   region?: string;
   provider: GeoMapProvider.Google;
@@ -42,7 +51,7 @@ export interface LoadGoogleMapConfigDefault extends LoadGoogleMapConfigBase {
   apiKey: string;
 }
 
-export interface LoadHereMapConfig {
+export interface LoadHereMapConfig extends BrowserCtx {
   appCode: string;
   appId: string;
   language?: string;
@@ -79,32 +88,25 @@ export interface LoadCustomMapResult {
   readonly provider: GeoMapProvider.Custom;
 }
 
-export interface DOMContext {
-  window: Window;
-  global: {
-    DOMParser: DOMParser;
-  };
-}
-
-export interface LoadMapContext extends DOMContext {
+export interface LoadMapContext extends BrowserCtx {
   init?(): GeoMapApi;
 }
 
-export type GeoMapInit = GoogleGeoMapInit | HereGeoMapInit | CustomGeoMapInit;
-
 export type GeoMapConfig = LoadGoogleMapConfig | LoadHereMapConfig;
 
-export interface GoogleGeoMapInit {
+export type GeoMapInit = GoogleGeoMapInit | HereGeoMapInit | CustomGeoMapInit;
+
+export interface GoogleGeoMapInit extends GeoMapContext {
   implementation: GeoMapImplementation;
   provider: GeoMapProvider.Google;
 }
 
-export interface HereGeoMapInit {
+export interface HereGeoMapInit extends GeoMapContext {
   implementation: GeoMapImplementation;
   provider: GeoMapProvider.Here;
 }
 
-export interface CustomGeoMapInit {
+export interface CustomGeoMapInit extends GeoMapContext {
   implementation: GeoMapImplementation;
   provider: GeoMapProvider.Custom;
 }
@@ -175,7 +177,7 @@ export interface GeoMapContext extends LoadMapContext {
   load?(config: GeoMapConfig, ctx?: GeoMapContext): Promise<any>;
   loaded?(
     geoMapApi: google.maps.Map | H.Map,
-    ctx: { api: GeoMapApi; context: GeoMapContext }
+    ctx: { api: GeoMapApi; geoMapCtx: GeoMapContext }
   ): Promise<void>;
 }
 
@@ -233,20 +235,17 @@ export interface GeoMarkerConfig {
   icon: string;
 }
 
-export interface GeoMarkerCreateInit extends GeoMarkerConfig {
+export interface GeoMarkerCreateInit extends GeoMarkerConfig, BrowserCtx {
   provider: GeoMapProvider;
   mapImplementation: GeoMapImplementation;
-  context?: GeoMapContext;
 }
 
-export interface HereMarkerContext {
+export interface HereMarkerContext extends BrowserCtx {
   mapImplementation: GeoMapImplementation;
-  context?: GeoMapContext;
 }
 
-export interface GoogleMarkerContext {
+export interface GoogleMarkerContext extends BrowserCtx {
   mapImplementation: GeoMapImplementation;
-  context?: GeoMapContext;
 }
 
 export type GeoMarkerContext = HereMarkerContext | GoogleMarkerContext;

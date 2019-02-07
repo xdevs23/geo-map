@@ -1,8 +1,12 @@
 import * as Types from './types';
+import { DOMContext, GeoMapConfig } from './types';
+import { GeoMapContext } from './geo-map-places-service';
 
 export class ServerSideGeoMap implements Types.GeoMapImplementation {
-  public constructor(_: Types.GeoMapConfig) {
-    /* */
+  public readonly geoMapCtx: GeoMapContext;
+
+  public constructor(opts: Types.GeoMapConfig) {
+    this.geoMapCtx = opts.geoMapCtx;
   }
 
   public async load(): Promise<Types.LoadMapResult> {

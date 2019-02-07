@@ -9,11 +9,11 @@ export async function createGoogleMap(opts: {
   mountInit?: Types.GeoMapMountInit;
   context: DOMContext;
 }): Promise<GeoMap.GeoMap> {
-  const window = opts.context;
   const provider = Types.GeoMapProvider.Google;
 
   const googleMap = GeoMap.GeoMap.create({
     config: {
+      browserCtx: opts.context,
       provider,
       auth: {
         apiKey: Constants.GOOGLE_MAP_API
@@ -23,8 +23,8 @@ export async function createGoogleMap(opts: {
       language: opts.config ? opts.config.language : undefined,
       viewport: opts.config ? opts.config.viewport : undefined
     },
-    context: {
-      ...opts.context
+    geoMapCtx: {
+      browserCtx: opts.context
     }
   });
 

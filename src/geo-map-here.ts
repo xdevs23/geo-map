@@ -6,28 +6,27 @@ import { loadMapApi } from './load-map-api';
 import * as Types from './types';
 
 export interface GeoMapHereInit {
-  context: Types.GeoMapContext;
   config: Types.LoadHereMapConfig;
 }
 
 export class GeoMapHere implements Types.GeoMapImplementation {
   public api: Types.HereApi;
-  public map: H.Map;
-  public markers: GeoMarkerHere[] = [];
+  public readonly map: H.Map;
+  public readonly markers: GeoMarkerHere[] = [];
   public platform: H.service.Platform;
 
-  private layer: Types.GeoLayer = Types.GeoLayer.None;
+  private readonly layer: Types.GeoLayer = Types.GeoLayer.None;
   private tainted: boolean;
-  private context: Types.GeoMapContext;
-  private config: Types.LoadHereMapConfig;
-  private mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
-  private phases: GeoMapPhases = new GeoMapPhases();
+  private readonly window: Window;
+  private readonly config: Types.LoadHereMapConfig;
+  private readonly mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
+  private readonly phases: GeoMapPhases = new GeoMapPhases();
 
   private handlers: Map<Types.GeoEvent, ((e?: Event) => void)[]> = new Map();
 
   public constructor(init: GeoMapHereInit) {
-    this.context = init.context;
     this.config = init.config;
+    this.window = init.config.browserCtx.window;
     this.phases.resolve(Types.GeoMapPhase.Pristine);
   }
 
@@ -38,7 +37,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   private async changed(): Promise<void> {
     if (this.tainted) {
-      const changed = this.context ? this.context.changed : undefined;
+      const changed = this.window ? this.window.changed : undefined;
       await (changed || hereMapChanged)(this.map);
       this.tainted = false;
     }
@@ -47,9 +46,9 @@ export class GeoMapHere implements Types.GeoMapImplementation {
   public async load(): Promise<Types.LoadHereMapResult> {
     this.phases.resolve(Types.GeoMapPhase.Loading);
 
-    const load = this.context.load ? this.context.load : loadMapApi;
+    const load = this.window.load ? this.window.load : loadMapApi;
 
-    const mapResult = await load(this.config, this.context);
+    const mapResult = await load(this.config, this.window);
 
     if (mapResult.result.type === Types.ResultType.Success) {
       this.api = mapResult.result.payload;
@@ -84,7 +83,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       },
       {
         platform: this.platform,
-        window: this.context.window
+        window: this.window.window
       }
     );
 
@@ -99,7 +98,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     // tslint:disable-next-line:no-unused-expression
     new api.mapevents.Behavior(new api.mapevents.MapEvents(this.map));
 
-    this.context.window.addEventListener('resize', () =>
+    this.window.window.addEventListener('resize', () =>
       this.map.getViewPort().resize()
     );
 
@@ -111,9 +110,12 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       this.map.getViewPort().setPadding(top, right, bottom, left);
     }
 
-    await (this.context.loaded
-      ? this.context.loaded(this.map, { api: this.api, context: this.context })
-      : hereMapLoaded(this.map, { api: this.api, context: this.context }));
+    await (this.window.loaded
+      ? this.window.loaded(this.map, {
+          api: this.api,
+          geoMapContext: this.window
+        })
+      : hereMapLoaded(this.map, { api: this.api, context: this.window }));
 
     this.phases.resolve(Types.GeoMapPhase.Layouted);
     return;
@@ -164,7 +166,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
         },
         {
           platform: this.platform,
-          window: this.context.window
+          window: this.window.window
         }
       )
     );
@@ -290,7 +292,7 @@ function hereMapChanged(map: H.Map): Promise<void> {
 
 function getHereMapLayer(
   config: { language?: string; type: Types.GeoMapType; layer: Types.GeoLayer },
-  context: { platform: H.service.Platform; window: Window }
+  context: { platform: H.service.Platform }
 ): H.map.layer.TileLayer {
   const defaultLayers = context.platform.createDefaultLayers({
     tileSize: 256,

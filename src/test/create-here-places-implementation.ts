@@ -16,14 +16,15 @@ export async function createHerePlacesImplementation(opts: {
   try {
     const map = new GeoMapHere({
       config: {
+        browserCtx: opts.context,
         provider: Types.GeoMapProvider.Here,
         appCode: Constants.HERE_APP_CODE,
         appId: Constants.HERE_APP_ID,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
-      context: {
-        ...opts.context,
+      geoMapCtx: {
+        browserCtx: opts.context,
         load:
           !opts || opts.mock !== false
             ? async () => ({ result: Result.createSuccess(createHMock()) })
@@ -46,6 +47,7 @@ export async function createHerePlacesImplementation(opts: {
       context: opts.context,
       el,
       service: GeoMapPlacesServiceHere.create({
+        context: opts.context,
         api: map.api,
         platform: map.platform
       })
