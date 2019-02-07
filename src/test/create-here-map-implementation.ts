@@ -20,7 +20,7 @@ export async function createHereMapImplementation(opts: {
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
-      geoMapCtx: {
+      context: {
         browserCtx: opts.context,
         changed: async () => {
           /** */

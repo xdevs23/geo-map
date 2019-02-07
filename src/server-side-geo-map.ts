@@ -3,10 +3,10 @@ import { DOMContext, GeoMapConfig } from './types';
 import { GeoMapContext } from './geo-map-places-service';
 
 export class ServerSideGeoMap implements Types.GeoMapImplementation {
-  public readonly geoMapCtx: GeoMapContext;
+  public readonly browserCtx: DOMContext;
 
   public constructor(opts: Types.GeoMapConfig) {
-    this.geoMapCtx = opts.geoMapCtx;
+    this.browserCtx = opts.browserCtx;
   }
 
   public async load(): Promise<Types.LoadMapResult> {

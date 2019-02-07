@@ -22,6 +22,7 @@ test(
   Test.domContextify(async context => {
     const googleResult = await loadMapApi(
       {
+        browserCtx: context,
         // mapJsUrl: 'file:///home/menabe/Software/s2/geo-map/x.js',
         // mapJsCallbackId: 'g842a34aeb4c84c358ff3e877216c72c3',
         provider: Types.GeoMapProvider.Google,

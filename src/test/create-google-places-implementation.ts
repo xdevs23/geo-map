@@ -29,16 +29,17 @@ export async function createGooglePlacesImplementation(opts: {
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
-      geoMapCtx: {
-        browserCtx: opts.context,
-        load:
-          !opts || opts.mock !== false
-            ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
-            : undefined,
-        loaded: async () => {
-          /** */
-        }
-      }
+      browserCtx: opts.context
+      // geoMapCtx: {
+      //   browserCtx: opts.context,
+      //   load:
+      //     !opts || opts.mock !== false
+      //       ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
+      //       : undefined,
+      //   loaded: async () => {
+      //     /** */
+      //   }
+      // }
     });
 
     const el = ensureElement(Types.GeoMapProvider.Google, opts.context);

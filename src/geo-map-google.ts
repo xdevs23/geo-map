@@ -4,8 +4,12 @@ import { GeoRectGoogle } from './geo-rect-google';
 import { loadMapApi } from './load-map-api';
 import * as Types from './types';
 
-export interface GeoMapGoogleInit {
-  geoMapCtx: Types.GeoMapContext;
+export interface GeoApiContext {
+  api: typeof google.maps;
+  context: Types.GeoMapContext;
+}
+
+export interface GeoMapGoogleInit extends Types.GeoMapContext {
   config: Types.LoadGoogleMapConfig;
 }
 
@@ -21,14 +25,22 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     google.maps.TrafficLayer | google.maps.TransitLayer | undefined
   ] = [Types.GeoLayer.None, undefined];
   private loadResult: Promise<Types.LoadGoogleMapResult>;
-  private geoMapCtx: Types.GeoMapContext;
-  private config: Types.LoadGoogleMapConfig;
-  private phases: GeoMapPhases = new GeoMapPhases();
+  private readonly window: Window & {
+    loaded?: (x: google.maps.Map, y: GeoApiContext) => void;
+    load?: (
+      x: Types.LoadGoogleMapConfig,
+      y: GeoMapGoogleInit
+    ) => Promise<Types.LoadGoogleMapResult>;
+  };
+  private readonly config: Types.LoadGoogleMapConfig;
+  private readonly phases: GeoMapPhases = new GeoMapPhases();
+  private readonly geoMapContext: GeoMapGoogleInit;
 
   private handlers: Map<Types.GeoEvent, Types.GeoEventHandler[]> = new Map();
 
   public constructor(init: GeoMapGoogleInit) {
-    this.geoMapCtx = init.geoMapCtx;
+    this.geoMapContext = init;
+    this.window = init.browserCtx.window;
     this.config = init.config;
     this.phases.resolve(Types.GeoMapPhase.Pristine);
   }
@@ -41,9 +53,9 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
   public async load(): Promise<Types.LoadGoogleMapResult> {
     this.phases.resolve(Types.GeoMapPhase.Loading);
 
-    const load = this.geoMapCtx.load ? this.geoMapCtx.load : loadMapApi;
+    const load = this.window.load ? this.window.load : loadMapApi;
 
-    this.loadResult = this.loadResult || load(this.config, this.geoMapCtx);
+    this.loadResult = this.loadResult || load(this.config, this.geoMapContext);
     const mapResult = await this.loadResult;
 
     if (mapResult.result.type === Types.ResultType.Success) {
@@ -82,12 +94,15 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     // Disable default POI click handling
     this.map.addListener('click', e => e.placeId && e.stop());
 
-    await (this.geoMapCtx.loaded
-      ? this.geoMapCtx.loaded(this.map, {
+    await (this.window.loaded
+      ? this.window.loaded(this.map, {
           api: this.api,
-          geoMapCtx: this.geoMapCtx
+          context: this.geoMapContext
         })
-      : googleMapLoaded(this.map, { api: this.api, context: this.geoMapCtx }));
+      : googleMapLoaded(this.map, {
+          api: this.api,
+          context: this.geoMapContext
+        }));
 
     this.api.event.addListenerOnce(this.map, 'tilesloaded', () => {
       this.phases.resolve(Types.GeoMapPhase.Layouted);
@@ -277,7 +292,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
 
 function googleMapLoaded(
   map: google.maps.Map,
-  { api }: { api: typeof google.maps; context: Types.GeoMapContext }
+  { api }: GeoApiContext
 ): Promise<void> {
   return new Promise(resolve =>
     api.event.addListenerOnce(map, 'idle', () => resolve())

@@ -23,7 +23,7 @@ export async function createGoogleMap(opts: {
       language: opts.config ? opts.config.language : undefined,
       viewport: opts.config ? opts.config.viewport : undefined
     },
-    geoMapCtx: {
+    context: {
       browserCtx: opts.context
     }
   });
