@@ -3,10 +3,10 @@ import * as Types from '../types';
 export function loadScript(
   src: string,
   data: { [key: string]: string },
-  context: Types.DOMContext
+  browserCtx: Types.DOMContext
 ): Promise<Types.Result<void>> {
   return new Promise(resolve => {
-    const script = context.window.document.createElement('script');
+    const script = browserCtx.window.document.createElement('script');
     script.src = src;
 
     Object.keys(data).map(key => script.setAttribute(`data-${key}`, data[key]));

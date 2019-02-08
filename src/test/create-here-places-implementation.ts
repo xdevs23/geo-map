@@ -8,34 +8,23 @@ import { GeoMapHere } from '../geo-map-here';
 import { DOMContext } from '../types';
 
 export async function createHerePlacesImplementation(opts: {
-  config?: Partial<Types.LoadHereMapConfig>;
+  config: Types.LoadHereMapConfig;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
-  context: DOMContext;
 }): Promise<Types.TestServiceImplementation<GeoMapPlacesServiceHere>> {
   try {
     const map = new GeoMapHere({
       config: {
-        browserCtx: opts.context,
+        browserCtx: opts.config.browserCtx,
         provider: Types.GeoMapProvider.Here,
         appCode: Constants.HERE_APP_CODE,
         appId: Constants.HERE_APP_ID,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
-      },
-      geoMapCtx: {
-        browserCtx: opts.context,
-        load:
-          !opts || opts.mock !== false
-            ? async () => ({ result: Result.createSuccess(createHMock()) })
-            : undefined,
-        loaded: async () => {
-          /** */
-        }
       }
     });
 
-    const el = ensureElement(Types.GeoMapProvider.Here, opts.context);
+    const el = ensureElement(Types.GeoMapProvider.Here, opts.config.browserCtx);
 
     await map.load();
     await map.mount(el, {
@@ -44,10 +33,10 @@ export async function createHerePlacesImplementation(opts: {
     });
 
     return {
-      context: opts.context,
+      context: opts.config.browserCtx,
       el,
       service: GeoMapPlacesServiceHere.create({
-        context: opts.context,
+        browserCtx: opts.config.browserCtx,
         api: map.api,
         platform: map.platform
       })

@@ -1,31 +1,27 @@
 import * as Types from './types';
 import { GeoMapPlacesServiceHere } from './geo-map-places-service-here';
 import { GeoMapPlacesServiceGoogle } from './geo-map-places-service-google';
-import { DOMContext } from './types';
+import { BrowserCtx } from './types';
 
 export type GeoMapPlacesServiceCreateInit =
   | GeoMapPlacesServiceInitGoogle
   | GeoMapPlacesServiceInitHere;
 
-export interface GeoMapContext {
-  readonly context: DOMContext;
-}
-
-export interface GeoMapPlacesServiceInitGoogle extends GeoMapContext {
+export type GeoMapPlacesServiceInitGoogle = BrowserCtx<{
   readonly api: Types.GoogleApi;
   readonly type: Types.GeoMapProvider.Google;
-}
+}>;
 
-export interface GeoMapPlacesServiceInitHere extends GeoMapContext {
+export type GeoMapPlacesServiceInitHere = BrowserCtx<{
   readonly api: Types.HereApi;
   readonly platform: H.service.Platform;
   readonly type: Types.GeoMapProvider.Here;
-}
+}>;
 
-export interface GeoMapPlacesServiceInit extends GeoMapContext {
+export type GeoMapPlacesServiceInit = BrowserCtx<{
   readonly type: Types.GeoMapProvider;
   readonly implementation: Types.GeoMapPlacesServiceImplementation;
-}
+}>;
 
 export class GeoMapPlacesService {
   private implementation: Types.GeoMapPlacesServiceImplementation;
@@ -38,11 +34,11 @@ export class GeoMapPlacesService {
 
       return new GeoMapPlacesService({
         type: init.type,
-        context: init.context,
+        browserCtx: init.browserCtx,
         implementation: GeoMapPlacesServiceHere.create({
           api: hereApi,
           platform: init.platform,
-          context: init.context
+          browserCtx: init.browserCtx
         })
       });
     }
@@ -51,10 +47,10 @@ export class GeoMapPlacesService {
 
     return new GeoMapPlacesService({
       type: init.type,
-      context: init.context,
+      browserCtx: init.browserCtx,
       implementation: GeoMapPlacesServiceGoogle.create({
         api: googleApi,
-        context: init.context
+        browserCtx: init.browserCtx
       })
     });
   }

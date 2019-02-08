@@ -1,11 +1,13 @@
 import { GeoMarkerHere } from './geo-marker-here';
 import * as Test from './test';
+import { browserCtxify } from './test';
+import { LoadHereMapConfig } from './types';
 
 test(
   'respects initial icon',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createHereMapImplementation({
-      context
+      config: browserCtx
     });
     const icon = '<svg><text>Hello</text></svg>';
 
@@ -23,9 +25,9 @@ test(
 
 test(
   'may set icon',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createHereMapImplementation({
-      context
+      config: browserCtx
     });
     const icon = '<svg><text>Hello</text></svg>';
 
@@ -41,9 +43,9 @@ test(
 
 test(
   'map hosts marker',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createHereMapImplementation({
-      context
+      config: browserCtx
     });
 
     const marker = GeoMarkerHere.create(
@@ -57,9 +59,9 @@ test(
 
 test(
   'map looses removed marker',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createHereMapImplementation({
-      context
+      config: browserCtx
     });
 
     const marker = GeoMarkerHere.create(

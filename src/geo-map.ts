@@ -8,7 +8,7 @@ import { ServerSideGeoMap } from './server-side-geo-map';
 import { GeoMapCodingService } from './geo-map-coding-service';
 import { GeoMapPlacesService } from './geo-map-places-service';
 import { GeoMapDirectionService } from './geo-map-direction-service';
-import { DOMContext } from './types';
+import { DOMContext, BrowserCtx } from './types';
 
 export class GeoMap {
   public readonly provider: Types.GeoMapProvider;
@@ -29,18 +29,18 @@ export class GeoMap {
 
   public static create(init: {
     config: Types.GeoMapConfig;
-    context: Types.GeoMapContext;
+    geoMapCtx?: Types.GeoMapContext;
   }): GeoMap {
     if (typeof window === 'undefined') {
       return new GeoMap({
-        browserCtx: init.context.browserCtx,
+        browserCtx: init.config.browserCtx,
         implementation: new ServerSideGeoMap(init.config),
         provider: Types.GeoMapProvider.Custom
       });
     }
     if (init.config.provider === Types.GeoMapProvider.Here) {
       return new GeoMap({
-        browserCtx: init.context.browserCtx,
+        browserCtx: init.config.browserCtx,
         implementation: new GeoMapHere({
           config: init.config as Types.LoadHereMapConfig
         }),
@@ -49,17 +49,20 @@ export class GeoMap {
     }
 
     return new GeoMap({
-      browserCtx: init.context.browserCtx,
+      browserCtx: init.config.browserCtx,
       implementation: new GeoMapGoogle({
         config: init.config as Types.LoadGoogleMapConfig,
-        context: init.context
+        geoMapCtx: init.geoMapCtx
       }),
       provider: init.config.provider
     });
   }
 
-  public static from(implementation: Types.GeoMapImplementation): GeoMap {
+  public static from(
+    implementation: BrowserCtx<Types.GeoMapImplementation>
+  ): GeoMap {
     return new GeoMap({
+      browserCtx: implementation.browserCtx,
       implementation,
       provider: Types.GeoMapProvider.Custom
     });
@@ -206,7 +209,7 @@ export class GeoMap {
 
     if (this.provider === Types.GeoMapProvider.Here) {
       const hereService = GeoMapPlacesService.create({
-        context: this.context,
+        browserCtx: this.browserCtx,
         type: this.provider as Types.GeoMapProvider.Here,
         api: (this.implementation as GeoMapHere).api,
         platform: (this.implementation as GeoMapHere).platform
@@ -216,7 +219,7 @@ export class GeoMap {
     }
 
     const googleService = GeoMapPlacesService.create({
-      context: this.context,
+      browserCtx: this.browserCtx,
       type: this.provider as Types.GeoMapProvider.Google,
       api: (this.implementation as GeoMapGoogle).api
     });

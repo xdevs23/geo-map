@@ -1,32 +1,26 @@
-import { createHMock } from './create-h-mock';
 import { ensureElement } from './ensure-element';
 import * as Constants from './constants';
 import * as GeoMap from '../geo-map';
 import * as Types from '../types';
-import { DOMContext } from '../types';
 
 export async function createHereMap(opts: {
-  config?: Partial<Types.GeoMapConfig>;
+  config: Types.GeoMapConfig;
   mountInit?: Types.GeoMapMountInit;
-  context: DOMContext;
 }): Promise<GeoMap.GeoMap> {
   const provider = Types.GeoMapProvider.Here;
 
   const hereMap = GeoMap.GeoMap.create({
     config: {
+      browserCtx: opts.config.browserCtx,
       provider,
-      browserCtx: opts.context,
       appCode: Constants.HERE_APP_CODE,
       appId: Constants.HERE_APP_ID,
       language: opts && opts.config ? opts.config.language : undefined,
       viewport: opts && opts.config ? opts.config.viewport : undefined
-    },
-    context: {
-      browserCtx: opts.context
     }
   });
 
-  const el = ensureElement(provider, opts.context);
+  const el = ensureElement(provider, opts.config.browserCtx);
   await hereMap.mount(
     el,
     (opts && opts.mountInit) || { center: Constants.S2_HAM }

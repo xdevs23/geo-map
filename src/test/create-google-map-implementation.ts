@@ -6,15 +6,14 @@ import * as Result from '../result';
 import * as Types from '../types';
 
 export async function createGoogleMapImplementation(opts: {
-  config?: Partial<Types.LoadGoogleMapConfig>;
+  config: Types.LoadGoogleMapConfig;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
-  context: Types.DOMContext;
 }): Promise<Types.TestMapImplementation<GeoMapGoogle>> {
   try {
     const map = new GeoMapGoogle({
       config: {
-        browserCtx: opts.context,
+        browserCtx: opts.config.browserCtx,
         provider: Types.GeoMapProvider.Google,
         auth: {
           apiKey: Constants.GOOGLE_MAP_API,
@@ -25,7 +24,6 @@ export async function createGoogleMapImplementation(opts: {
         viewport: opts && opts.config ? opts.config.viewport : undefined
       },
       geoMapCtx: {
-        browserCtx: opts.context,
         load:
           !opts || opts.mock !== false
             ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
@@ -36,7 +34,7 @@ export async function createGoogleMapImplementation(opts: {
       }
     });
 
-    const el = ensureElement(Types.GeoMapProvider.Here, opts.context);
+    const el = ensureElement(Types.GeoMapProvider.Here, opts.config.browserCtx);
 
     await map.load();
     await map.mount(el, {
@@ -45,7 +43,7 @@ export async function createGoogleMapImplementation(opts: {
     });
 
     return {
-      context: opts.context,
+      browserCtx: opts.config.browserCtx,
       el,
       map
     };

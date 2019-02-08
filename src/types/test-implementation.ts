@@ -1,13 +1,11 @@
-import { DOMContext } from './geo-map';
+import { DOMContext, BrowserCtx } from './geo-map';
 
-export interface TestMapImplementation<T> {
-  context: DOMContext;
+export type TestMapImplementation<T> = BrowserCtx<{
   el: HTMLElement;
   map: T;
-}
+}>;
 
-export interface TestServiceImplementation<T> {
-  context: DOMContext;
+export type TestServiceImplementation<T> = BrowserCtx<{
   el: HTMLElement;
   service: T;
-}
+}>;

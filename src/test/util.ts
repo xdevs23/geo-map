@@ -2,7 +2,7 @@
 // tslint:disable:no-var-requires
 import * as Util from 'util';
 import * as Types from '../types';
-import { DOMContext } from '../types';
+import { DOMContext, BrowserCtx } from '../types';
 
 const PNGReader = require('png.js');
 
@@ -100,10 +100,12 @@ export function paintViewport({
 }
 
 // tslint:disable-next-line:no-any
-export function dump(context: DOMContext, data: any): void {
-  const previous = context.window.document.querySelector('textarea[data-dump]');
+export function dump({ browserCtx }: BrowserCtx, data: any): void {
+  const previous = browserCtx.window.document.querySelector(
+    'textarea[data-dump]'
+  );
   const el = (previous ||
-    context.window.document.createElement('textarea')) as HTMLElement;
+    browserCtx.window.document.createElement('textarea')) as HTMLElement;
   el.setAttribute('data-dump', 'data-dump');
   el.textContent = JSON.stringify(data);
 

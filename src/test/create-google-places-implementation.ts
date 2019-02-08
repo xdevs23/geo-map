@@ -28,8 +28,7 @@ export async function createGooglePlacesImplementation(opts: {
           opts && opts.config ? opts.config.mapJsCallbackId : undefined,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
-      },
-      browserCtx: opts.context
+      }
       // geoMapCtx: {
       //   browserCtx: opts.context,
       //   load:

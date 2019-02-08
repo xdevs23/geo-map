@@ -10,17 +10,17 @@ export interface GeoMapHereInit {
 }
 
 export class GeoMapHere implements Types.GeoMapImplementation {
-  public api: Types.HereApi;
-  public readonly map: H.Map;
+  public api?: Types.HereApi;
+  public map?: H.Map;
   public readonly markers: GeoMarkerHere[] = [];
   public platform: H.service.Platform;
 
-  private readonly layer: Types.GeoLayer = Types.GeoLayer.None;
+  private layer: Types.GeoLayer = Types.GeoLayer.None;
   private tainted: boolean;
-  private readonly window: Window;
+  private readonly window: Types.GeoMapWindow;
   private readonly config: Types.LoadHereMapConfig;
-  private readonly mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
-  private readonly phases: GeoMapPhases = new GeoMapPhases();
+  private mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
+  private phases: GeoMapPhases = new GeoMapPhases();
 
   private handlers: Map<Types.GeoEvent, ((e?: Event) => void)[]> = new Map();
 
@@ -82,8 +82,8 @@ export class GeoMapHere implements Types.GeoMapImplementation {
         language: this.config.language
       },
       {
-        platform: this.platform,
-        window: this.window.window
+        platform: this.platform
+        // window: this.window
       }
     );
 

@@ -3,6 +3,8 @@ import { GeoMapGoogle } from './geo-map-google';
 import * as Test from './test';
 import * as Types from './types';
 import * as simulant from 'jsdom-simulant';
+import { browserCtxify } from './test';
+import { LoadGoogleMapConfig } from './types';
 
 const auth = {
   clientId: Test.Constants.GOOGLE_MAP_CLIENT_ID,
@@ -11,15 +13,12 @@ const auth = {
 
 test(
   'Google map succeeds loading',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = new GeoMapGoogle({
       config: {
-        browserCtx: context,
+        ...browserCtx,
         provider: Types.GeoMapProvider.Google,
         auth
-      },
-      geoMapCtx: {
-        browserCtx: context
       }
     });
 
@@ -30,10 +29,10 @@ test(
 
 test(
   'Google respects initial zoom',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
       mount: { zoom: 2, center: Test.Constants.S2_HAM },
-      context
+      config: browserCtx
     });
     expect(await googleMap.map.getZoom()).toBe(2);
   })
@@ -41,9 +40,9 @@ test(
 
 test(
   'Google supports setZoom',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     });
     await googleMap.map.setZoom(1);
     expect(await googleMap.map.getZoom()).toBe(1);
@@ -52,10 +51,10 @@ test(
 
 test(
   'Google respects initial type',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
       mount: { center: Test.Constants.S2_HAM, type: Types.GeoMapType.Hybrid },
-      context
+      config: browserCtx
     });
     expect(await googleMap.map.getType()).toBe(Types.GeoMapType.Hybrid);
   })
@@ -63,9 +62,9 @@ test(
 
 test(
   'Google supports setType',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     });
     googleMap.map.setType(Types.GeoMapType.Hybrid);
     expect(await googleMap.map.getType()).toBe(Types.GeoMapType.Hybrid);
@@ -74,10 +73,10 @@ test(
 
 test(
   'Google supports initial center',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
       mount: { center: Test.Constants.S2_HAM, zoom: 10 },
-      context
+      config: browserCtx
     });
     const center = await googleMap.map.getCenter();
 
@@ -88,9 +87,9 @@ test(
 
 test(
   'Google map supports setCenter',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     });
     await googleMap.map.setCenter({ lat: 0, lng: 0 });
     expect(await googleMap.map.getCenter()).toEqual({ lat: 0, lng: 0 });
@@ -99,9 +98,9 @@ test(
 
 test(
   'Google layer default to None',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     });
     expect(await googleMap.map.getLayer()).toBe(Types.GeoLayer.None);
   })
@@ -109,10 +108,10 @@ test(
 
 test(
   'Google layer respects mount options',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
       mount: { center: Test.Constants.S2_HAM, layer: Types.GeoLayer.Traffic },
-      context
+      config: browserCtx
     });
     expect(await googleMap.map.getLayer()).toBe(Types.GeoLayer.Traffic);
   })
@@ -120,10 +119,10 @@ test(
 
 test(
   'Google layer supports setLayer',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMapImplementation({
       mount: { center: Test.Constants.S2_HAM, layer: Types.GeoLayer.Traffic },
-      context
+      config: browserCtx
     });
 
     await googleMap.map.setLayer(Types.GeoLayer.Transit);
@@ -133,19 +132,15 @@ test(
 
 test(
   'Google fires registered event handlers as expected',
-  Test.domContextify(async context => {
-    const {
-      el,
-      map,
-      context: ctxWindow
-    } = await Test.createGoogleMapImplementation({
-      context
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
+    const { el, map } = await Test.createGoogleMapImplementation({
+      config: browserCtx
     });
 
     const onClick = jest.fn();
     await map.addEventListener(Types.GeoEvent.Click, onClick);
 
-    const event = simulant(context.window, 'click');
+    const event = simulant(browserCtx.browserCtx.window, 'click');
     (event as any).latLng = { lat: () => 0, lng: () => 0 };
     simulant.fire(el, event);
 
@@ -155,9 +150,9 @@ test(
 
 test(
   'Google fires change event handler',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const { map } = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     });
 
     const onChange = jest.fn();
@@ -174,19 +169,15 @@ test(
 
 test(
   'Google click carries lat/lng payload',
-  Test.domContextify(async context => {
-    const {
-      el,
-      map,
-      context: ctxWindow
-    } = await Test.createGoogleMapImplementation({
-      context
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
+    const { el, map } = await Test.createGoogleMapImplementation({
+      config: browserCtx
     });
 
     const onClick = jest.fn();
     await map.addEventListener(Types.GeoEvent.Click, onClick);
 
-    const event = simulant(context.window, 'click');
+    const event = simulant(browserCtx.browserCtx.window, 'click');
     (event as any).latLng = { lat: () => 0, lng: () => 0 };
     simulant.fire(el, event);
 
@@ -203,9 +194,9 @@ test(
 
 test(
   'GeoMapGoogle.coversLocation returns true for location in view bounds',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const { map } = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     }); // Mock bounds are n: 1, east: -1, south: -1, west: 1
     const covered = await map.coversLocation({ lat: 0, lng: 0 });
     expect(covered).toBe(true);
@@ -214,9 +205,9 @@ test(
 
 test(
   'GeoMapGoogle.coversLocation false for location outside view bounds',
-  Test.domContextify(async context => {
+  Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const { map } = await Test.createGoogleMapImplementation({
-      context
+      config: browserCtx
     }); // Mock bounds are n: 1, east: -1, south: -1, west: 1
     const covered = await map.coversLocation({ lat: 2, lng: 2 });
     expect(covered).toBe(false);

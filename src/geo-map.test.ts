@@ -1,6 +1,7 @@
 import { GeoMap } from './geo-map';
 import * as Test from './test';
 import * as Types from './types';
+import { createBrowserCtx } from './util';
 
 const auth = {
   clientId: Test.Constants.GOOGLE_MAP_CLIENT_ID,
@@ -12,6 +13,7 @@ test(
   Test.domContextify(async browserCtx => {
     const googleMap = GeoMap.create({
       config: {
+        browserCtx,
         provider: Types.GeoMapProvider.Google,
         auth
       }
@@ -21,50 +23,58 @@ test(
   })
 );
 
-test('HERE geo map exposes expected provider', async () => {
-  const googleMap = GeoMap.create({
-    config: {
-      provider: Types.GeoMapProvider.Here,
-      appCode: Test.Constants.HERE_APP_CODE,
-      appId: Test.Constants.HERE_APP_ID
-    }
-  });
+test(
+  'HERE geo map exposes expected provider',
+  Test.domContextify(async browserCtx => {
+    const googleMap = GeoMap.create({
+      config: {
+        browserCtx,
+        provider: Types.GeoMapProvider.Here,
+        appCode: Test.Constants.HERE_APP_CODE,
+        appId: Test.Constants.HERE_APP_ID
+      }
+    });
 
-  expect(googleMap.provider).toBe(Types.GeoMapProvider.Here);
-});
+    expect(googleMap.provider).toBe(Types.GeoMapProvider.Here);
+  })
+);
 
-test('faulty geo map fails loading', async () => {
-  const faultyMap = GeoMap.create({
-    config: {
-      provider: 'Algolia' as Types.GeoMapProvider.Here,
-      appCode: Test.Constants.HERE_APP_CODE,
-      appId: Test.Constants.HERE_APP_ID
-    }
-  });
+test(
+  'faulty geo map fails loading',
+  Test.domContextify(async browserCtx => {
+    const faultyMap = GeoMap.create({
+      config: {
+        browserCtx,
+        provider: 'Algolia' as Types.GeoMapProvider.Here,
+        appCode: Test.Constants.HERE_APP_CODE,
+        appId: Test.Constants.HERE_APP_ID
+      }
+    });
 
-  const loadResult = await faultyMap.load();
-  expect(loadResult.result.type).toBe(Types.ResultType.Failure);
-});
+    const loadResult = await faultyMap.load();
+    expect(loadResult.result.type).toBe(Types.ResultType.Failure);
+  })
+);
 
 // TODO: Check if we can reestablish support in JSDOM
 // currently fails with "The Google Maps JavaScript API does not support this browser".
 test(
   'Google geo map loads automatically when mounting',
-  Test.domContextify(async context => {
+  Test.domContextify(async browserCtx => {
     const loaded = jest.fn();
 
     const googleMap = GeoMap.create({
       config: {
+        browserCtx,
         provider: Types.GeoMapProvider.Google,
         auth
       },
       geoMapCtx: {
-        ...context,
         loaded
       }
     });
 
-    const el = Test.ensureElement(Types.GeoMapProvider.Google, context);
+    const el = Test.ensureElement(Types.GeoMapProvider.Google, browserCtx);
     await googleMap.mount(el, { center: Test.Constants.S2_HAM });
 
     expect(loaded).toHaveBeenCalledTimes(1);
@@ -73,17 +83,17 @@ test(
 
 test(
   'HERE geo map loads automatically when mounting',
-  Test.domContextify(async context => {
+  Test.domContextify(async browserCtx => {
     const loaded = jest.fn();
 
     const hereMap = GeoMap.create({
       config: {
+        browserCtx,
         provider: Types.GeoMapProvider.Here,
         appCode: Test.Constants.HERE_APP_CODE,
         appId: Test.Constants.HERE_APP_ID
       },
       geoMapCtx: {
-        ...context,
         changed: async () => {
           /** */
         },
@@ -92,7 +102,7 @@ test(
       }
     });
 
-    const el = Test.ensureElement(Types.GeoMapProvider.Here, context);
+    const el = Test.ensureElement(Types.GeoMapProvider.Here, browserCtx);
     await hereMap.mount(el, { center: Test.Constants.S2_HAM });
 
     expect(loaded).toHaveBeenCalledTimes(1);
@@ -101,15 +111,15 @@ test(
 
 test(
   'Geo map exposes getLayer',
-  Test.domContextify(async context => {
-    const el = Test.ensureElement(Types.GeoMapProvider.Custom, context);
+  Test.domContextify(async browserCtx => {
+    const el = Test.ensureElement(Types.GeoMapProvider.Custom, browserCtx);
     const expected = Types.GeoLayer.Traffic;
 
     const mock = await Test.createMockMapImplementation(
       {
         getLayer: jest.fn().mockImplementation(() => expected)
       },
-      context
+      browserCtx
     );
 
     const map = GeoMap.from(mock);
@@ -143,9 +153,9 @@ test(
 // currently fails with "The Google Maps JavaScript API does not support this browser".
 test.only(
   'Geo createMarker triggers change event with Google',
-  Test.domContextify(async context => {
+  Test.domContextify(async browserCtx => {
     const googleMap = await Test.createGoogleMap({
-      context
+      config: browserCtx
     });
     const onChange = jest.fn();
 
@@ -164,7 +174,7 @@ test(
   'Geo createMarker triggers change event with HERE',
   Test.domContextify(async context => {
     const hereMap = await Test.createHereMap({
-      context
+      config: context
     });
     const onChange = jest.fn();
 
@@ -203,9 +213,9 @@ test(
 
 test(
   'GeoMarker.remove triggers change event with HERE',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.GeoMapConfig>(async browserCtx => {
     const hereMap = await Test.createHereMap({
-      context
+      config: browserCtx
     });
     const onChange = jest.fn();
 

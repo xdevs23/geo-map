@@ -11,7 +11,10 @@ export class GeoMarker {
         provider: Types.GeoMapProvider.Here,
         implementation: GeoMarkerHere.create(
           { position: init.position, icon: init.icon, anchor: init.anchor },
-          { mapImplementation: init.mapImplementation, context: init.geoMapCtx }
+          {
+            mapImplementation: init.mapImplementation,
+            geoMapCtx: init.geoMapCtx
+          }
         )
       });
     }
@@ -20,7 +23,7 @@ export class GeoMarker {
       provider: Types.GeoMapProvider.Google,
       implementation: GeoMarkerGoogle.create(
         { position: init.position, icon: init.icon, anchor: init.anchor },
-        { mapImplementation: init.mapImplementation, context: init.geoMapCtx }
+        { mapImplementation: init.mapImplementation, geoMapCtx: init.geoMapCtx }
       )
     });
   }

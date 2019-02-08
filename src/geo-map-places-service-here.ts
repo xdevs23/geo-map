@@ -1,6 +1,6 @@
 import * as Result from './result';
 import * as Types from './types';
-import { DOMContext } from './types';
+import { BrowserCtx } from './types';
 
 interface HerePlace {
   name: string;
@@ -110,11 +110,10 @@ interface HereError {
   message: string;
 }
 
-export interface GeoMapPlacesServiceHereProps {
+export type GeoMapPlacesServiceHereProps = BrowserCtx<{
   api: Types.HereApi;
   platform: H.service.Platform;
-  context: DOMContext;
-}
+}>;
 
 export class GeoMapPlacesServiceHere
   implements Types.GeoMapPlacesServiceImplementation {

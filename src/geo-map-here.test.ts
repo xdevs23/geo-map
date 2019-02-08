@@ -12,12 +12,12 @@ test(
 
     const hereMap = new GeoMapHere({
       config: {
+        browserCtx: context,
         provider: Types.GeoMapProvider.Here,
         appCode: Test.Constants.HERE_APP_CODE,
         appId: Test.Constants.HERE_APP_ID
       },
       context: {
-        ...context,
         changed: async () => {
           /** */
         },

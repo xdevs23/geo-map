@@ -1,13 +1,7 @@
 import * as Types from './types';
-import { DOMContext, GeoMapConfig } from './types';
-import { GeoMapContext } from './geo-map-places-service';
 
 export class ServerSideGeoMap implements Types.GeoMapImplementation {
-  public readonly browserCtx: DOMContext;
-
-  public constructor(opts: Types.GeoMapConfig) {
-    this.browserCtx = opts.browserCtx;
-  }
+  public constructor(opts: Types.GeoMapConfig) {}
 
   public async load(): Promise<Types.LoadMapResult> {
     // tslint:disable-next-line:no-any

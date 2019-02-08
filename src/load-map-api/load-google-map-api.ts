@@ -16,11 +16,11 @@ let memoizedGoogleMapResult: Types.LoadGoogleMapResult;
 export function loadGoogleMapApi(
   result: Types.LoadGoogleMapResult,
   config: Types.LoadGoogleMapConfig,
-  context: Types.LoadMapContext
+  context?: Types.LoadMapContext
 ): Promise<Types.LoadGoogleMapResult> {
   return new Promise((resolve, rejects) => {
     // tslint:disable-next-line:no-any
-    const win = (context.window as any) as Window & { google: typeof google };
+    const win = config.browserCtx.window;
 
     if (win.google && typeof win.google.maps === 'object') {
       Result.toSuccess(

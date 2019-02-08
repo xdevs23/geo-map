@@ -1,15 +1,17 @@
 import * as Types from '.';
 
+export type GeoMapWindow = Window & GeoMapContext & { google: typeof google };
+
 export interface DOMContext {
-  window: Window;
-  global: {
-    DOMParser: DOMParser;
+  readonly window: GeoMapWindow;
+  readonly global: {
+    readonly DOMParser: DOMParser;
   };
 }
 
-export interface BrowserCtx {
-  browserCtx: DOMContext;
-}
+export type BrowserCtx<T = unknown> = T & {
+  readonly browserCtx: DOMContext;
+};
 
 export enum GeoMapProvider {
   Google = 'Google',
@@ -29,36 +31,36 @@ export enum GoogleMapAuthType {
 }
 
 export interface GoogleMapApiKeyAuth {
-  apiKey: string;
+  readonly apiKey: string;
 }
 
 export interface GoogleMapClientIdAuth {
-  clientId: string;
-  channel?: string;
+  readonly clientId: string;
+  readonly channel?: string;
 }
 
-export interface LoadGoogleMapConfigBase<T = undefined> extends BrowserCtx {
-  language?: string;
-  region?: string;
-  provider: GeoMapProvider.Google;
+export type LoadGoogleMapConfigBase<T = undefined> = BrowserCtx<{
+  readonly language?: string;
+  readonly region?: string;
+  readonly provider: GeoMapProvider.Google;
   viewport?: GeoMapViewport;
-  mapJsUrl?: string;
-  mapJsCallbackId?: string;
-  auth: T;
-}
+  readonly mapJsUrl?: string;
+  readonly mapJsCallbackId?: string;
+  readonly auth: T;
+}>;
 
 export interface LoadGoogleMapConfigDefault extends LoadGoogleMapConfigBase {
-  apiKey: string;
+  readonly apiKey: string;
 }
 
-export interface LoadHereMapConfig extends BrowserCtx {
-  appCode: string;
-  appId: string;
-  language?: string;
-  provider: GeoMapProvider.Here;
-  region?: string;
+export type LoadHereMapConfig = BrowserCtx<{
+  readonly appCode: string;
+  readonly appId: string;
+  readonly language?: string;
+  readonly provider: GeoMapProvider.Here;
+  readonly region?: string;
   viewport?: GeoMapViewport;
-}
+}>;
 
 export interface GeoMapViewport {
   top: number;
@@ -88,7 +90,7 @@ export interface LoadCustomMapResult {
   readonly provider: GeoMapProvider.Custom;
 }
 
-export interface LoadMapContext extends BrowserCtx {
+export interface LoadMapContext {
   init?(): GeoMapApi;
 }
 
@@ -96,20 +98,35 @@ export type GeoMapConfig = LoadGoogleMapConfig | LoadHereMapConfig;
 
 export type GeoMapInit = GoogleGeoMapInit | HereGeoMapInit | CustomGeoMapInit;
 
-export interface GoogleGeoMapInit extends GeoMapContext {
-  implementation: GeoMapImplementation;
-  provider: GeoMapProvider.Google;
-}
+export type GeoMapCtx<T> = T & { readonly geoMapCtx?: GeoMapContext };
 
-export interface HereGeoMapInit extends GeoMapContext {
-  implementation: GeoMapImplementation;
-  provider: GeoMapProvider.Here;
-}
+export type GeoMapImplementationAttribute<T> = T & {
+  readonly implementation?: GeoMapImplementation;
+};
 
-export interface CustomGeoMapInit extends GeoMapContext {
-  implementation: GeoMapImplementation;
-  provider: GeoMapProvider.Custom;
-}
+export type GoogleGeoMapInit = GeoMapImplementationAttribute<
+  GeoMapCtx<
+    BrowserCtx<{
+      readonly provider: GeoMapProvider.Google;
+    }>
+  >
+>;
+
+export type HereGeoMapInit = GeoMapImplementationAttribute<
+  GeoMapCtx<
+    BrowserCtx<{
+      readonly provider: GeoMapProvider.Here;
+    }>
+  >
+>;
+
+export type CustomGeoMapInit = GeoMapImplementationAttribute<
+  GeoMapCtx<
+    BrowserCtx<{
+      readonly provider: GeoMapProvider.Custom;
+    }>
+  >
+>;
 
 export interface GeoMapImplementation {
   load(): Promise<LoadMapResult>;
@@ -158,7 +175,7 @@ export interface PlaceInit {
 }
 
 export interface Place {
-  type: PlaceType;
+  readonly type: PlaceType;
   readonly id: string;
   equal(oth: Place): boolean;
 }
@@ -182,15 +199,15 @@ export interface GeoMapContext extends LoadMapContext {
 }
 
 export interface GeoPoint {
-  lat: number;
-  lng: number;
+  readonly lat: number;
+  readonly lng: number;
 }
 
 export interface GeoMapMountInit {
-  center: GeoPoint;
-  type?: GeoMapType;
-  layer?: GeoLayer;
-  zoom?: number;
+  readonly center: GeoPoint;
+  readonly type?: GeoMapType;
+  readonly layer?: GeoLayer;
+  readonly zoom?: number;
 }
 
 export enum GeoMapType {
@@ -214,8 +231,8 @@ export interface GeoMarkerImplementation {
 }
 
 export interface GeoMarkerInit {
-  provider: GeoMapProvider;
-  implementation: GeoMarkerImplementation;
+  readonly provider: GeoMapProvider;
+  readonly implementation: GeoMarkerImplementation;
 }
 
 export enum GeoMarkerOrientation {
@@ -225,27 +242,27 @@ export enum GeoMarkerOrientation {
 }
 
 export interface GeoMarkerAnchor {
-  vertical: GeoMarkerOrientation;
-  horizontal: GeoMarkerOrientation;
+  readonly vertical: GeoMarkerOrientation;
+  readonly horizontal: GeoMarkerOrientation;
 }
 
-export interface GeoMarkerConfig {
-  anchor?: GeoMarkerAnchor;
-  position: GeoPoint;
-  icon: string;
+export type GeoMarkerConfig = BrowserCtx<{
+  readonly anchor?: GeoMarkerAnchor;
+  readonly position: GeoPoint;
+  readonly icon: string;
+}>;
+
+export interface GeoMarkerCreateInit extends GeoMarkerConfig {
+  readonly provider: GeoMapProvider;
+  readonly mapImplementation: GeoMapImplementation;
 }
 
-export interface GeoMarkerCreateInit extends GeoMarkerConfig, BrowserCtx {
-  provider: GeoMapProvider;
-  mapImplementation: GeoMapImplementation;
+export interface HereMarkerContext {
+  readonly mapImplementation: GeoMapImplementation;
 }
 
-export interface HereMarkerContext extends BrowserCtx {
-  mapImplementation: GeoMapImplementation;
-}
-
-export interface GoogleMarkerContext extends BrowserCtx {
-  mapImplementation: GeoMapImplementation;
+export interface GoogleMarkerContext {
+  readonly mapImplementation: GeoMapImplementation;
 }
 
 export type GeoMarkerContext = HereMarkerContext | GoogleMarkerContext;
@@ -291,20 +308,20 @@ export enum HereLanguage {
 }
 
 export interface GeoBounds {
-  north: number;
-  east: number;
-  south: number;
-  west: number;
+  readonly north: number;
+  readonly east: number;
+  readonly south: number;
+  readonly west: number;
 }
 
 export interface GeoRectInit {
-  implementation: GeoRectImplementation;
-  provider: GeoMapProvider;
+  readonly implementation: GeoRectImplementation;
+  readonly provider: GeoMapProvider;
 }
 
 export interface GeoRectCreateInit<T extends GeoMapProvider = GeoMapProvider>
   extends GeoBounds {
-  provider: T;
+  readonly provider: T;
 }
 
 export interface GeoRectImplementation {
@@ -313,19 +330,19 @@ export interface GeoRectImplementation {
 }
 
 export interface RectContext {
-  mapImplementation: GeoMapImplementation;
+  readonly mapImplementation: GeoMapImplementation;
 }
 
 export interface CircleContext {
-  mapImplementation: GeoMapImplementation;
+  readonly mapImplementation: GeoMapImplementation;
 }
 
 export interface GoogleRectContext {
-  api: GoogleApi;
+  readonly api: GoogleApi;
 }
 
 export interface HereRectContext {
-  api: HereApi;
+  readonly api: HereApi;
 }
 
 export enum GeoMapPhase {
@@ -343,23 +360,23 @@ export interface GeoCircleImplementation {
 }
 
 export interface GeoCircleInit {
-  provider: GeoMapProvider;
-  implementation: GeoCircleImplementation;
+  readonly provider: GeoMapProvider;
+  readonly implementation: GeoCircleImplementation;
 }
 
 export interface GeoCircleCreateInit {
-  provider: GeoMapProvider;
+  readonly provider: GeoMapProvider;
   /** LatLng position of the circle's center */
-  position: GeoPoint;
+  readonly position: GeoPoint;
   /** Radius of the circle in meters */
-  radius: number;
+  readonly radius: number;
 }
 
 export interface GeoCircleConfig {
   /** LatLng position of the circle's center */
-  position: GeoPoint;
+  readonly position: GeoPoint;
   /** Radius of the circle in meters */
-  radius: number;
+  readonly radius: number;
 }
 
 export enum GeoEvent {
@@ -372,9 +389,9 @@ export enum GeoEvent {
 export type GeoEventPayload = GeoClickPayload;
 
 export interface GeoClickPayload {
-  position: {
-    lat: number;
-    lng: number;
+  readonly position: {
+    readonly lat: number;
+    readonly lng: number;
   };
 }
 
@@ -388,8 +405,8 @@ export interface GeoMapCodingServiceImplementation {
 }
 
 export interface GeoMapDirectionResult {
-  start: Types.GeoPoint;
-  end: Types.GeoPoint;
+  readonly start: Types.GeoPoint;
+  readonly end: Types.GeoPoint;
 }
 
 export interface GeoMapDirectionServiceImplementation {

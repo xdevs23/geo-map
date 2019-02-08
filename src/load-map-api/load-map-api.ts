@@ -5,15 +5,15 @@ import * as Types from '../types';
 
 export async function loadMapApi(
   config: Types.LoadHereMapConfig,
-  context: Types.LoadMapContext
+  context?: Types.LoadMapContext
 ): Promise<Types.LoadHereMapResult>;
 export async function loadMapApi(
   config: Types.LoadGoogleMapConfig,
-  context: Types.LoadMapContext
+  context?: Types.LoadMapContext
 ): Promise<Types.LoadGoogleMapResult>;
 export async function loadMapApi(
   config: Types.LoadMapConfig,
-  context: Types.LoadMapContext
+  context?: Types.LoadMapContext
 ): Promise<Types.LoadMapResult> {
   // tslint:disable-next-line:no-parameter-reassignment
   // context = context || { window };

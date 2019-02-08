@@ -1,9 +1,9 @@
-import { DOMContext } from '../types';
+import { DOMContext, GeoMapWindow, BrowserCtx } from '../types';
 
 const JSDOMEnvironment = require('jest-environment-jsdom');
 
 export function domContextify<T>(
-  toInject: (context: DOMContext) => Promise<T>
+  injected: (context: DOMContext) => Promise<T | void>
 ): jest.ProvidesCallback {
   const jsdomEnv = new JSDOMEnvironment(
     {
@@ -20,7 +20,7 @@ export function domContextify<T>(
   // console.log('JSDOM Created', typeof jsdomEnv.dom.window, typeof window);
   return async done => {
     try {
-      await toInject({
+      await injected({
         window: jsdomEnv.dom.window,
         global: jsdomEnv.global
       });
@@ -33,8 +33,14 @@ export function domContextify<T>(
   };
 }
 
-export function windowify<T>(
-  toInject: (window: Window) => Promise<T>
+export function browserCtxify<T extends BrowserCtx>(
+  injected: (browserCtx: BrowserCtx<T>) => Promise<BrowserCtx<T> | void>
 ): jest.ProvidesCallback {
-  return domContextify(ctx => toInject(ctx.window));
+  return domContextify(ctx => injected({ browserCtx: ctx } as T));
+}
+
+export function windowify<T>(
+  injected: (window: GeoMapWindow) => Promise<T | void>
+): jest.ProvidesCallback {
+  return domContextify(ctx => injected(ctx.window));
 }

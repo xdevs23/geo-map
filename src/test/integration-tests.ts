@@ -1,9 +1,10 @@
 import * as Constants from './constants';
 import * as Types from '../types';
-import { createDOMContext } from '../util';
+import { createBrowserCtx } from '../util';
 import { createGoogleMap } from './create-google-map';
 import { createHereMap } from './create-here-map';
 import * as Util from './util';
+import { BrowserCtx, LoadHereMapConfig } from '../types';
 
 const VIEWPORT = { top: 0, right: 0, bottom: 0, left: 300 };
 
@@ -14,69 +15,85 @@ const BOUNDS = {
   west: 0
 };
 
-export const Tests = {
-  basicHere: async () => {
-    const hereMap = await createHereMap({
-      context: createDOMContext()
-    });
-  },
+declare type FnAction<Y, R> = (bc: Y) => R;
+declare type FnReturn<R> = () => R;
+export interface IFnFactory<Y, R =  unknown> {
+  <A1, T extends (x: Y, a1: A1) => R>(o: T): (a1: A1) => R;
+  (x: FnAction<Y, R>): FnReturn<R>;
+  //<A1, R, T extends (a1: A1) => R>(x: Y, fn: T): (fn: T) => R;
+  //<A1, A2, R, T extends (a1: A1, a2: A2) => R>(x: Y, fn: T): (fn: T) => R
+  //<A1, A2, A3, R, T extends (a1: A1, a2: A2, a3: A3) => R>(x: Y, fn: T): (fn: T) => R;
+  // <A1, A2, A3, A4, R, T extends (a1: A1, a2: A2, a3: A3, a4: A4) => R>(x: Y, fn: T): (fn: T) => R;
+  //  <A1, A2, A3, A4, A5, R, T extends (a1: A1, a2: A2, a3: A3, a4: A4, a5: A5) => R>(x: Y, fn: T): (fn: T) => R;
+  // <A1, A2, A3, A4, A5, A6, R, T extends (a1: A1, a2: A2, a3: A3, a4: A4, a6: A6) => R>(x: Y, fn: T): (fn: T) => R;
+}
 
-  basicGoogle: async () => {
+const injectBrowserCtx: IFnFactory<BrowserCtx<LoadHereMapConfig>> =
+  (o: FnAction<BrowserCtx<LoadHereMapConfig>, Promise<void>>): () => Promise<void> => {
+    return function (): Promise<void> { return o(createBrowserCtx<LoadHereMapConfig>()); }
+  }
+
+export const Tests = {
+  basicHere: injectBrowserCtx(async (browserCtx) => {
+    const hereMap = await createHereMap({
+      config: browserCtx
+    });
+  }),
+
+  basicGoogle: injectBrowserCtx(async (browserCtx) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext()
+      config: browserCtx
     });
     await gmap.phase(Types.GeoMapPhase.Layouted);
-  },
+  }),
 
-  zoomGoogle: async (zoom = 10) => {
+  zoomGoogle: injectBrowserCtx(async (browserCtx, zoom = 10) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext()
+      config: browserCtx
     });
     gmap.setZoom(zoom);
     return gmap.getZoom();
-  },
+  }),
 
-  zoomHere: async (zoom = 10) => {
+  zoomHere: injectBrowserCtx(async (browserCtx, zoom = 10) => {
     const hmap = await createHereMap({
-      context: createDOMContext()
+      config: createBrowserCtx()
     });
     await hmap.setZoom(zoom);
     return hmap.getZoom();
-  },
+  }),
 
-  zoomSameHere: async (zoom = 5) => {
+  zoomSameHere: injectBrowserCtx(async (browserCtx, zoom = 5) => {
     const hmap = await createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom, center: Constants.S2_HAM }
     });
     await hmap.setZoom(zoom);
     const result = await hmap.getZoom();
     return result;
-  },
+  }),
 
-  typeGoogle: async (type: Types.GeoMapType = Types.GeoMapType.Hybrid) => {
+  typeGoogle: injectBrowserCtx(async (browserCtx, type: Types.GeoMapType = Types.GeoMapType.Hybrid) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext()
+      config: createBrowserCtx()
     });
     gmap.setType(type);
     return gmap.getType();
-  },
+  }),
 
-  typeHere: async (type: Types.GeoMapType = Types.GeoMapType.Hybrid) => {
+  typeHere: injectBrowserCtx(async (browserCtx, type: Types.GeoMapType = Types.GeoMapType.Hybrid) => {
     const hmap = await createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 2, center: Constants.S2_HAM }
     });
     hmap.setType(type);
     return hmap.getType();
-  },
+  }),
 
-  styledPOIMarkerWork: async (
-    icon: string = Constants.ICON,
-    center = Constants.S2_HAM
-  ) => {
+  styledPOIMarkerWork: injectBrowserCtx(async (browserCtx, icon: string = Constants.ICON,
+    center = Constants.S2_HAM) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -100,7 +117,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -125,7 +142,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -158,7 +175,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -178,7 +195,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -199,7 +216,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -225,7 +242,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -249,7 +266,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 18, center }
     });
 
@@ -264,7 +281,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
     await gmap.phase(Types.GeoMapPhase.Layouted);
@@ -280,7 +297,7 @@ export const Tests = {
     center = Constants.S2_HAM
   ) => {
     const hmap = await createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { zoom: 10, center }
     });
 
@@ -292,16 +309,20 @@ export const Tests = {
 
   languageHere: async (language = 'en') => {
     return createHereMap({
-      context: createDOMContext(),
-      config: { language },
+      config: {
+        ...createBrowserCtx(),
+        language
+      },
       mountInit: { center: Constants.S2_HAM, zoom: 4 }
     });
   },
 
   languageGoogle: async (language = 'en') => {
     return createGoogleMap({
-      context: createDOMContext(),
-      config: { language },
+      config: {
+        ...createBrowserCtx(),
+        language
+      },
       mountInit: { center: Constants.S2_HAM, zoom: 4 }
     });
   },
@@ -310,7 +331,7 @@ export const Tests = {
     { lat, lng }: { lat: number; lng: number } = { lat: 0, lng: 0 }
   ) => {
     const hmap = await createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_HAM, zoom: 5 }
     });
     await hmap.setCenter({
@@ -324,7 +345,7 @@ export const Tests = {
     { lat, lng }: { lat: number; lng: number } = { lat: 0, lng: 0 }
   ) => {
     const gmap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_HAM, zoom: 5 }
     });
     await gmap.setCenter({
@@ -335,10 +356,9 @@ export const Tests = {
   },
 
   viewportHere: async (viewport: Types.GeoMapViewport = VIEWPORT) => {
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const hmap = await createHereMap({
-      context,
-      config: { viewport },
+      config: { ...context, viewport },
       mountInit: { center: Constants.S2_HAM, zoom: 5 }
     });
 
@@ -346,7 +366,7 @@ export const Tests = {
       `[data-map="${Types.GeoMapProvider.Here}"]`
     ) as HTMLElement;
 
-    Util.paintViewport({ context, viewport, container: el });
+    Util.paintViewport({ context: context.browserCtx, viewport, container: el });
 
     return await hmap.createMarker({
       icon: Constants.ICON,
@@ -355,10 +375,9 @@ export const Tests = {
   },
 
   viewportGoogle: async (viewport: Types.GeoMapViewport = VIEWPORT) => {
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const gmap = await createGoogleMap({
-      context,
-      config: { viewport },
+      config: { ...context, viewport },
       mountInit: { center: Constants.S2_HAM, zoom: 5 }
     });
 
@@ -366,7 +385,7 @@ export const Tests = {
       `[data-map="${Types.GeoMapProvider.Google}"]`
     ) as HTMLElement;
 
-    Util.paintViewport({ context, viewport, container: el });
+    Util.paintViewport({ context: context.browserCtx, viewport, container: el });
 
     return await gmap.createMarker({
       icon: Constants.ICON,
@@ -379,8 +398,7 @@ export const Tests = {
     bounds: Types.GeoBounds = BOUNDS
   ) => {
     const hmap = await createHereMap({
-      context: createDOMContext(),
-      config: { viewport: { top: 0, right: 0, bottom: 0, left: 300 } },
+      config: { ...createBrowserCtx(), viewport: { top: 0, right: 0, bottom: 0, left: 300 } },
       mountInit: { center: { lat: 0, lng: 0 }, zoom: 5 }
     });
 
@@ -401,8 +419,7 @@ export const Tests = {
     bounds: Types.GeoBounds = BOUNDS
   ) => {
     const googleMap = await createGoogleMap({
-      context: createDOMContext(),
-      config: { viewport },
+      config: { ...createBrowserCtx(), viewport },
       mountInit: { center: { lat: 0, lng: 0 }, zoom: 5 }
     });
 
@@ -421,7 +438,7 @@ export const Tests = {
 
   routeGoogle: async () => {
     const googleMap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_FRA, zoom: 5 }
     });
 
@@ -476,7 +493,7 @@ export const Tests = {
 
   routeHere: async () => {
     const hereMap = await createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_FRA, zoom: 5 }
     });
 
@@ -538,6 +555,7 @@ export const Tests = {
         map.addObject(lineForegroud);
 
         hereMap.createMarker({
+          browserCtx,
           position: origin,
           icon: Constants.ORIGIN_ICON
         });
@@ -555,7 +573,7 @@ export const Tests = {
 
   layerGoogle: async (layer: Types.GeoLayer = Types.GeoLayer.None) => {
     const googleMap = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_HAM, zoom: 13, layer }
     });
     await googleMap.phase(Types.GeoMapPhase.Layouted);
@@ -563,14 +581,14 @@ export const Tests = {
 
   layerHere: (layer: Types.GeoLayer = Types.GeoLayer.None) => {
     return createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_HAM, zoom: 13, layer }
     });
   },
 
   circleGoogle: async () => {
     const map = await createGoogleMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_HAM, zoom: 13 }
     });
     map.createGeoCircle({ position: Constants.S2_HAM, radius: 100 });
@@ -578,7 +596,7 @@ export const Tests = {
 
   circleHere: async () => {
     const map = await createHereMap({
-      context: createDOMContext(),
+      config: createBrowserCtx(),
       mountInit: { center: Constants.S2_HAM, zoom: 13 }
     });
     map.createGeoCircle({ position: Constants.S2_HAM, radius: 100 });
@@ -586,9 +604,9 @@ export const Tests = {
 
   eventGoogle: async (id: string) => {
     const data = { clicked: 0 };
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createGoogleMap({
-      context,
+      config: context,
       mountInit: { center: Constants.S2_HAM, zoom: 13 }
     });
 
@@ -600,9 +618,9 @@ export const Tests = {
 
   eventHere: async (id: string) => {
     const data = { clicked: 0 };
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: { center: Constants.S2_HAM, zoom: 13 }
     });
 
@@ -614,9 +632,9 @@ export const Tests = {
 
   eventPayloadGoogle: async (input?: { lat: number; lng: number }) => {
     const center = input || { lat: 1, lng: 1 };
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createGoogleMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 13 }
     });
     map.addEventListener(Types.GeoEvent.Click, e => Util.dump(context, e));
@@ -624,9 +642,9 @@ export const Tests = {
 
   eventPayloadHere: async (input?: { lat: number; lng: number }) => {
     const center = input || { lat: 1, lng: 1 };
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 13 }
     });
     map.addEventListener(Types.GeoEvent.Click, e => Util.dump(context, e));
@@ -635,9 +653,9 @@ export const Tests = {
   geocodeHere: async (
     center: { lat: number; lng: number } = Constants.S2_FRA
   ) => {
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 17 }
     });
     map.addEventListener(Types.GeoEvent.Click, async e => {
@@ -656,9 +674,9 @@ export const Tests = {
   geocodeGoogle: async (
     center: { lat: number; lng: number } = Constants.S2_FRA
   ) => {
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createGoogleMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 17 }
     });
     map.addEventListener(Types.GeoEvent.Click, async e => {
@@ -676,9 +694,9 @@ export const Tests = {
 
   searchHere: async (term: string = 'Hamburg') => {
     const center = Constants.S2_HAM;
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 15 }
     });
     const results = await map.search(term, center);
@@ -690,9 +708,9 @@ export const Tests = {
 
   searchGoogle: async (term: string = 'Hamburg') => {
     const center = Constants.S2_HAM;
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createGoogleMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 15 }
     });
     const results = await map.search(term, center);
@@ -704,9 +722,9 @@ export const Tests = {
 
   getGoogle: async (term: string = 'Hamburg') => {
     const center = Constants.S2_HAM;
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createGoogleMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 15 }
     });
     const results = await map.search(term, center);
@@ -727,9 +745,9 @@ export const Tests = {
 
   getHere: async (term: string = 'Hamburg') => {
     const center = Constants.S2_HAM;
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 15 }
     });
     const results = await map.search(term, center);
@@ -750,9 +768,9 @@ export const Tests = {
 
   getAllWayDownFromReverseGeocode: async () => {
     const center = Constants.S2_HAM;
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: { center, zoom: 15 }
     });
     const geocodeResult = await map.reverseGeocode(center);
@@ -772,9 +790,9 @@ export const Tests = {
   },
 
   paintGoogleRoute: async () => {
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createGoogleMap({
-      context,
+      config: context,
       mountInit: { zoom: 8, center: { lat: 53.0572754, lng: 11.4263859 } }
     });
 
@@ -784,9 +802,9 @@ export const Tests = {
   },
 
   paintHereRoute: async () => {
-    const context = createDOMContext();
+    const context = createBrowserCtx<Types.GeoMapConfig>();
     const map = await createHereMap({
-      context,
+      config: context,
       mountInit: {
         zoom: 8,
         center: { lat: 53.0572754, lng: 11.4263859 }

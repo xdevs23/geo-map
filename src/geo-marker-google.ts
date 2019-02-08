@@ -15,16 +15,16 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
 
   public static create(
     config: Types.GeoMarkerConfig,
-    context: Types.GoogleMarkerContext
+    geoMarkerCtx: Types.GoogleMarkerContext
   ): GeoMarkerGoogle {
-    return new GeoMarkerGoogle(config, context);
+    return new GeoMarkerGoogle(config, geoMarkerCtx);
   }
 
   private constructor(
     config: Types.GeoMarkerConfig,
-    context: Types.GoogleMarkerContext
+    geoMarkerCtx: Types.GoogleMarkerContext
   ) {
-    this.implementation = context.mapImplementation as GeoMapGoogle;
+    this.implementation = geoMarkerCtx.mapImplementation as GeoMapGoogle;
     this.iconMarkup = config.icon;
 
     if (config.anchor) {
@@ -34,7 +34,7 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
     const iconAnchor = getAnchor(
       this.anchor,
       config.icon,
-      context.context.global.DOMParser
+      config.browserCtx.global.DOMParser
     );
 
     this.marker = new this.implementation.api.Marker({
