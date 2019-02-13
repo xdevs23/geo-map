@@ -1,4 +1,4 @@
-import { DOMContext, BrowserCtx } from './geo-map';
+import { BrowserCtx } from './geo-map';
 
 export type TestMapImplementation<T> = BrowserCtx<{
   el: HTMLElement;

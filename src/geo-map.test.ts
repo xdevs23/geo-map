@@ -2,6 +2,7 @@ import { GeoMap } from './geo-map';
 import * as Test from './test';
 import * as Types from './types';
 import { createBrowserCtx } from './util';
+import { browserCtxify } from './test';
 
 const auth = {
   clientId: Test.Constants.GOOGLE_MAP_CLIENT_ID,
@@ -111,15 +112,15 @@ test(
 
 test(
   'Geo map exposes getLayer',
-  Test.domContextify(async browserCtx => {
-    const el = Test.ensureElement(Types.GeoMapProvider.Custom, browserCtx);
+  Test.domContextify(async domContext => {
+    const el = Test.ensureElement(Types.GeoMapProvider.Custom, domContext);
     const expected = Types.GeoLayer.Traffic;
 
     const mock = await Test.createMockMapImplementation(
       {
         getLayer: jest.fn().mockImplementation(() => expected)
       },
-      browserCtx
+      domContext
     );
 
     const map = GeoMap.from(mock);
@@ -153,7 +154,7 @@ test(
 // currently fails with "The Google Maps JavaScript API does not support this browser".
 test.only(
   'Geo createMarker triggers change event with Google',
-  Test.domContextify(async browserCtx => {
+  Test.browserCtxify<Types.GeoMapConfig>(async browserCtx => {
     const googleMap = await Test.createGoogleMap({
       config: browserCtx
     });
@@ -162,6 +163,7 @@ test.only(
     googleMap.addEventListener(Types.GeoEvent.Changed, onChange);
 
     await googleMap.createMarker({
+      browserCtx: browserCtx.browserCtx,
       icon: '',
       position: Test.Constants.S2_HAM
     });
@@ -172,7 +174,7 @@ test.only(
 
 test(
   'Geo createMarker triggers change event with HERE',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.GeoMapConfig>(async context => {
     const hereMap = await Test.createHereMap({
       config: context
     });
@@ -181,6 +183,7 @@ test(
     hereMap.addEventListener(Types.GeoEvent.Changed, onChange);
 
     await hereMap.createMarker({
+      browserCtx: context.browserCtx,
       icon: '',
       position: Test.Constants.S2_HAM
     });
@@ -193,13 +196,14 @@ test(
 // currently fails with "The Google Maps JavaScript API does not support this browser".
 test(
   'GeoMarker.remove triggers change event with Google',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.GeoMapConfig>(async context => {
     const googleMap = await Test.createGoogleMap({
-      context
+      config: context
     });
     const onChange = jest.fn();
 
     const marker = await googleMap.createMarker({
+      browserCtx: context.browserCtx,
       icon: '',
       position: Test.Constants.S2_HAM
     });
@@ -220,6 +224,7 @@ test(
     const onChange = jest.fn();
 
     const marker = await hereMap.createMarker({
+      browserCtx: browserCtx.browserCtx,
       icon: '',
       position: Test.Constants.S2_HAM
     });

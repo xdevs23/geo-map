@@ -10,10 +10,14 @@ export class GeoMarker {
       return new GeoMarker({
         provider: Types.GeoMapProvider.Here,
         implementation: GeoMarkerHere.create(
-          { position: init.position, icon: init.icon, anchor: init.anchor },
           {
-            mapImplementation: init.mapImplementation,
-            geoMapCtx: init.geoMapCtx
+            browserCtx: init.browserCtx,
+            position: init.position,
+            icon: init.icon,
+            anchor: init.anchor
+          },
+          {
+            mapImplementation: init.mapImplementation
           }
         )
       });
@@ -22,8 +26,13 @@ export class GeoMarker {
     return new GeoMarker({
       provider: Types.GeoMapProvider.Google,
       implementation: GeoMarkerGoogle.create(
-        { position: init.position, icon: init.icon, anchor: init.anchor },
-        { mapImplementation: init.mapImplementation, geoMapCtx: init.geoMapCtx }
+        {
+          browserCtx: init.browserCtx,
+          position: init.position,
+          icon: init.icon,
+          anchor: init.anchor
+        },
+        { mapImplementation: init.mapImplementation }
       )
     });
   }

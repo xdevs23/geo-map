@@ -28,7 +28,7 @@ export async function createHereMapImplementation(opts: {
       center: Constants.S2_HAM,
       ...((opts && opts.mount) || {})
     });
-    return { context: opts.config.browserCtx, map, el };
+    return { browserCtx: opts.config.browserCtx, map, el };
   } catch (err) {
     console.error(err);
     throw err;

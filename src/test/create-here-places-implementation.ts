@@ -33,7 +33,7 @@ export async function createHerePlacesImplementation(opts: {
     });
 
     return {
-      context: opts.config.browserCtx,
+      browserCtx: opts.config.browserCtx,
       el,
       service: GeoMapPlacesServiceHere.create({
         browserCtx: opts.config.browserCtx,

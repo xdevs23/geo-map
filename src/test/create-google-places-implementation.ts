@@ -8,15 +8,14 @@ import { GeoMapGoogle } from '../geo-map-google';
 import { DOMContext } from '../types';
 
 export async function createGooglePlacesImplementation(opts: {
-  config?: Partial<Types.LoadGoogleMapConfig>;
+  config: Partial<Types.LoadGoogleMapConfig>;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
-  context: DOMContext;
 }): Promise<Types.TestServiceImplementation<GeoMapPlacesServiceGoogle>> {
   try {
     const map = new GeoMapGoogle({
       config: {
-        browserCtx: opts.context,
+        browserCtx: opts.config.browserCtx,
         provider: Types.GeoMapProvider.Google,
         auth: {
           apiKey: Constants.GOOGLE_MAP_API,
@@ -41,7 +40,10 @@ export async function createGooglePlacesImplementation(opts: {
       // }
     });
 
-    const el = ensureElement(Types.GeoMapProvider.Google, opts.context);
+    const el = ensureElement(
+      Types.GeoMapProvider.Google,
+      opts.config.browserCtx
+    );
 
     await map.load();
     await map.mount(el, {
@@ -50,11 +52,11 @@ export async function createGooglePlacesImplementation(opts: {
     });
 
     return {
-      context: opts.context,
+      browserCtx: opts.config.browserCtx,
       el,
       service: GeoMapPlacesServiceGoogle.create({
         api: map.api,
-        context: opts.context
+        browserCtx: opts.config.browserCtx
       })
     };
   } catch (err) {

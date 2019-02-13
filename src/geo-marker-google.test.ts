@@ -1,16 +1,18 @@
 import { GeoMarkerGoogle } from './geo-marker-google';
 import * as Test from './test';
+import * as Types from './types';
 
 test(
   'respects initial icon',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.LoadGoogleMapConfig>(async browserCfg => {
     const { map: mapImplementation } = await Test.createGoogleMapImplementation(
       {
-        context
+        config: browserCfg
       }
     );
     const marker = GeoMarkerGoogle.create(
       {
+        browserCtx: browserCfg.browserCtx,
         icon: Test.Constants.ICON,
         position: Test.Constants.S2_HAM
       },
@@ -23,15 +25,19 @@ test(
 
 test(
   'may set icon',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.LoadGoogleMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createGoogleMapImplementation(
       {
-        context
+        config: browserCtx
       }
     );
 
     const marker = GeoMarkerGoogle.create(
-      { icon: '', position: Test.Constants.S2_HAM },
+      {
+        browserCtx: browserCtx.browserCtx,
+        icon: '',
+        position: Test.Constants.S2_HAM
+      },
       { mapImplementation }
     );
 
@@ -42,15 +48,19 @@ test(
 
 test(
   'map hosts marker',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.LoadGoogleMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createGoogleMapImplementation(
       {
-        context
+        config: browserCtx
       }
     );
 
     const marker = GeoMarkerGoogle.create(
-      { icon: '', position: Test.Constants.S2_HAM },
+      {
+        browserCtx: browserCtx.browserCtx,
+        icon: '',
+        position: Test.Constants.S2_HAM
+      },
       { mapImplementation }
     );
 
@@ -60,15 +70,19 @@ test(
 
 test(
   'map looses removed marker',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.LoadGoogleMapConfig>(async browserCtx => {
     const { map: mapImplementation } = await Test.createGoogleMapImplementation(
       {
-        context
+        config: browserCtx
       }
     );
 
     const marker = GeoMarkerGoogle.create(
-      { icon: '', position: Test.Constants.S2_HAM },
+      {
+        browserCtx: browserCtx.browserCtx,
+        icon: '',
+        position: Test.Constants.S2_HAM
+      },
       { mapImplementation }
     );
 

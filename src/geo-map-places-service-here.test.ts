@@ -5,9 +5,9 @@ import * as Types from './types';
 // currently fails with "The Google Maps JavaScript API does not support this browser".
 test(
   'Here map search result',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.LoadHereMapConfig>(async browserCtx => {
     const herePlaces = await Test.createHerePlacesImplementation({
-      context,
+      config: browserCtx,
       mock: false,
       mount: { center: Test.Constants.S2_HAM, type: Types.GeoMapType.Hybrid }
     });

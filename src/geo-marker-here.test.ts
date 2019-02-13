@@ -13,6 +13,7 @@ test(
 
     const marker = GeoMarkerHere.create(
       {
+        browserCtx: browserCtx.browserCtx,
         icon,
         position: Test.Constants.S2_HAM
       },
@@ -32,7 +33,11 @@ test(
     const icon = '<svg><text>Hello</text></svg>';
 
     const marker = GeoMarkerHere.create(
-      { icon: '', position: Test.Constants.S2_HAM },
+      {
+        browserCtx: browserCtx.browserCtx,
+        icon: '',
+        position: Test.Constants.S2_HAM
+      },
       { mapImplementation }
     );
 
@@ -49,7 +54,11 @@ test(
     });
 
     const marker = GeoMarkerHere.create(
-      { icon: '', position: Test.Constants.S2_HAM },
+      {
+        browserCtx: browserCtx.browserCtx,
+        icon: '',
+        position: Test.Constants.S2_HAM
+      },
       { mapImplementation }
     );
 
@@ -65,7 +74,11 @@ test(
     });
 
     const marker = GeoMarkerHere.create(
-      { icon: '', position: Test.Constants.S2_HAM },
+      {
+        browserCtx: browserCtx.browserCtx,
+        icon: '',
+        position: Test.Constants.S2_HAM
+      },
       { mapImplementation }
     );
 

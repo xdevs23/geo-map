@@ -7,7 +7,10 @@ export function createBrowserCtx<T = unknown>(
   return {
     ...y,
     browserCtx: {
-      window,
+      window: {
+        ...window,
+        google
+      },
       global: {
         DOMParser: x
       }

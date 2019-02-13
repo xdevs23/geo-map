@@ -1,13 +1,14 @@
 import { GeoRectGoogle } from './geo-rect-google';
 import * as Test from './test';
+import * as Types from './types';
 
 test(
   'Google rect accepts constructor bounds',
-  Test.domContextify(async context => {
+  Test.browserCtxify<Types.LoadGoogleMapConfig>(async context => {
     const { map: mapImplementation } = await Test.createGoogleMapImplementation(
       {
         mount: { zoom: 2, center: Test.Constants.S2_HAM },
-        context
+        config: context
       }
     );
 

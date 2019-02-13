@@ -7,6 +7,7 @@ import * as Types from './types';
 
 export interface GeoMapHereInit {
   config: Types.LoadHereMapConfig;
+  geoMapCtx?: Types.GeoMapContext;
 }
 
 export class GeoMapHere implements Types.GeoMapImplementation {
@@ -113,7 +114,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     await (this.window.loaded
       ? this.window.loaded(this.map, {
           api: this.api,
-          geoMapContext: this.window
+          geoMapCtx: this.window
         })
       : hereMapLoaded(this.map, { api: this.api, context: this.window }));
 
@@ -165,8 +166,8 @@ export class GeoMapHere implements Types.GeoMapImplementation {
           language: this.config.language
         },
         {
-          platform: this.platform,
-          window: this.window.window
+          platform: this.platform
+          // window: this.window.window
         }
       )
     );
@@ -253,6 +254,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   public async createMarker(config: Types.GeoMarkerConfig): Promise<GeoMarker> {
     return GeoMarker.create({
+      browserCtx: config.browserCtx,
       provider: Types.GeoMapProvider.Here,
       mapImplementation: this,
       position: config.position,
