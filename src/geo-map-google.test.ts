@@ -1,9 +1,7 @@
-// tslint:disable:no-any
 import { GeoMapGoogle } from './geo-map-google';
 import * as Test from './test';
 import * as Types from './types';
 import * as simulant from 'jsdom-simulant';
-import { browserCtxify } from './test';
 import { LoadGoogleMapConfig } from './types';
 
 const auth = {
@@ -130,15 +128,21 @@ test(
   })
 );
 
-test(
+test.only(
   'Google fires registered event handlers as expected',
   Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
+    debugger;
     const { el, map } = await Test.createGoogleMapImplementation({
       config: browserCtx
     });
+    // await map.load();
 
     const onClick = jest.fn();
+    // await map.addEventListener(Types.GeoEvent.Click, onClick);
     await map.addEventListener(Types.GeoEvent.Click, onClick);
+
+    //browserCtx.browserCtx.window.addEventListener('click', onClick);
+    // el.addEventListener('click', onClick);
 
     const event = simulant(browserCtx.browserCtx.window, 'click');
     (event as any).latLng = { lat: () => 0, lng: () => 0 };

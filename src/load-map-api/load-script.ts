@@ -29,6 +29,6 @@ export function loadScript(
     script.addEventListener('error', onError);
     script.addEventListener('load', onLoad);
 
-    document.body.appendChild(script);
+    browserCtx.window.document.body.appendChild(script);
   });
 }

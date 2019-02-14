@@ -26,15 +26,24 @@ export async function createGoogleMapImplementation(opts: {
       geoMapCtx: {
         load:
           !opts || opts.mock !== false
-            ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
+            ? async () => {
+                debugger;
+                return {
+                  result: Result.createSuccess(createGoogleMock())
+                };
+              }
             : undefined,
         loaded: async () => {
+          debugger;
           /** */
         }
       }
     });
 
-    const el = ensureElement(Types.GeoMapProvider.Here, opts.config.browserCtx);
+    const el = ensureElement(
+      Types.GeoMapProvider.Google,
+      opts.config.browserCtx
+    );
 
     await map.load();
     await map.mount(el, {

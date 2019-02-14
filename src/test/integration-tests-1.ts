@@ -3,8 +3,6 @@ import * as Types from '../types';
 import { injectBrowserCtx } from './integration-tests-utils';
 import { createHereMap } from './create-here-map';
 import { createGoogleMap } from './create-google-map';
-import { browserCtxify } from './windowify';
-import { GeoMap } from '../geo-map';
 import { GeoPoint } from '../types';
 import { GeoMarker } from '..';
 

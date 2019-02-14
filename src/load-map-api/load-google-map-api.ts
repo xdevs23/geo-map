@@ -44,9 +44,6 @@ export function loadGoogleMapApi(
       region: config.region || null,
       libraries: 'places,geometry'
     };
-
-    debugger;
-
     if (
       isAuthType<Types.GoogleMapApiKeyAuth>(
         config.auth,
@@ -87,7 +84,7 @@ export function loadGoogleMapApi(
     (win as any)[callbackFunctionName.functionName] = () => {
       Result.toSuccess(
         result.result,
-        context.init ? context.init() : win.google.maps
+        context && context.init ? context.init() : win.google.maps
       );
       resolve(result);
       if (callbackFunctionName.toRemove) {

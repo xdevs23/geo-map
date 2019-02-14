@@ -41,31 +41,35 @@ export const Tests4 = {
     map.createGeoCircle({ position: Constants.S2_HAM, radius: 100 });
   }),
 
-  eventGoogle: injectBrowserCtx(async (browserCtx, id: string) => {
-    const data = { clicked: 0 };
-    const map = await createGoogleMap({
-      config: browserCtx,
-      mountInit: { center: Constants.S2_HAM, zoom: 13 }
-    });
+  eventGoogle: injectBrowserCtx(
+    async (browserCtx: Types.GeoMapConfig, id: string) => {
+      const data = { clicked: 0 };
+      const map = await createGoogleMap({
+        config: browserCtx,
+        mountInit: { center: Constants.S2_HAM, zoom: 13 }
+      });
 
-    map.addEventListener(Types.GeoEvent.Click, () => {
-      data.clicked++;
-      Util.dump(browserCtx, data);
-    });
-  }),
+      map.addEventListener(Types.GeoEvent.Click, () => {
+        data.clicked++;
+        Util.dump(browserCtx, data);
+      });
+    }
+  ),
 
-  eventHere: injectBrowserCtx(async (browserCtx, id: string) => {
-    const data = { clicked: 0 };
-    const map = await createHereMap({
-      config: browserCtx,
-      mountInit: { center: Constants.S2_HAM, zoom: 13 }
-    });
+  eventHere: injectBrowserCtx(
+    async (browserCtx: Types.GeoMapConfig, id: string) => {
+      const data = { clicked: 0 };
+      const map = await createHereMap({
+        config: browserCtx,
+        mountInit: { center: Constants.S2_HAM, zoom: 13 }
+      });
 
-    map.addEventListener(Types.GeoEvent.Click, () => {
-      data.clicked++;
-      Util.dump(browserCtx, data);
-    });
-  }),
+      map.addEventListener(Types.GeoEvent.Click, () => {
+        data.clicked++;
+        Util.dump(browserCtx, data);
+      });
+    }
+  ),
 
   eventPayloadGoogle: injectBrowserCtx(
     async (browserCtx, input?: { lat: number; lng: number }) => {

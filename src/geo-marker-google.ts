@@ -34,7 +34,7 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
     const iconAnchor = getAnchor(
       this.anchor,
       config.icon,
-      config.browserCtx.global.DOMParser
+      new config.browserCtx.window.DOMParser()
     );
 
     this.marker = new this.implementation.api.Marker({

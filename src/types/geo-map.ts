@@ -1,12 +1,18 @@
 import * as Types from '.';
 
-export type GeoMapWindow = Window & GeoMapContext & { google: typeof google };
+//export declare type GoogleType = google;
+
+export type GeoMapWindow = Window & {
+  DOMParser: typeof DOMParser;
+} & GeoMapContext & { google: typeof google };
 
 export interface DOMContext {
   readonly window: GeoMapWindow;
+  /*
   readonly global: {
     readonly DOMParser: DOMParser;
   };
+  */
 }
 
 export type BrowserCtx<T = unknown> = T & {
