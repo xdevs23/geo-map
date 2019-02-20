@@ -2,14 +2,13 @@ import * as Fs from 'fs';
 import * as TestEntry from '../src/test/integration-tests';
 import * as Types from '../src/types';
 import * as Util from '../src/test/util';
-import * as Constants from '../src/test/constants';
 
 beforeAll(() => {
   if (!Fs.existsSync('./screenshots')) {
     Fs.mkdirSync('./screenshots');
   }
 
-  page.setUserAgent(Constants.USER_AGENT);
+  page.setUserAgent(TestEntry.Constants.USER_AGENT);
 
   page.on('console', e => {
     if (e.text().startsWith('[HMR]') || e.text().startsWith('[WDS]')) {
@@ -73,7 +72,12 @@ test('Type with Here', async () => {
 
 test('Marker with HERE has red marker at center', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
-  await page.evaluate(() => TestEntry.Tests.markerHere());
+  await page.evaluate(() =>
+    TestEntry.Tests.markerHere(
+      TestEntry.Constants.ICON,
+      TestEntry.Constants.S2_HAM
+    )
+  );
 
   const screenshot = await page.screenshot({
     path: './screenshots/marker-here.png'
@@ -138,6 +142,7 @@ test('Click events with HERE trigger call on event handler', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(() => TestEntry.Tests.eventHere('click-id'));
   await page.click('[data-map="Here"]');
+  await page.waitForSelector('[data-dump="data-dump"]');
   const data = JSON.parse(
     String(
       await page.evaluate(
@@ -154,6 +159,7 @@ test('Click events with HERE carry appropriate lat/lng data', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(input => TestEntry.Tests.eventPayloadHere(input), center);
   await page.mouse.click(400, 300); // click on center
+  await page.waitForSelector('[data-dump="data-dump"]');
   const { position } = JSON.parse(
     String(
       await page.evaluate(
@@ -170,7 +176,7 @@ test('Geocoding works as expected', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(
     input => TestEntry.Tests.geocodeHere(input),
-    Constants.S2_BER
+    TestEntry.Constants.S2_BER
   );
   await page.mouse.click(400, 300); // click on center
   await page.waitForSelector('[data-dump="data-dump"]');
@@ -202,6 +208,7 @@ test('Search works as expected', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(() => TestEntry.Tests.searchHere('SinnerSchrader'));
 
+  await page.waitForSelector('[data-dump="data-dump"]');
   const data = JSON.parse(
     String(
       await page.evaluate(
@@ -221,6 +228,8 @@ test('getPlace with all details', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(() => TestEntry.Tests.getAllWayDownFromReverseGeocode());
 
+  await page.waitForSelector('[data-dump="data-dump"]');
+
   const data = JSON.parse(
     String(
       await page.evaluate(
@@ -239,6 +248,7 @@ test('getPlace with all details', async () => {
 test('paint route on here map', async () => {
   await page.goto(`http://localhost:1338/?integration=true`);
   await page.evaluate(() => TestEntry.Tests.paintHereRoute());
+  await page.waitForSelector('[data-dump="data-dump"]');
 
   const data: Types.GeoMapDirectionResult = JSON.parse(
     String(
@@ -248,8 +258,8 @@ test('paint route on here map', async () => {
     )
   );
 
-  expect(data.start.lat).toBeCloseTo(Constants.S2_HAM.lat);
-  expect(data.start.lng).toBeCloseTo(Constants.S2_HAM.lng);
-  expect(data.end.lat).toBeCloseTo(Constants.S2_BER.lat);
-  expect(data.end.lng).toBeCloseTo(Constants.S2_BER.lng);
+  expect(data.start.lat).toBeCloseTo(TestEntry.Constants.S2_HAM.lat);
+  expect(data.start.lng).toBeCloseTo(TestEntry.Constants.S2_HAM.lng);
+  expect(data.end.lat).toBeCloseTo(TestEntry.Constants.S2_BER.lat);
+  expect(data.end.lng).toBeCloseTo(TestEntry.Constants.S2_BER.lng);
 });

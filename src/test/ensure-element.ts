@@ -16,7 +16,7 @@ export function ensureElement(
 
   const el = context.window.document.createElement('div');
   el.setAttribute('data-map', provider);
-  el.setAttribute('style', 'width: 600px; height: 600px');
+  el.setAttribute('style', 'display: flex; width: 100vw; height: 100vh');
   rootEl.appendChild(el);
   return el;
 }

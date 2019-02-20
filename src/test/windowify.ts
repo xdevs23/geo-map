@@ -9,8 +9,7 @@ export function domContextify<T>(
   // (global as any).window = jsdomEnv.dom.window;
   // console.log('JSDOM Created', typeof jsdomEnv.dom.window, typeof window);
   return async done => {
-    debugger;
-    console.log('domContextify');
+    // console.log('domContextify');
     const jsdomEnv = new JSDOMEnvironment(
       {
         testEnvironmentOptions: {

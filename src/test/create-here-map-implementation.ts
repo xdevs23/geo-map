@@ -3,7 +3,6 @@ import { ensureElement } from './ensure-element';
 import * as Constants from './constants';
 import { GeoMapHere } from '../geo-map-here';
 import * as Types from '../types';
-import { DOMContext } from '../types';
 
 export async function createHereMapImplementation(opts: {
   config: Types.LoadHereMapConfig;

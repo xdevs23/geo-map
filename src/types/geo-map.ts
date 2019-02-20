@@ -4,7 +4,7 @@ import * as Types from '.';
 
 export type GeoMapWindow = Window & {
   DOMParser: typeof DOMParser;
-} & GeoMapContext & { google: typeof google };
+} & GeoMapContext & { google: typeof google } & { H: typeof H };
 
 export interface DOMContext {
   readonly window: GeoMapWindow;

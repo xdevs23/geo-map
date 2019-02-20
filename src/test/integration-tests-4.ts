@@ -4,19 +4,21 @@ import * as Util from './util';
 import { injectBrowserCtx } from './integration-tests-utils';
 import { createHereMap } from './create-here-map';
 import { createGoogleMap } from './create-google-map';
+import { GeoMap } from '../geo-map';
 
 export const Tests4 = {
-  layerGoogle: injectBrowserCtx(
+  layerGoogle: injectBrowserCtx<Types.GeoLayer, GeoMap>(
     async (browserCtx, layer: Types.GeoLayer = Types.GeoLayer.None) => {
       const googleMap = await createGoogleMap({
         config: browserCtx,
         mountInit: { center: Constants.S2_HAM, zoom: 13, layer }
       });
       await googleMap.phase(Types.GeoMapPhase.Layouted);
+      return googleMap;
     }
   ),
 
-  layerHere: injectBrowserCtx(
+  layerHere: injectBrowserCtx<Types.GeoLayer, GeoMap>(
     async (browserCtx, layer: Types.GeoLayer = Types.GeoLayer.None) => {
       return createHereMap({
         config: browserCtx,
@@ -41,22 +43,20 @@ export const Tests4 = {
     map.createGeoCircle({ position: Constants.S2_HAM, radius: 100 });
   }),
 
-  eventGoogle: injectBrowserCtx(
-    async (browserCtx: Types.GeoMapConfig, id: string) => {
-      const data = { clicked: 0 };
-      const map = await createGoogleMap({
-        config: browserCtx,
-        mountInit: { center: Constants.S2_HAM, zoom: 13 }
-      });
+  eventGoogle: injectBrowserCtx(async (browserCtx: Types.GeoMapConfig) => {
+    const data = { clicked: 0 };
+    const map = await createGoogleMap({
+      config: browserCtx,
+      mountInit: { center: Constants.S2_HAM, zoom: 13 }
+    });
 
-      map.addEventListener(Types.GeoEvent.Click, () => {
-        data.clicked++;
-        Util.dump(browserCtx, data);
-      });
-    }
-  ),
+    map.addEventListener(Types.GeoEvent.Click, () => {
+      data.clicked++;
+      Util.dump(browserCtx, data);
+    });
+  }),
 
-  eventHere: injectBrowserCtx(
+  eventHere: injectBrowserCtx<string, void>(
     async (browserCtx: Types.GeoMapConfig, id: string) => {
       const data = { clicked: 0 };
       const map = await createHereMap({
@@ -71,8 +71,8 @@ export const Tests4 = {
     }
   ),
 
-  eventPayloadGoogle: injectBrowserCtx(
-    async (browserCtx, input?: { lat: number; lng: number }) => {
+  eventPayloadGoogle: injectBrowserCtx<Types.GeoPoint, void>(
+    async (browserCtx, input?: Types.GeoPoint) => {
       const center = input || { lat: 1, lng: 1 };
       const map = await createGoogleMap({
         config: browserCtx,
@@ -82,8 +82,8 @@ export const Tests4 = {
     }
   ),
 
-  eventPayloadHere: injectBrowserCtx(
-    async (browserCtx, input?: { lat: number; lng: number }) => {
+  eventPayloadHere: injectBrowserCtx<Types.GeoPoint, void>(
+    async (browserCtx, input?: Types.GeoPoint) => {
       const center = input || { lat: 1, lng: 1 };
       const map = await createHereMap({
         config: browserCtx,
@@ -93,11 +93,8 @@ export const Tests4 = {
     }
   ),
 
-  geocodeHere: injectBrowserCtx(
-    async (
-      browserCtx,
-      center: { lat: number; lng: number } = Constants.S2_FRA
-    ) => {
+  geocodeHere: injectBrowserCtx<Types.GeoPoint, void>(
+    async (browserCtx, center = Constants.S2_FRA) => {
       const map = await createHereMap({
         config: browserCtx,
         mountInit: { center, zoom: 17 }
@@ -116,7 +113,7 @@ export const Tests4 = {
     }
   ),
 
-  geocodeGoogle: injectBrowserCtx(
+  geocodeGoogle: injectBrowserCtx<Types.GeoPoint, void>(
     async (
       browserCtx,
       center: { lat: number; lng: number } = Constants.S2_FRA
@@ -139,18 +136,20 @@ export const Tests4 = {
     }
   ),
 
-  searchHere: injectBrowserCtx(async (browserCtx, term: string = 'Hamburg') => {
-    const center = Constants.S2_HAM;
-    const map = await createHereMap({
-      config: browserCtx,
-      mountInit: { center, zoom: 15 }
-    });
-    const results = await map.search(term, center);
+  searchHere: injectBrowserCtx<string, void>(
+    async (browserCtx, term: string = 'Hamburg') => {
+      const center = Constants.S2_HAM;
+      const map = await createHereMap({
+        config: browserCtx,
+        mountInit: { center, zoom: 15 }
+      });
+      const results = await map.search(term, center);
 
-    if (results.type === Types.ResultType.Success) {
-      Util.dump(browserCtx, results.payload);
+      if (results.type === Types.ResultType.Success) {
+        Util.dump(browserCtx, results.payload);
+      }
     }
-  }),
+  ),
 
   searchGoogle: injectBrowserCtx(
     async (browserCtx, term: string = 'Hamburg') => {

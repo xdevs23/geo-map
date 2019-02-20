@@ -1,7 +1,6 @@
 import { GeoMap } from './geo-map';
 import * as Test from './test';
 import * as Types from './types';
-import { createBrowserCtx } from './util';
 import { browserCtxify } from './test';
 
 const auth = {

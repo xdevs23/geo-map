@@ -32,7 +32,7 @@ export class GeoMapGoogle
   private readonly window: Types.GeoMapWindow;
   private readonly config: Types.LoadGoogleMapConfig;
   private readonly phases: GeoMapPhases = new GeoMapPhases();
-  private readonly geoMapCtx: Types.GeoMapContext;
+  private readonly geoMapCtx?: Types.GeoMapContext;
 
   private handlers: Map<Types.GeoEvent, Types.GeoEventHandler[]> = new Map();
 
@@ -52,9 +52,9 @@ export class GeoMapGoogle
   public async load(): Promise<Types.LoadGoogleMapResult> {
     this.phases.resolve(Types.GeoMapPhase.Loading);
 
-    const load = this.window.load ? this.window.load : loadMapApi;
+    const loadFn = this.window.load ? this.window.load : loadMapApi;
 
-    this.loadResult = this.loadResult || load(this.config, this.geoMapCtx);
+    this.loadResult = this.loadResult || loadFn(this.config, this.geoMapCtx);
     const mapResult = await this.loadResult;
 
     if (mapResult.result.type === Types.ResultType.Success) {

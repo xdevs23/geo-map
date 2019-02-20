@@ -1,6 +1,7 @@
 import * as Result from './result';
 import * as Types from './types';
 import { GeoMapGoogle } from './geo-map-google';
+import { GeoEvent } from './types';
 // import * as jsdom from 'jsdom/lib/jsdom/living/domparsing';
 
 export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {

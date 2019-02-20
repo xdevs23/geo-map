@@ -16,7 +16,7 @@ export async function loadHereMapApi(
   context?: Types.LoadMapContext
 ): Promise<Types.LoadHereMapResult> {
   // tslint:disable-next-line:no-any
-  const win = (config.browserCtx.window as any) as { H: typeof H };
+  const win = config.browserCtx.window;
 
   const load = (src: string) =>
     loadScript(src, { 'map-provider': config.provider }, config.browserCtx);
@@ -37,7 +37,10 @@ export async function loadHereMapApi(
   await load(CORE_SCRIPT);
 
   await Promise.all([load(SERVICE_SCRIPT), load(EVENTS_SCRIPT)]);
-
-  Result.toSuccess(result.result, context.init ? context.init() : win.H);
+  // debugger;
+  Result.toSuccess(
+    result.result,
+    context && context.init ? context.init() : win.H
+  );
   return result;
 }

@@ -6,6 +6,7 @@ import { createHereMap } from './create-here-map';
 import { createGoogleMap } from './create-google-map';
 import { GeoMap } from '../geo-map';
 import { GeoMarker } from '..';
+import { GeoEvent } from '../types';
 
 export const Tests2 = {
   styledPOIMarkerHome: injectBrowserCtx<
@@ -130,12 +131,7 @@ export const Tests2 = {
     }
   ),
 
-  markerGoogle: injectBrowserCtx<
-    string,
-    Types.GeoPoint,
-    Types.GeoMapConfig,
-    GeoMarker
-  >(
+  markerGoogle: injectBrowserCtx<string, Types.GeoPoint, GeoMarker>(
     async (
       browserCtx,
       icon: string = Constants.ICON,
@@ -147,20 +143,26 @@ export const Tests2 = {
       });
       await gmap.phase(Types.GeoMapPhase.Layouted);
 
+      // return new Promise(rs => {
+      // let ret: GeoMarker;
+      // gmap.addEventListener(GeoEvent.Changed, () => console.log(ret));
+      // setTimeout(() => {
       return await gmap.createMarker({
         ...browserCtx,
         icon,
         position: center
       });
+      /*.then(ret => {
+        console.log('done', ret)
+        rs(ret)
+      });
+      // }, 1000);
+    });
+    */
     }
   ),
 
-  markerHere: injectBrowserCtx<
-    string,
-    Types.GeoPoint,
-    Types.GeoMapConfig,
-    GeoMarker
-  >(
+  markerHere: injectBrowserCtx<string, Types.GeoPoint, GeoMarker>(
     async (
       browserCtx,
       icon: string = Constants.ICON,

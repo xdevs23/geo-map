@@ -25,7 +25,7 @@ export function loadGoogleMapApi(
     if (win.google && typeof win.google.maps === 'object') {
       Result.toSuccess(
         result.result,
-        context.init ? context.init() : win.google.maps
+        context && context.init ? context.init() : win.google.maps
       );
       resolve(result);
       return;

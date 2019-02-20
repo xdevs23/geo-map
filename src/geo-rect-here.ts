@@ -18,9 +18,9 @@ export class GeoRectHere implements Types.GeoRectImplementation {
   ): GeoRectHere {
     const data = {
       north: rect.getTop(),
-      east: rect.getRight(),
+      west: rect.getLeft(),
       south: rect.getBottom(),
-      west: rect.getLeft()
+      east: rect.getRight()
     };
 
     return new GeoRectHere(data, context);
@@ -44,9 +44,9 @@ export class GeoRectHere implements Types.GeoRectImplementation {
   public async getBounds(): Promise<Types.GeoBounds> {
     return {
       north: this.rect.getTop(),
-      east: this.rect.getRight(),
+      west: this.rect.getLeft(),
       south: this.rect.getBottom(),
-      west: this.rect.getLeft()
+      east: this.rect.getRight()
     };
   }
 

@@ -1,8 +1,4 @@
-import * as Constants from './constants';
-import * as Types from '../types';
-import { createGoogleMap } from './create-google-map';
-import { createHereMap } from './create-here-map';
-import * as Util from './util';
+import * as Konstants from './constants';
 import { Tests1 } from './integration-tests-1';
 import { Tests2 } from './integration-tests-2';
 import { Tests3 } from './integration-tests-3';
@@ -16,3 +12,5 @@ export const Tests = {
   ...Tests4,
   ...Tests5
 };
+
+export const Constants = Konstants;

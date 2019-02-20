@@ -5,9 +5,10 @@ import { VIEWPORT, BOUNDS } from './integration-tests-utils';
 import { createHereMap } from './create-here-map';
 import { createGoogleMap } from './create-google-map';
 import { injectBrowserCtx } from './integration-tests-utils';
+import { GeoMarker } from '../geo-marker';
 
 export const Tests3 = {
-  viewportHere: injectBrowserCtx(
+  viewportHere: injectBrowserCtx<Types.GeoMapViewport, GeoMarker>(
     async (browserCtx, viewport: Types.GeoMapViewport = VIEWPORT) => {
       const hmap = await createHereMap({
         config: { ...browserCtx, viewport },
@@ -32,7 +33,7 @@ export const Tests3 = {
     }
   ),
 
-  viewportGoogle: injectBrowserCtx(
+  viewportGoogle: injectBrowserCtx<Types.GeoMapViewport, GeoMarker>(
     async (browserCtx, viewport: Types.GeoMapViewport = VIEWPORT) => {
       const gmap = await createGoogleMap({
         config: { ...browserCtx, viewport },
@@ -57,7 +58,7 @@ export const Tests3 = {
     }
   ),
 
-  boundsHere: injectBrowserCtx(
+  boundsHere: injectBrowserCtx<Types.GeoMapViewport, Types.GeoBounds, void>(
     async (
       browserCtx,
       viewport: Types.GeoMapViewport = VIEWPORT,

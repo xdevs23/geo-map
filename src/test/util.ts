@@ -108,6 +108,7 @@ export function dump({ browserCtx }: BrowserCtx, data: any): void {
     browserCtx.window.document.createElement('textarea')) as HTMLElement;
   el.setAttribute('data-dump', 'data-dump');
   el.textContent = JSON.stringify(data);
+  // console.log(`dump:`, el.textContent)
 
   if (!previous) {
     document.body.appendChild(el);

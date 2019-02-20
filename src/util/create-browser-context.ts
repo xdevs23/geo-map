@@ -1,4 +1,5 @@
 import * as Types from '../types';
+import { GeoMapWindow } from '../types';
 
 export function createBrowserCtx<T = unknown>(
   y: T = undefined
@@ -7,14 +8,7 @@ export function createBrowserCtx<T = unknown>(
   return {
     ...y,
     browserCtx: {
-      window: {
-        ...window,
-        DOMParser: (window as any).DOMParser,
-        google
-      }
-      // global: {
-      //   DOMParser: x
-      // }
+      window: window as GeoMapWindow
     }
   };
 }

@@ -1,8 +1,9 @@
 // Entry file for integration testing purposes
 import { Tests } from './integration-tests';
 import * as QueryString from 'query-string';
+import * as Constants from '../constants';
 
-export { Tests };
+export { Constants, Tests };
 
 async function main(): Promise<void> {
   const params = QueryString.parse(window.location.search);

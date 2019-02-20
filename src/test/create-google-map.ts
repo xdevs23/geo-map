@@ -26,5 +26,7 @@ export async function createGoogleMap(opts: {
 
   const el = ensureElement(provider, opts.config.browserCtx);
   await googleMap.mount(el, opts.mountInit || { center: Constants.S2_HAM });
+  // console.log('piep');
+  await new Promise(rs => setTimeout(rs, 500));
   return googleMap;
 }

@@ -8,6 +8,7 @@ import { GeoMarker } from '..';
 
 export const Tests1 = {
   basicHere: injectBrowserCtx(async browserCtx => {
+    // debugger;
     const hereMap = await createHereMap({
       config: browserCtx
     });
@@ -20,7 +21,7 @@ export const Tests1 = {
     await gmap.phase(Types.GeoMapPhase.Layouted);
   }),
 
-  zoomGoogle: injectBrowserCtx<number, Types.GeoMapConfig, number>(
+  zoomGoogle: injectBrowserCtx<number, number>(
     async (browserCtx, zoom = 10) => {
       const gmap = await createGoogleMap({
         config: browserCtx
@@ -30,17 +31,15 @@ export const Tests1 = {
     }
   ),
 
-  zoomHere: injectBrowserCtx<number, Types.GeoMapConfig, number>(
-    async (browserCtx, zoom = 10) => {
-      const hmap = await createHereMap({
-        config: browserCtx
-      });
-      await hmap.setZoom(zoom);
-      return hmap.getZoom();
-    }
-  ),
+  zoomHere: injectBrowserCtx<number, number>(async (browserCtx, zoom = 10) => {
+    const hmap = await createHereMap({
+      config: browserCtx
+    });
+    await hmap.setZoom(zoom);
+    return hmap.getZoom();
+  }),
 
-  zoomSameHere: injectBrowserCtx<number, Types.GeoMapConfig, number>(
+  zoomSameHere: injectBrowserCtx<number, number>(
     async (browserCtx, zoom = 5) => {
       const hmap = await createHereMap({
         config: browserCtx,
@@ -52,7 +51,7 @@ export const Tests1 = {
     }
   ),
 
-  typeGoogle: injectBrowserCtx(
+  typeGoogle: injectBrowserCtx<Types.GeoMapType, Types.GeoMapType>(
     async (browserCtx, type: Types.GeoMapType = Types.GeoMapType.Hybrid) => {
       const gmap = await createGoogleMap({
         config: browserCtx
@@ -62,7 +61,7 @@ export const Tests1 = {
     }
   ),
 
-  typeHere: injectBrowserCtx(
+  typeHere: injectBrowserCtx<Types.GeoMapType, Types.GeoMapType>(
     async (browserCtx, type: Types.GeoMapType = Types.GeoMapType.Hybrid) => {
       const hmap = await createHereMap({
         config: browserCtx,
