@@ -23,7 +23,7 @@ test(
         type: Types.ResultType.Success,
         payload: expect.arrayContaining([
           expect.objectContaining({
-            name: expect.stringContaining('SinnerSchrader')
+            name: expect.stringMatching(/sinnerschrader/i)
           })
         ])
       })

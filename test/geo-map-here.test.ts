@@ -322,3 +322,43 @@ test(
   },
   TIMEOUT
 );
+
+describe.only('markers', () => {
+  test(
+    'Geo createMarker triggers change event with HERE',
+    async () => {
+      await page.goto(`http://localhost:1338/?integration=true`);
+      await page.evaluate(() => TestEntry.Tests.hereCreateMarkerFiresChange());
+      await page.waitForSelector('[data-dump="data-dump"]');
+
+      const data: Types.GeoMapDirectionResult = JSON.parse(
+        String(
+          await page.evaluate(
+            () => document.querySelector('[data-dump="data-dump"]').textContent
+          )
+        )
+      );
+      expect(data).toBeCloseTo(TestEntry.Constants.S2_HAM.lat);
+    },
+    TIMEOUT
+  );
+
+  test(
+    'GeoMarker.remove triggers change event with HERE',
+    async () => {
+      await page.goto(`http://localhost:1338/?integration=true`);
+      await page.evaluate(() => TestEntry.Tests.hereRemoveMarkerFiresChange());
+      await page.waitForSelector('[data-dump="data-dump"]');
+
+      const data: Types.GeoMapDirectionResult = JSON.parse(
+        String(
+          await page.evaluate(
+            () => document.querySelector('[data-dump="data-dump"]').textContent
+          )
+        )
+      );
+      expect(data).toBeCloseTo(TestEntry.Constants.S2_HAM.lat);
+    },
+    TIMEOUT
+  );
+});

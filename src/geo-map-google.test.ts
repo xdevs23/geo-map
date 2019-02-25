@@ -213,7 +213,8 @@ test.only(
   'GeoMapGoogle.coversLocation returns true for location in view bounds',
   Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const { map } = await Test.createGoogleMapImplementation({
-      config: browserCtx
+      config: browserCtx,
+      mock: true
     }); // Mock bounds are n: 1, east: -1, south: -1, west: 1
     const bounds = await map.getViewBounds();
     const hamBox = {
@@ -227,7 +228,7 @@ test.only(
     return new Promise(rs => {
       setTimeout(async () => {
         const lo = await map.getViewBounds();
-        // console.log(bounds, hamBox, lo);
+        console.log(bounds, hamBox, lo);
         const covered = await map.coversLocation({ lat: 0, lng: 0 });
         expect(covered).toBe(true);
       }, 100);
@@ -239,9 +240,10 @@ test.only(
   'GeoMapGoogle.coversLocation false for location outside view bounds',
   Test.browserCtxify<LoadGoogleMapConfig>(async browserCtx => {
     const { map } = await Test.createGoogleMapImplementation({
-      config: browserCtx
+      config: browserCtx,
+      mock: true
     }); // Mock bounds are n: 1, east: -1, south: -1, west: 1
-    // console.log('bound:', await map.getViewBounds());
+    console.log('bound:', await map.getViewBounds());
     const covered = await map.coversLocation({ lat: 2, lng: 2 });
     expect(covered).toBe(false);
   })

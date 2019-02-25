@@ -10,6 +10,7 @@ export async function createGoogleMapImplementation(opts: {
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
 }): Promise<Types.TestMapImplementation<GeoMapGoogle>> {
+  console.log(`XXXXXXXXXMOCK:`, opts.mock);
   try {
     const map = new GeoMapGoogle({
       config: {
@@ -27,14 +28,14 @@ export async function createGoogleMapImplementation(opts: {
         load:
           !opts || opts.mock !== false
             ? async () => {
-                // debugger;
+                debugger;
                 return {
                   result: Result.createSuccess(createGoogleMock())
                 };
               }
             : undefined,
         loaded: async () => {
-          // debugger;
+          debugger;
           /** */
         }
       }

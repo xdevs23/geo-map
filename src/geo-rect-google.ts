@@ -22,9 +22,12 @@ export class GeoRectGoogle implements Types.GeoRectImplementation {
   private constructor(bounds: Types.GeoBounds, context: Types.RectContext) {
     this.api = (context.mapImplementation as GeoMapGoogle).api;
 
-    this.bounds = new this.api.LatLngBounds();
-    this.bounds.extend(new this.api.LatLng(bounds.south, bounds.west));
-    this.bounds.extend(new this.api.LatLng(bounds.north, bounds.east));
+    this.bounds = new this.api.LatLngBounds(
+      new this.api.LatLng(bounds.south, bounds.west),
+      new this.api.LatLng(bounds.north, bounds.east)
+    );
+    // this.bounds.extend(new this.api.LatLng(bounds.north, bounds.east));
+    // this.bounds.extend(new this.api.LatLng(bounds.south, bounds.west));
   }
 
   public async getBounds(): Promise<Types.GeoBounds> {

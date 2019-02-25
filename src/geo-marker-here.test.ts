@@ -1,91 +1,65 @@
 import { GeoMarkerHere } from './geo-marker-here';
 import * as Test from './test';
-import { browserCtxify } from './test';
-import { LoadHereMapConfig } from './types';
 
-test(
-  'respects initial icon',
-  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
-    const { map: mapImplementation } = await Test.createHereMapImplementation({
-      config: browserCtx
-    });
+Test.jestCreateHereMapImpl(async donot => {
+  test('respects initial icon', async () => {
     const icon = '<svg><text>Hello</text></svg>';
 
     const marker = GeoMarkerHere.create(
       {
-        browserCtx: browserCtx.browserCtx,
+        browserCtx: donot.hereMap.browserCtx,
         icon,
         position: Test.Constants.S2_HAM
       },
-      { mapImplementation }
+      { mapImplementation: donot.hereMap.map }
     );
 
     expect(await marker.getIcon()).toBe(icon);
-  })
-);
+  });
 
-test(
-  'may set icon',
-  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
-    const { map: mapImplementation } = await Test.createHereMapImplementation({
-      config: browserCtx
-    });
+  test('may set icon', async () => {
     const icon = '<svg><text>Hello</text></svg>';
 
     const marker = GeoMarkerHere.create(
       {
-        browserCtx: browserCtx.browserCtx,
+        browserCtx: donot.hereMap.browserCtx,
         icon: '',
         position: Test.Constants.S2_HAM
       },
-      { mapImplementation }
+      { mapImplementation: donot.hereMap.map }
     );
 
     marker.setIcon(icon);
     expect(await marker.getIcon()).toBe(icon);
-  })
-);
+  });
 
-test(
-  'map hosts marker',
-  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
-    const { map: mapImplementation } = await Test.createHereMapImplementation({
-      config: browserCtx
-    });
-
+  test('map hosts marker', async () => {
     const marker = GeoMarkerHere.create(
       {
-        browserCtx: browserCtx.browserCtx,
+        browserCtx: donot.hereMap.browserCtx,
         icon: '',
         position: Test.Constants.S2_HAM
       },
-      { mapImplementation }
+      { mapImplementation: donot.hereMap.map }
     );
 
-    expect(await mapImplementation.getMarkers()).toContain(marker);
-  })
-);
+    expect(await donot.hereMap.map.getMarkers()).toContain(marker);
+  });
 
-test(
-  'map looses removed marker',
-  Test.browserCtxify<LoadHereMapConfig>(async browserCtx => {
-    const { map: mapImplementation } = await Test.createHereMapImplementation({
-      config: browserCtx
-    });
-
+  test('map looses removed marker', async () => {
     const marker = GeoMarkerHere.create(
       {
-        browserCtx: browserCtx.browserCtx,
+        browserCtx: donot.hereMap.browserCtx,
         icon: '',
         position: Test.Constants.S2_HAM
       },
-      { mapImplementation }
+      { mapImplementation: donot.hereMap.map }
     );
 
-    expect(await mapImplementation.getMarkers()).toContain(marker);
+    expect(await donot.hereMap.map.getMarkers()).toContain(marker);
 
     await marker.remove();
 
-    expect(await mapImplementation.getMarkers()).not.toContain(marker);
-  })
-);
+    expect(await donot.hereMap.map.getMarkers()).not.toContain(marker);
+  });
+});

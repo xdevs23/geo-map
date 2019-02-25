@@ -93,8 +93,8 @@ export class GeoMapGoogle
     // Disable default POI click handling
     this.map.addListener('click', e => e.placeId && e.stop());
 
-    await (this.window.loaded
-      ? this.window.loaded(this.map, {
+    await (this.geoMapCtx && this.geoMapCtx.loaded
+      ? this.geoMapCtx.loaded(this.map, {
           api: this.api,
           geoMapCtx: this.geoMapCtx
         })
