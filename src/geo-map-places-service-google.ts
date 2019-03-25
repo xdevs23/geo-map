@@ -1,33 +1,26 @@
 import * as Types from './types';
 import * as Util from './util';
 import * as CountryCodes from './country-codes';
-import { DOMContext, BrowserCtx } from './types';
-
-export type GeoMapPlacesServiceGoogleProps = BrowserCtx<{
-  readonly api: Types.GoogleApi;
-}>;
 
 export class GeoMapPlacesServiceGoogle
   implements Types.GeoMapPlacesServiceImplementation {
   private readonly api: Types.GoogleApi;
-  private readonly domContext: DOMContext;
 
-  public static create(
-    init: GeoMapPlacesServiceGoogleProps
-  ): GeoMapPlacesServiceGoogle {
+  public static create(init: {
+    api: Types.GoogleApi;
+  }): GeoMapPlacesServiceGoogle {
     return new GeoMapPlacesServiceGoogle(init);
   }
 
-  private constructor(init: GeoMapPlacesServiceGoogleProps) {
+  private constructor(init: { api: Types.GoogleApi }) {
     this.api = init.api;
-    this.domContext = init.browserCtx;
   }
 
   public async get(
     placeId: string
   ): Promise<Types.Result<Types.GeoMapPlaceDetails>> {
     return new Promise<Types.Result<Types.GeoMapPlaceDetails>>(resolve => {
-      const container = this.domContext.window.document.createElement('div');
+      const container = document.createElement('div');
       const service = new this.api.places.PlacesService(container);
 
       service.getDetails(
@@ -98,7 +91,7 @@ export class GeoMapPlacesServiceGoogle
     center: Types.GeoPoint,
     radius: number
   ): Promise<Types.Result<Types.GeoMapPlace[]>> {
-    const container = this.domContext.window.document.createElement('div');
+    const container = document.createElement('div');
     const service = new this.api.places.PlacesService(container);
 
     const request: google.maps.places.TextSearchRequest = {

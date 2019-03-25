@@ -1,6 +1,5 @@
 import * as Result from './result';
 import * as Types from './types';
-import { BrowserCtx } from './types';
 
 interface HerePlace {
   name: string;
@@ -110,23 +109,22 @@ interface HereError {
   message: string;
 }
 
-export type GeoMapPlacesServiceHereProps = BrowserCtx<{
-  api: Types.HereApi;
-  platform: H.service.Platform;
-}>;
-
 export class GeoMapPlacesServiceHere
   implements Types.GeoMapPlacesServiceImplementation {
   private platform: H.service.Platform;
   private api: Types.HereApi;
 
-  public static create(
-    init: GeoMapPlacesServiceHereProps
-  ): GeoMapPlacesServiceHere {
+  public static create(init: {
+    api: Types.HereApi;
+    platform: H.service.Platform;
+  }): GeoMapPlacesServiceHere {
     return new GeoMapPlacesServiceHere(init);
   }
 
-  private constructor(init: GeoMapPlacesServiceHereProps) {
+  private constructor(init: {
+    api: Types.HereApi;
+    platform: H.service.Platform;
+  }) {
     this.platform = init.platform;
     this.api = init.api;
   }

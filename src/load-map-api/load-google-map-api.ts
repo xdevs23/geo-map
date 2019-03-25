@@ -2,48 +2,30 @@ import * as QueryString from 'query-string';
 import * as Result from '../result';
 import * as Types from '../types';
 import * as uuid from 'uuid';
-import { rejects } from 'assert';
 
-function googleMapCallbackId(): string {
-  return `g${uuid
-    .v4()
-    .split('-')
-    .join('')}`;
-}
+const GOOGLE_MAP_CALLBACK_ID = `g${uuid
+  .v4()
+  .split('-')
+  .join('')}`;
 
 let memoizedGoogleMapResult: Types.LoadGoogleMapResult;
 
 export function loadGoogleMapApi(
   result: Types.LoadGoogleMapResult,
   config: Types.LoadGoogleMapConfig,
-  context?: Types.LoadMapContext
+  context: Types.LoadMapContext
 ): Promise<Types.LoadGoogleMapResult> {
-  return new Promise((resolve, rejects) => {
+  return new Promise(resolve => {
     // tslint:disable-next-line:no-any
-    const win = config.browserCtx.window;
+    const win = (context.window as any) as Window & { google: typeof google };
 
-    if (win.google && typeof win.google.maps === 'object') {
-      Result.toSuccess(
-        result.result,
-        context && context.init ? context.init() : win.google.maps
-      );
-      resolve(result);
-      return;
-    }
-
-    const callbackFunctionName = (config.mapJsCallbackId && {
-      functionName: config.mapJsCallbackId,
-      toRemove: false
-    }) || {
-      functionName: googleMapCallbackId(),
-      toRemove: true
-    };
     const params: { [key: string]: string | null } = {
-      callback: callbackFunctionName.functionName,
+      callback: GOOGLE_MAP_CALLBACK_ID,
       language: config.language || 'en',
       region: config.region || null,
       libraries: 'places,geometry'
     };
+
     if (
       isAuthType<Types.GoogleMapApiKeyAuth>(
         config.auth,
@@ -60,16 +42,13 @@ export function loadGoogleMapApi(
       params.client = config.auth.clientId;
       params.channel = config.auth.channel || null;
     } else {
-      const e = new Error(`Could not configure Google Maps authentication.`);
-      rejects(e);
-      return;
+      // tslint:disable-next-line:no-console
+      console.warn(`Could not configure Google Maps authentication.`);
     }
 
-    const url = `${config.mapJsUrl ||
-      'https://maps.googleapis.com/maps/api/js'}?${QueryString.stringify(
+    const url = `https://maps.googleapis.com/maps/api/js?${QueryString.stringify(
       params
     )}`;
-
     const previous = win.document.querySelector(
       `[data-map-provider=${Types.GeoMapProvider.Google}]`
     );
@@ -80,21 +59,20 @@ export function loadGoogleMapApi(
 
     memoizedGoogleMapResult = result;
 
-    // tslint:disable-next-line:no-any
-    (win as any)[callbackFunctionName.functionName] = () => {
-      Result.toSuccess(
-        result.result,
-        context && context.init ? context.init() : win.google.maps
-      );
-      resolve(result);
-      if (callbackFunctionName.toRemove) {
-        delete (win as any)[callbackFunctionName.functionName];
-      }
-    };
     const script = win.document.createElement('script');
     script.src = url;
     script.setAttribute('data-map-provider', Types.GeoMapProvider.Google);
+
     win.document.body.appendChild(script);
+
+    // tslint:disable-next-line:no-any
+    (win as any)[GOOGLE_MAP_CALLBACK_ID] = () => {
+      Result.toSuccess(
+        result.result,
+        context.init ? context.init() : win.google.maps
+      );
+      resolve(result);
+    };
   });
 }
 

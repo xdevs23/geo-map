@@ -13,14 +13,14 @@ let memoizedHereMapResult: Types.LoadHereMapResult;
 export async function loadHereMapApi(
   result: Types.LoadHereMapResult,
   config: Types.LoadHereMapConfig,
-  context?: Types.LoadMapContext
+  context: Types.LoadMapContext
 ): Promise<Types.LoadHereMapResult> {
   // tslint:disable-next-line:no-any
-  const win = config.browserCtx.window;
+  const win = (context.window as any) as { H: typeof H };
 
   const load = (src: string) =>
-    loadScript(src, { 'map-provider': config.provider }, config.browserCtx);
-  const previous = config.browserCtx.window.document.querySelectorAll(
+    loadScript(src, { 'map-provider': config.provider }, context);
+  const previous = context.window.document.querySelectorAll(
     `[data-map-provider=${config.provider}]`
   );
   const previousSources = Array.from(previous).map(p => p.getAttribute('src'));
@@ -37,10 +37,7 @@ export async function loadHereMapApi(
   await load(CORE_SCRIPT);
 
   await Promise.all([load(SERVICE_SCRIPT), load(EVENTS_SCRIPT)]);
-  // debugger;
-  Result.toSuccess(
-    result.result,
-    context && context.init ? context.init() : win.H
-  );
+
+  Result.toSuccess(result.result, context.init ? context.init() : win.H);
   return result;
 }

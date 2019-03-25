@@ -1,8 +1,6 @@
 import * as Result from './result';
 import * as Types from './types';
 import { GeoMapGoogle } from './geo-map-google';
-import { GeoEvent } from './types';
-// import * as jsdom from 'jsdom/lib/jsdom/living/domparsing';
 
 export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
   private readonly implementation: GeoMapGoogle;
@@ -16,27 +14,23 @@ export class GeoMarkerGoogle implements Types.GeoMarkerImplementation {
 
   public static create(
     config: Types.GeoMarkerConfig,
-    geoMarkerCtx: Types.GoogleMarkerContext
+    context: Types.GoogleMarkerContext
   ): GeoMarkerGoogle {
-    return new GeoMarkerGoogle(config, geoMarkerCtx);
+    return new GeoMarkerGoogle(config, context);
   }
 
   private constructor(
     config: Types.GeoMarkerConfig,
-    geoMarkerCtx: Types.GoogleMarkerContext
+    context: Types.GoogleMarkerContext
   ) {
-    this.implementation = geoMarkerCtx.mapImplementation as GeoMapGoogle;
+    this.implementation = context.mapImplementation as GeoMapGoogle;
     this.iconMarkup = config.icon;
 
     if (config.anchor) {
       this.anchor = config.anchor;
     }
 
-    const iconAnchor = getAnchor(
-      this.anchor,
-      config.icon,
-      new config.browserCtx.window.DOMParser()
-    );
+    const iconAnchor = getAnchor(this.anchor, config.icon);
 
     this.marker = new this.implementation.api.Marker({
       position: config.position,
@@ -103,8 +97,7 @@ function getOrientationRatio(orientation: Types.GeoMarkerOrientation): number {
 
 function getAnchor(
   anchor: Types.GeoMarkerAnchor,
-  icon: string,
-  parser: DOMParser
+  icon: string
 ): { x: number; y: number } | undefined {
   if (typeof window === 'undefined') {
     return;
@@ -112,6 +105,7 @@ function getAnchor(
 
   const wRatio = getOrientationRatio(anchor.horizontal);
   const hRatio = getOrientationRatio(anchor.vertical);
+  const parser = new DOMParser();
 
   const doc = parser.parseFromString(icon, 'image/svg+xml');
   const rootElement = doc.documentElement;

@@ -1,13 +1,5 @@
 module.exports = {
-  verbose: true,
-  testEnvironment: "node",
-  // testEnvironmentOptions: {
-  // resources: 'usable',
-  //  runScripts: 'dangerously'
-  // },
+  testEnvironment: "jsdom",
   preset: "ts-jest",
-  testMatch: ["<rootDir>/src/**/*.test.ts"],
-  globals: {
-    window: false
-  }
+  testMatch: ["<rootDir>/src/**/*.test.ts"]
 };

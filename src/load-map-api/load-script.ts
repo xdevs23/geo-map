@@ -3,10 +3,14 @@ import * as Types from '../types';
 export function loadScript(
   src: string,
   data: { [key: string]: string },
-  browserCtx: Types.DOMContext
+  context: Types.LoadMapContext
 ): Promise<Types.Result<void>> {
+  const {
+    window: { document }
+  } = context;
+
   return new Promise(resolve => {
-    const script = browserCtx.window.document.createElement('script');
+    const script = document.createElement('script');
     script.src = src;
 
     Object.keys(data).map(key => script.setAttribute(`data-${key}`, data[key]));
@@ -29,6 +33,6 @@ export function loadScript(
     script.addEventListener('error', onError);
     script.addEventListener('load', onLoad);
 
-    browserCtx.window.document.body.appendChild(script);
+    document.body.appendChild(script);
   });
 }

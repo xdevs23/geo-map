@@ -2,34 +2,34 @@
 // tslint:disable:no-var-requires
 import * as Util from 'util';
 import * as Types from '../types';
-import { DOMContext, BrowserCtx } from '../types';
 
 const PNGReader = require('png.js');
 
 // tslint:disable-next-line:no-any
-export function divContext(context: DOMContext) {
-  return (fragments: TemplateStringsArray, ...interpolations: any[]) => {
-    const parts = fragments.reduce(
-      (result, part, i) => [...result, part, interpolations[i]],
-      []
-    );
+export const div = (
+  fragments: TemplateStringsArray,
+  ...interpolations: any[]
+) => {
+  const parts = fragments.reduce(
+    (result, part, i) => [...result, part, interpolations[i]],
+    []
+  );
 
-    const el = context.window.document.createElement('div');
+  const el = document.createElement('div');
 
-    el.setAttribute(
-      'style',
-      parts
-        .join('')
-        .split('\n')
-        .join('')
-        .split(';')
-        .map(i => i.trim())
-        .join('; ')
-    );
+  el.setAttribute(
+    'style',
+    parts
+      .join('')
+      .split('\n')
+      .join('')
+      .split(';')
+      .map(i => i.trim())
+      .join('; ')
+  );
 
-    return el;
-  };
-}
+  return el;
+};
 
 export const parsePng = (image: Buffer) => {
   const reader = new PNGReader(image);
@@ -38,15 +38,12 @@ export const parsePng = (image: Buffer) => {
 
 export function paintViewport({
   container,
-  viewport,
-  context
+  viewport
 }: {
-  context: DOMContext;
   container: HTMLElement;
   viewport: Types.GeoMapViewport;
 }): void {
   const els = [];
-  const div = divContext(context);
 
   if (viewport.top > 0) {
     els.push(div`
@@ -100,15 +97,11 @@ export function paintViewport({
 }
 
 // tslint:disable-next-line:no-any
-export function dump({ browserCtx }: BrowserCtx, data: any): void {
-  const previous = browserCtx.window.document.querySelector(
-    'textarea[data-dump]'
-  );
-  const el = (previous ||
-    browserCtx.window.document.createElement('textarea')) as HTMLElement;
+export function dump(data: any): void {
+  const previous = document.querySelector('textarea[data-dump]');
+  const el = (previous || document.createElement('textarea')) as HTMLElement;
   el.setAttribute('data-dump', 'data-dump');
   el.textContent = JSON.stringify(data);
-  // console.log(`dump:`, el.textContent)
 
   if (!previous) {
     document.body.appendChild(el);
