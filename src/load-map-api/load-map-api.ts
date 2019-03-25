@@ -16,8 +16,8 @@ export async function loadMapApi(
   context?: Types.LoadMapContext
 ): Promise<Types.LoadMapResult> {
   // tslint:disable-next-line:no-parameter-reassignment
-  // context = context || { window };
-  // context.window = context.window; // || window;
+  context = context || { window };
+  context.window = context.window || window;
 
   switch (config.provider) {
     case Types.GeoMapProvider.Google: {

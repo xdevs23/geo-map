@@ -1,11 +1,11 @@
-import { BrowserCtx } from './geo-map';
-
-export type TestMapImplementation<T> = BrowserCtx<{
+export interface TestMapImplementation<T> {
+  window: Window;
   el: HTMLElement;
   map: T;
-}>;
+}
 
-export type TestServiceImplementation<T> = BrowserCtx<{
+export interface TestServiceImplementation<T> {
+  window: Window;
   el: HTMLElement;
   service: T;
-}>;
+}

@@ -8,12 +8,14 @@ import { ServerSideGeoMap } from './server-side-geo-map';
 import { GeoMapCodingService } from './geo-map-coding-service';
 import { GeoMapPlacesService } from './geo-map-places-service';
 import { GeoMapDirectionService } from './geo-map-direction-service';
-import { DOMContext, BrowserCtx } from './types';
 
 export class GeoMap {
-  public readonly init: Types.GeoMapInit;
-
   public readonly provider: Types.GeoMapProvider;
+
+  /**
+   * @internal
+   */
+  private implementation: Types.GeoMapImplementation;
 
   /**
    * @internal
@@ -22,56 +24,50 @@ export class GeoMap {
 
   public static create(init: {
     config: Types.GeoMapConfig;
-    geoMapCtx?: Types.GeoMapContext;
+    context?: Types.GeoMapContext;
   }): GeoMap {
     if (typeof window === 'undefined') {
       return new GeoMap({
-        browserCtx: init.config.browserCtx,
         implementation: new ServerSideGeoMap(init.config),
         provider: Types.GeoMapProvider.Custom
       });
     }
     if (init.config.provider === Types.GeoMapProvider.Here) {
       return new GeoMap({
-        browserCtx: init.config.browserCtx,
         implementation: new GeoMapHere({
-          config: init.config as Types.LoadHereMapConfig
+          config: init.config as Types.LoadHereMapConfig,
+          context: init.context
         }),
         provider: init.config.provider
       });
     }
 
     return new GeoMap({
-      browserCtx: init.config.browserCtx,
       implementation: new GeoMapGoogle({
         config: init.config as Types.LoadGoogleMapConfig,
-        geoMapCtx: init.geoMapCtx
+        context: init.context
       }),
       provider: init.config.provider
     });
   }
 
-  public static from(
-    implementation: BrowserCtx<Types.GeoMapImplementation>
-  ): GeoMap {
+  public static from(implementation: Types.GeoMapImplementation): GeoMap {
     return new GeoMap({
-      browserCtx: implementation.browserCtx,
       implementation,
       provider: Types.GeoMapProvider.Custom
     });
   }
 
   private constructor(init: Types.GeoMapInit) {
-    this.init = init;
-    this.provider = init.provider; // api compatible
+    this.implementation = init.implementation;
+    this.provider = init.provider;
   }
 
   public async createMarker(config: Types.GeoMarkerConfig): Promise<GeoMarker> {
     return GeoMarker.create({
-      browserCtx: this.init.browserCtx,
       anchor: config.anchor,
-      provider: this.init.provider,
-      mapImplementation: this.init.implementation,
+      provider: this.provider,
+      mapImplementation: this.implementation,
       position: config.position,
       icon: config.icon
     });
@@ -79,8 +75,8 @@ export class GeoMap {
 
   public async createGeoRect(config: Types.GeoBounds): Promise<GeoRect> {
     return GeoRect.create(
-      { provider: this.init.provider, ...config },
-      { mapImplementation: this.init.implementation }
+      { provider: this.provider, ...config },
+      { mapImplementation: this.implementation }
     );
   }
 
@@ -88,69 +84,69 @@ export class GeoMap {
     config: Types.GeoCircleConfig
   ): Promise<GeoCircle> {
     return GeoCircle.create(
-      { provider: this.init.provider, ...config },
-      { mapImplementation: this.init.implementation }
+      { provider: this.provider, ...config },
+      { mapImplementation: this.implementation }
     );
   }
 
   public async load(): Promise<Types.LoadMapResult> {
-    return this.init.implementation.load();
+    return this.implementation.load();
   }
 
   public async mount(
     el: HTMLElement,
     init: Types.GeoMapMountInit
   ): Promise<void> {
-    await this.init.implementation.load();
-    await this.init.implementation.mount(el, init);
+    await this.implementation.load();
+    await this.implementation.mount(el, init);
   }
 
   public async phase(phase: Types.GeoMapPhase): Promise<void> {
-    return this.init.implementation.phase(phase);
+    return this.implementation.phase(phase);
   }
 
   public getCenter(): Promise<Types.GeoPoint> {
-    return this.init.implementation.getCenter();
+    return this.implementation.getCenter();
   }
 
   public setCenter(center: Types.GeoPoint): Promise<void> {
-    return this.init.implementation.setCenter(center);
+    return this.implementation.setCenter(center);
   }
 
   public getLayer(): Promise<Types.GeoLayer> {
-    return this.init.implementation.getLayer();
+    return this.implementation.getLayer();
   }
 
   public setLayer(type: Types.GeoLayer): Promise<void> {
-    return this.init.implementation.setLayer(type);
+    return this.implementation.setLayer(type);
   }
 
   public getType(): Promise<Types.GeoMapType> {
-    return this.init.implementation.getType();
+    return this.implementation.getType();
   }
 
   public setType(type: Types.GeoMapType): Promise<void> {
-    return this.init.implementation.setType(type);
+    return this.implementation.setType(type);
   }
 
   public setViewport(viewport: Types.GeoMapViewport): Promise<void> {
-    return this.init.implementation.setViewport(viewport);
+    return this.implementation.setViewport(viewport);
   }
 
   public getViewBounds(): Promise<Types.GeoBounds> {
-    return this.init.implementation.getViewBounds();
+    return this.implementation.getViewBounds();
   }
 
   public setViewBounds(bounds: Types.GeoBounds): Promise<void> {
-    return this.init.implementation.setViewBounds(bounds);
+    return this.implementation.setViewBounds(bounds);
   }
 
   public getZoom(): Promise<number> {
-    return this.init.implementation.getZoom();
+    return this.implementation.getZoom();
   }
 
   public setZoom(zoomFactor: number): Promise<void> {
-    return this.init.implementation.setZoom(zoomFactor);
+    return this.implementation.setZoom(zoomFactor);
   }
 
   public async addEventListener(
@@ -165,7 +161,7 @@ export class GeoMap {
     event: Types.GeoEvent,
     handler: Types.GeoEventHandler
   ): Promise<void> {
-    return this.init.implementation.addEventListener(event, handler);
+    return this.implementation.addEventListener(event, handler);
   }
 
   // public async coversLocation(point: Types.GeoPoint): Promise<boolean> {
@@ -178,19 +174,19 @@ export class GeoMap {
     await this.phase(Types.GeoMapPhase.Loaded);
 
     // TODO: Move out of here when splitting GeoMap into Geo -> Map, Geo -> Code, Geo -> ...
-    if (this.init.provider === Types.GeoMapProvider.Here) {
+    if (this.provider === Types.GeoMapProvider.Here) {
       const hereService = GeoMapCodingService.create({
-        type: this.init.provider as Types.GeoMapProvider.Here,
-        api: (this.init.implementation as GeoMapHere).api,
-        platform: (this.init.implementation as GeoMapHere).platform
+        type: this.provider as Types.GeoMapProvider.Here,
+        api: (this.implementation as GeoMapHere).api,
+        platform: (this.implementation as GeoMapHere).platform
       });
 
       return hereService.reverse(point);
     }
 
     const googleService = GeoMapCodingService.create({
-      type: this.init.provider as Types.GeoMapProvider.Google,
-      api: (this.init.implementation as GeoMapGoogle).api
+      type: this.provider as Types.GeoMapProvider.Google,
+      api: (this.implementation as GeoMapGoogle).api
     });
 
     return googleService.reverse(point);
@@ -199,21 +195,19 @@ export class GeoMap {
   private async getPlacesService(): Promise<GeoMapPlacesService> {
     await this.phase(Types.GeoMapPhase.Loaded);
 
-    if (this.init.provider === Types.GeoMapProvider.Here) {
+    if (this.provider === Types.GeoMapProvider.Here) {
       const hereService = GeoMapPlacesService.create({
-        browserCtx: this.init.browserCtx,
-        type: this.init.provider as Types.GeoMapProvider.Here,
-        api: (this.init.implementation as GeoMapHere).api,
-        platform: (this.init.implementation as GeoMapHere).platform
+        type: this.provider as Types.GeoMapProvider.Here,
+        api: (this.implementation as GeoMapHere).api,
+        platform: (this.implementation as GeoMapHere).platform
       });
 
       return hereService;
     }
 
     const googleService = GeoMapPlacesService.create({
-      browserCtx: this.init.browserCtx,
-      type: this.init.provider as Types.GeoMapProvider.Google,
-      api: (this.init.implementation as GeoMapGoogle).api
+      type: this.provider as Types.GeoMapProvider.Google,
+      api: (this.implementation as GeoMapGoogle).api
     });
 
     return googleService;
@@ -226,21 +220,21 @@ export class GeoMap {
 
     await this.phase(Types.GeoMapPhase.Loaded);
 
-    if (this.init.provider === Types.GeoMapProvider.Here) {
+    if (this.provider === Types.GeoMapProvider.Here) {
       this.directionService = GeoMapDirectionService.create({
-        type: this.init.provider as Types.GeoMapProvider.Here,
-        api: (this.init.implementation as GeoMapHere).api,
-        platform: (this.init.implementation as GeoMapHere).platform,
-        map: this.init.implementation
+        type: this.provider as Types.GeoMapProvider.Here,
+        api: (this.implementation as GeoMapHere).api,
+        platform: (this.implementation as GeoMapHere).platform,
+        map: this.implementation
       });
 
       return this.directionService;
     }
 
     this.directionService = GeoMapDirectionService.create({
-      type: this.init.provider as Types.GeoMapProvider.Google,
-      api: (this.init.implementation as GeoMapGoogle).api,
-      map: this.init.implementation
+      type: this.provider as Types.GeoMapProvider.Google,
+      api: (this.implementation as GeoMapGoogle).api,
+      map: this.implementation
     });
 
     return this.directionService;

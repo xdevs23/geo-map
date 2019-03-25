@@ -38,7 +38,7 @@ export class GeoMarkerHere implements Types.GeoMarkerImplementation {
     this.implementation.map.addObject(this.marker);
 
     this.implementation.markers.push(this);
-    // this.implementation.(Types.GeoEvent.Changed);
+    this.implementation.fire(Types.GeoEvent.Changed);
   }
 
   public async getIcon(): Promise<string> {
@@ -96,7 +96,7 @@ export class GeoMarkerHere implements Types.GeoMarkerImplementation {
     this.implementation.markers.splice(
       this.implementation.markers.indexOf(this)
     );
-    // this.implementation.fire(Types.GeoEvent.Changed);
+    this.implementation.fire(Types.GeoEvent.Changed);
   }
 }
 

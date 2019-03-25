@@ -1,9 +1,9 @@
-// import { GeoMapPlacesService } from '../geo-map-places-service';
+import { GeoMapPlacesService } from '../geo-map-places-service';
 
 // tslint:disable:max-classes-per-file
 // tslint:disable:no-any
 
-export function createHMock(): any {
+export const createHMock = (): any => {
   class NormalMap {}
   class SatteliteMap {}
   class TerrainMap {}
@@ -190,7 +190,7 @@ export function createHMock(): any {
       Platform
     }
   };
-}
+};
 
 function hereToDomEvent(input: string): string | undefined {
   switch (input) {

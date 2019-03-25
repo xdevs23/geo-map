@@ -1,3 +1,4 @@
+import { createWindow } from './create-window';
 import { createGoogleMock } from './create-google-mock';
 import * as Constants from './constants';
 import { ensureElement } from './ensure-element';
@@ -5,45 +6,39 @@ import { GeoMapPlacesServiceGoogle } from '../geo-map-places-service-google';
 import * as Result from '../result';
 import * as Types from '../types';
 import { GeoMapGoogle } from '../geo-map-google';
-import { DOMContext } from '../types';
 
-export async function createGooglePlacesImplementation(opts: {
-  config: Partial<Types.LoadGoogleMapConfig>;
+export async function createGooglePlacesImplementation(opts?: {
+  config?: Partial<Types.LoadGoogleMapConfig>;
   mount?: Types.GeoMapMountInit;
   mock?: boolean;
 }): Promise<Types.TestServiceImplementation<GeoMapPlacesServiceGoogle>> {
   try {
+    const window = createWindow();
+
     const map = new GeoMapGoogle({
       config: {
-        browserCtx: opts.config.browserCtx,
         provider: Types.GeoMapProvider.Google,
         auth: {
           apiKey: Constants.GOOGLE_MAP_API,
           clientId: Constants.GOOGLE_MAP_CLIENT_ID,
           channel: Constants.GOOGLE_MAP_CHANNEL
         },
-        mapJsUrl: opts && opts.config ? opts.config.mapJsUrl : undefined,
-        mapJsCallbackId:
-          opts && opts.config ? opts.config.mapJsCallbackId : undefined,
         language: opts && opts.config ? opts.config.language : undefined,
         viewport: opts && opts.config ? opts.config.viewport : undefined
+      },
+      context: {
+        window,
+        load:
+          !opts || opts.mock !== false
+            ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
+            : undefined,
+        loaded: async () => {
+          /** */
+        }
       }
-      // geoMapCtx: {
-      //   browserCtx: opts.context,
-      //   load:
-      //     !opts || opts.mock !== false
-      //       ? async () => ({ result: Result.createSuccess(createGoogleMock()) })
-      //       : undefined,
-      //   loaded: async () => {
-      //     /** */
-      //   }
-      // }
     });
 
-    const el = ensureElement(
-      Types.GeoMapProvider.Google,
-      opts.config.browserCtx
-    );
+    const el = ensureElement(Types.GeoMapProvider.Here, { window });
 
     await map.load();
     await map.mount(el, {
@@ -52,11 +47,10 @@ export async function createGooglePlacesImplementation(opts: {
     });
 
     return {
-      browserCtx: opts.config.browserCtx,
+      window,
       el,
       service: GeoMapPlacesServiceGoogle.create({
-        api: map.api,
-        browserCtx: opts.config.browserCtx
+        api: map.api
       })
     };
   } catch (err) {

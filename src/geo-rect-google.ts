@@ -26,8 +26,6 @@ export class GeoRectGoogle implements Types.GeoRectImplementation {
       new this.api.LatLng(bounds.south, bounds.west),
       new this.api.LatLng(bounds.north, bounds.east)
     );
-    // this.bounds.extend(new this.api.LatLng(bounds.north, bounds.east));
-    // this.bounds.extend(new this.api.LatLng(bounds.south, bounds.west));
   }
 
   public async getBounds(): Promise<Types.GeoBounds> {

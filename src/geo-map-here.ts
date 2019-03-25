@@ -4,71 +4,52 @@ import { GeoMapPhases } from './geo-map-phases';
 import { GeoRectHere } from './geo-rect-here';
 import { loadMapApi } from './load-map-api';
 import * as Types from './types';
-import { RSA_NO_PADDING } from 'constants';
-import { threadId } from 'worker_threads';
 
 export interface GeoMapHereInit {
+  context?: Types.GeoMapContext;
   config: Types.LoadHereMapConfig;
-  geoMapCtx?: Types.GeoMapContext;
 }
 
 export class GeoMapHere implements Types.GeoMapImplementation {
-  public api?: Types.HereApi;
-  public map?: H.Map;
-  public readonly markers: GeoMarkerHere[] = [];
+  public api: Types.HereApi;
+  public map: H.Map;
+  public markers: GeoMarkerHere[] = [];
   public platform: H.service.Platform;
 
   private layer: Types.GeoLayer = Types.GeoLayer.None;
-  // private tainted: boolean;
-  private readonly window: Types.GeoMapWindow;
-  private readonly config: Types.LoadHereMapConfig;
+  private tainted: boolean;
+  private context: Types.GeoMapContext;
+  private config: Types.LoadHereMapConfig;
   private mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
   private phases: GeoMapPhases = new GeoMapPhases();
 
-  // private handlers: Map<Types.GeoEvent, ((e?: Event) => void)[]> = new Map();
+  private handlers: Map<Types.GeoEvent, ((e?: Event) => void)[]> = new Map();
 
   public constructor(init: GeoMapHereInit) {
+    this.context = init.context || { window };
     this.config = init.config;
-    this.window = init.config.browserCtx.window;
     this.phases.resolve(Types.GeoMapPhase.Pristine);
   }
 
-  // public fire(eventName: Types.GeoEvent, e?: Event): void {
-  //   const handlers = this.handlers.get(eventName) || [];
-  //   handlers.forEach(h => h(e));
-  // }
+  public fire(eventName: Types.GeoEvent, e?: Event): void {
+    const handlers = this.handlers.get(eventName) || [];
+    handlers.forEach(h => h(e));
+  }
 
-  private async waitForChangeEvent(
-    action: (
-      rs?: (m: void | PromiseLike<void>) => void,
-      rj?: (t?: any) => void
-    ) => void
-  ): Promise<void> {
-    return new Promise(async (rs, rj) => {
-      const onMapViewChangedEnd = () => {
-        this.map.removeEventListener('mapviewchangeend', onMapViewChangedEnd);
-        rs();
-      };
-      this.map.addEventListener('mapviewchangeend', onMapViewChangedEnd);
-      try {
-        await action(onMapViewChangedEnd, () => {
-          this.map.removeEventListener('mapviewchangeend', onMapViewChangedEnd);
-          rj();
-        });
-      } catch (e) {
-        this.map.removeEventListener('mapviewchangeend', onMapViewChangedEnd);
-        rj(e);
-      }
-    });
+  private async changed(): Promise<void> {
+    if (this.tainted) {
+      const changed = this.context ? this.context.changed : undefined;
+      await (changed || hereMapChanged)(this.map);
+      this.tainted = false;
+    }
   }
 
   public async load(): Promise<Types.LoadHereMapResult> {
     this.phases.resolve(Types.GeoMapPhase.Loading);
-    // debugger;
 
-    const load = this.window.load ? this.window.load : loadMapApi;
+    const load = this.context.load ? this.context.load : loadMapApi;
 
-    const mapResult = await load(this.config, this.window);
+    const mapResult = await load(this.config, this.context);
 
     if (mapResult.result.type === Types.ResultType.Success) {
       this.api = mapResult.result.payload;
@@ -85,7 +66,6 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     this.phases.resolve(Types.GeoMapPhase.Mounting);
 
     const { api } = this;
-    // console.log('mount:', this);
 
     this.platform = new this.api.service.Platform({
       app_code: this.config.appCode,
@@ -103,8 +83,8 @@ export class GeoMapHere implements Types.GeoMapImplementation {
         language: this.config.language
       },
       {
-        platform: this.platform
-        // window: this.window
+        platform: this.platform,
+        window: this.context.window
       }
     );
 
@@ -119,7 +99,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     // tslint:disable-next-line:no-unused-expression
     new api.mapevents.Behavior(new api.mapevents.MapEvents(this.map));
 
-    this.window.window.addEventListener('resize', () =>
+    this.context.window.addEventListener('resize', () =>
       this.map.getViewPort().resize()
     );
 
@@ -131,12 +111,9 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       this.map.getViewPort().setPadding(top, right, bottom, left);
     }
 
-    await (this.window.loaded
-      ? this.window.loaded(this.map, {
-          api: this.api,
-          geoMapCtx: this.window
-        })
-      : hereMapLoaded(this.map, { api: this.api, context: this.window }));
+    await (this.context.loaded
+      ? this.context.loaded(this.map, { api: this.api, context: this.context })
+      : hereMapLoaded(this.map, { api: this.api, context: this.context }));
 
     this.phases.resolve(Types.GeoMapPhase.Layouted);
     return;
@@ -153,13 +130,8 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   public async setCenter(center: Types.GeoPoint): Promise<void> {
     await this.phase(Types.GeoMapPhase.Mounted);
-    return this.waitForChangeEvent(async rs => {
-      const currentCenter = this.map.getCenter();
-      if (pointEqual(center, currentCenter)) {
-        return rs();
-      }
-      this.map.setCenter(center);
-    });
+    this.map.setCenter(center);
+    this.fire(Types.GeoEvent.Changed);
   }
 
   public async getMarkers(): Promise<GeoMarkerHere[]> {
@@ -183,29 +155,28 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     this.mapType = type;
     await this.phase(Types.GeoMapPhase.Mounted);
 
-    return this.waitForChangeEvent(async () => {
-      this.map.setBaseLayer(
-        getHereMapLayer(
-          {
-            type: this.mapType,
-            layer: this.layer,
-            language: this.config.language
-          },
-          {
-            platform: this.platform
-            // window: this.window.window
-          }
-        )
-      );
-    });
+    this.map.setBaseLayer(
+      getHereMapLayer(
+        {
+          type: this.mapType,
+          layer: this.layer,
+          language: this.config.language
+        },
+        {
+          platform: this.platform,
+          window: this.context.window
+        }
+      )
+    );
+
+    this.fire(Types.GeoEvent.Changed);
   }
 
   public async setViewport(viewport: Types.GeoMapViewport): Promise<void> {
     const { top, right, bottom, left } = viewport;
     await this.phase(Types.GeoMapPhase.Mounted);
-    return this.waitForChangeEvent(async () => {
-      this.map.getViewPort().setPadding(top, right, bottom, left);
-    });
+    this.map.getViewPort().setPadding(top, right, bottom, left);
+    await this.changed;
   }
 
   public async getViewBounds(): Promise<Types.GeoBounds> {
@@ -217,18 +188,13 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   public async setViewBounds(bounds: Types.GeoBounds): Promise<void> {
     await this.phase(Types.GeoMapPhase.Mounted);
-    return this.waitForChangeEvent(async rs => {
-      const currentVieewBounds = this.map.getViewBounds();
-      const rect = GeoRectHere.create(bounds, { mapImplementation: this });
-      if (currentVieewBounds.equals(rect.toRect())) {
-        return rs();
-      }
-      this.map.setViewBounds(rect.toRect());
-    });
+    const rect = GeoRectHere.create(bounds, { mapImplementation: this });
+    this.map.setViewBounds(rect.toRect());
+    await this.changed;
   }
 
   public async getZoom(): Promise<number> {
-    // await this.changed(false);
+    await this.changed();
     await this.phase(Types.GeoMapPhase.Mounted);
     return this.map.getZoom();
   }
@@ -236,13 +202,13 @@ export class GeoMapHere implements Types.GeoMapImplementation {
   public async setZoom(factor: number): Promise<void> {
     const previousFactor = await this.getZoom();
 
-    return this.waitForChangeEvent(async rs => {
-      if (previousFactor === factor) {
-        return rs();
-      }
-      // this.tainted = true;
-      this.map.setZoom(factor);
-    });
+    if (previousFactor === factor) {
+      return;
+    }
+
+    this.tainted = true;
+    this.map.setZoom(factor);
+    await this.changed();
   }
 
   public async addEventListener(
@@ -257,8 +223,8 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     eventName: Types.GeoEvent,
     handler: Types.GeoEventHandler
   ): Promise<void> {
-    // const previous = this.handlers.get(eventName) || [];
-    // this.handlers.set(eventName, [...previous, handler]);
+    const previous = this.handlers.get(eventName) || [];
+    this.handlers.set(eventName, [...previous, handler]);
 
     const hereEventName = geoToHereEvent(eventName);
 
@@ -268,10 +234,8 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
     await this.phase(Types.GeoMapPhase.Mounted);
 
-    // console.log('WHAT', hereEventName);
     // tslint:disable-next-line:no-any
     this.map.addEventListener(hereEventName, (e: any) => {
-      // console.log('WTF', e);
       if (eventName === Types.GeoEvent.Click) {
         const position = this.map.screenToGeo(
           e.currentPointer.viewportX,
@@ -287,7 +251,6 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   public async createMarker(config: Types.GeoMarkerConfig): Promise<GeoMarker> {
     return GeoMarker.create({
-      browserCtx: config.browserCtx,
       provider: Types.GeoMapProvider.Here,
       mapImplementation: this,
       position: config.position,
@@ -314,9 +277,20 @@ function hereMapLoaded(
   });
 }
 
+function hereMapChanged(map: H.Map): Promise<void> {
+  return new Promise(resolve => {
+    const onChanged = () => {
+      resolve();
+      map.removeEventListener('mapviewchangeend', onChanged);
+    };
+
+    map.addEventListener('mapviewchangeend', onChanged);
+  });
+}
+
 function getHereMapLayer(
   config: { language?: string; type: Types.GeoMapType; layer: Types.GeoLayer },
-  context: { platform: H.service.Platform }
+  context: { platform: H.service.Platform; window: Window }
 ): H.map.layer.TileLayer {
   const defaultLayers = context.platform.createDefaultLayers({
     tileSize: 256,
@@ -371,20 +345,8 @@ function geoToHereEvent(input: Types.GeoEvent): string | undefined {
     case Types.GeoEvent.Click:
       return 'tap';
     case Types.GeoEvent.Changed:
-      return 'mapviewchangeend';
+      return 'mapviewchange';
     default:
       return;
   }
-}
-
-function pointEqual(p1: Types.GeoPoint, p2: Types.GeoPoint) {
-  // this does not near the poles
-  const toleranz = 0.00002;
-  const topLeft = { lat: p1.lat - toleranz, lng: p1.lng - toleranz };
-  const bottomRight = { lat: p1.lat + toleranz, lng: p1.lng + toleranz };
-  return (
-    topLeft.lat <= p2.lat &&
-    p2.lat <= bottomRight.lat &&
-    (topLeft.lng <= p2.lng && p2.lng <= bottomRight.lng)
-  );
 }

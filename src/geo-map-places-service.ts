@@ -1,27 +1,27 @@
 import * as Types from './types';
 import { GeoMapPlacesServiceHere } from './geo-map-places-service-here';
 import { GeoMapPlacesServiceGoogle } from './geo-map-places-service-google';
-import { BrowserCtx } from './types';
+import { GeoMap } from './geo-map';
 
 export type GeoMapPlacesServiceCreateInit =
   | GeoMapPlacesServiceInitGoogle
   | GeoMapPlacesServiceInitHere;
 
-export type GeoMapPlacesServiceInitGoogle = BrowserCtx<{
-  readonly api: Types.GoogleApi;
-  readonly type: Types.GeoMapProvider.Google;
-}>;
+export interface GeoMapPlacesServiceInitGoogle {
+  api: Types.GoogleApi;
+  type: Types.GeoMapProvider.Google;
+}
 
-export type GeoMapPlacesServiceInitHere = BrowserCtx<{
-  readonly api: Types.HereApi;
-  readonly platform: H.service.Platform;
-  readonly type: Types.GeoMapProvider.Here;
-}>;
+export interface GeoMapPlacesServiceInitHere {
+  api: Types.HereApi;
+  platform: H.service.Platform;
+  type: Types.GeoMapProvider.Here;
+}
 
-export type GeoMapPlacesServiceInit = BrowserCtx<{
-  readonly type: Types.GeoMapProvider;
-  readonly implementation: Types.GeoMapPlacesServiceImplementation;
-}>;
+export interface GeoMapPlacesServiceInit {
+  type: Types.GeoMapProvider;
+  implementation: Types.GeoMapPlacesServiceImplementation;
+}
 
 export class GeoMapPlacesService {
   private implementation: Types.GeoMapPlacesServiceImplementation;
@@ -34,11 +34,9 @@ export class GeoMapPlacesService {
 
       return new GeoMapPlacesService({
         type: init.type,
-        browserCtx: init.browserCtx,
         implementation: GeoMapPlacesServiceHere.create({
           api: hereApi,
-          platform: init.platform,
-          browserCtx: init.browserCtx
+          platform: init.platform
         })
       });
     }
@@ -47,10 +45,8 @@ export class GeoMapPlacesService {
 
     return new GeoMapPlacesService({
       type: init.type,
-      browserCtx: init.browserCtx,
       implementation: GeoMapPlacesServiceGoogle.create({
-        api: googleApi,
-        browserCtx: init.browserCtx
+        api: googleApi
       })
     });
   }

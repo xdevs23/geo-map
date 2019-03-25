@@ -1,7 +1,9 @@
 import * as Types from './types';
 
 export class ServerSideGeoMap implements Types.GeoMapImplementation {
-  public constructor(opts: Types.GeoMapConfig) {}
+  public constructor(_: Types.GeoMapConfig) {
+    /* */
+  }
 
   public async load(): Promise<Types.LoadMapResult> {
     // tslint:disable-next-line:no-any
