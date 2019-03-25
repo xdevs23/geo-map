@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.10.0"></a>
+# [1.10.0](https://github.com/marionebl/geo-map/compare/v1.9.1...v1.10.0) (2019-03-25)
+
+
+### Bug Fixes
+
+* avoid pull flatmap-stream ([f826026](https://github.com/marionebl/geo-map/commit/f826026))
+* force merge on versions >= 1.2.1 to avoid prototype pollution bugs ([9e15eeb](https://github.com/marionebl/geo-map/commit/9e15eeb))
+* Handle empty route results [#94](https://github.com/marionebl/geo-map/issues/94) ([4015b48](https://github.com/marionebl/geo-map/commit/4015b48))
+* return here places after empty resolve ([#131](https://github.com/marionebl/geo-map/issues/131)) ([b312598](https://github.com/marionebl/geo-map/commit/b312598))
+* split error check in two for different error messages ([068938e](https://github.com/marionebl/geo-map/commit/068938e))
+* update dependency [@types](https://github.com/types)/heremaps to v3.0.13 ([#140](https://github.com/marionebl/geo-map/issues/140)) ([c3c5ee7](https://github.com/marionebl/geo-map/commit/c3c5ee7))
+* update dependency [@types](https://github.com/types)/query-string to v6.2.0 ([#122](https://github.com/marionebl/geo-map/issues/122)) ([719ff3d](https://github.com/marionebl/geo-map/commit/719ff3d))
+
+
+### Features
+
+* add more configuration options to here map ([f687360](https://github.com/marionebl/geo-map/commit/f687360))
+* allow to set the minimal zoom for the google map ([63566fc](https://github.com/marionebl/geo-map/commit/63566fc))
+
+
+
 <a name="1.9.1"></a>
 ## [1.9.1](https://github.com/marionebl/geo-map/compare/v1.9.0...v1.9.1) (2018-11-19)
 
