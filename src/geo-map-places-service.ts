@@ -16,6 +16,7 @@ export interface GeoMapPlacesServiceInitHere {
   api: Types.HereApi;
   platform: H.service.Platform;
   type: Types.GeoMapProvider.Here;
+  language?: string;
 }
 
 export interface GeoMapPlacesServiceInit {
@@ -36,7 +37,8 @@ export class GeoMapPlacesService {
         type: init.type,
         implementation: GeoMapPlacesServiceHere.create({
           api: hereApi,
-          platform: init.platform
+          platform: init.platform,
+          language: init.language
         })
       });
     }
