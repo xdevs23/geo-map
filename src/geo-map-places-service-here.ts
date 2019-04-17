@@ -113,10 +113,12 @@ export class GeoMapPlacesServiceHere
   implements Types.GeoMapPlacesServiceImplementation {
   private platform: H.service.Platform;
   private api: Types.HereApi;
+  private language: string;
 
   public static create(init: {
     api: Types.HereApi;
     platform: H.service.Platform;
+    language?: string;
   }): GeoMapPlacesServiceHere {
     return new GeoMapPlacesServiceHere(init);
   }
@@ -124,9 +126,11 @@ export class GeoMapPlacesServiceHere
   private constructor(init: {
     api: Types.HereApi;
     platform: H.service.Platform;
+    language?: string;
   }) {
     this.platform = init.platform;
     this.api = init.api;
+    this.language = init.language;
   }
 
   public async get(
@@ -240,7 +244,12 @@ export class GeoMapPlacesServiceHere
           : { at: point };
 
       service.search(
-        { q: needle, tf: 'plain', ...params },
+        {
+          q: needle,
+          tf: 'plain',
+          'Accept-Language': this.language,
+          ...params
+        },
         response => {
           const { results } = response;
 
@@ -264,7 +273,10 @@ export class GeoMapPlacesServiceHere
                 const location = locations[index];
                 return {
                   provider: Types.GeoMapProvider.Here,
-                  id: location.Response.View[0].Result[0].Location.LocationId,
+                  id:
+                    location.type == Types.ResultType.Success
+                      ? location.Response.View[0].Result[0].Location.LocationId
+                      : undefined,
                   name: item.title,
                   formattedAddress: item.vicinity,
                   location: {

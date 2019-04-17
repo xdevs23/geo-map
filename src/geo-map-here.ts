@@ -155,6 +155,10 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     return this.mapType;
   }
 
+  public getLanguage(): string {
+    return this.config.language;
+  }
+
   public async setType(type: Types.GeoMapType): Promise<void> {
     this.mapType = type;
     await this.phase(Types.GeoMapPhase.Mounted);

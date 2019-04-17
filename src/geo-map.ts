@@ -199,7 +199,8 @@ export class GeoMap {
       const hereService = GeoMapPlacesService.create({
         type: this.provider as Types.GeoMapProvider.Here,
         api: (this.implementation as GeoMapHere).api,
-        platform: (this.implementation as GeoMapHere).platform
+        platform: (this.implementation as GeoMapHere).platform,
+        language: (this.implementation as GeoMapHere).getLanguage()
       });
 
       return hereService;
