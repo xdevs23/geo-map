@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [1.12.0](https://github.com/marionebl/geo-map/compare/v1.11.0...v1.12.0) (2019-04-17)
+
+
+### Features
+
+* add here places service language support ([#179](https://github.com/marionebl/geo-map/issues/179)) ([8899c16](https://github.com/marionebl/geo-map/commit/8899c16))
+
+
+
 # [1.11.0](https://github.com/marionebl/geo-map/compare/v1.10.0...v1.11.0) (2019-04-04)
 
 
