@@ -188,7 +188,8 @@ test('Geocoding works as expected', async () => {
       provider: Types.GeoMapProvider.Here,
       formattedAddress: 'Boxhagener Straße 75, 10245 Berlin, Deutschland',
       address: expect.objectContaining({
-        country: 'DEU',
+        country: 'Deutschland',
+        countryCode: 'DEU',
         postalCode: '10245',
         locality: 'Berlin',
         route: 'Boxhagener Straße',

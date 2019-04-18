@@ -69,14 +69,17 @@ function herePlaceToGeoPlace(
   herePlace: HereTypes.Place
 ): Types.GeoMapPlaceDetails {
   const address = herePlace.location.address;
+  const countryNameEntry =
+    Array.isArray(address.additionalData) &&
+    address.additionalData.find(d => d.key === 'CountryName');
 
   return {
     provider: Types.GeoMapProvider.Here,
     id: herePlace.location.locationId,
     formattedAddress: herePlace.location.address.label,
     address: {
-      country: address.country,
-      countryCode: undefined,
+      country: countryNameEntry ? countryNameEntry.value : address.country,
+      countryCode: address.country,
       county: address.county,
       district: address.district,
       state: address.state,
