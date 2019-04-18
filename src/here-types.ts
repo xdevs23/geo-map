@@ -107,6 +107,8 @@ export interface Place {
       postalCode: string;
       /* Building name. Building names are currently only supported for Hong Kong addresses. */
       building: string;
+      /* additional data key value map */
+      additionalData?: { key: string; value: string }[];
     };
     /*  References to a network link and admin areas of the location object. */
     mapReference: {
