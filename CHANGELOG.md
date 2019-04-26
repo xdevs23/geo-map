@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.12.3](https://github.com/marionebl/geo-map/compare/v1.12.2...v1.12.3) (2019-04-26)
+
+
+### Bug Fixes
+
+* fix here address country mapping in reverse geocoding result ([#182](https://github.com/marionebl/geo-map/issues/182)) ([9d2d1b1](https://github.com/marionebl/geo-map/commit/9d2d1b1))
+* google marker not visible in IE11 ([63675b3](https://github.com/marionebl/geo-map/commit/63675b3))
+
+
+
 ## [1.12.2](https://github.com/marionebl/geo-map/compare/v1.12.1...v1.12.2) (2019-04-17)
 
 
