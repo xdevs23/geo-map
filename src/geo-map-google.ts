@@ -2,6 +2,7 @@ import { GeoMarkerGoogle } from './geo-marker-google';
 import { GeoMapPhases } from './geo-map-phases';
 import { GeoRectGoogle } from './geo-rect-google';
 import { loadMapApi } from './load-map-api';
+import { isGeoPoint, isGeoBounds } from './util/type-guards';
 import * as Types from './types';
 
 export interface GeoMapGoogleInit {
@@ -51,6 +52,7 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     }
 
     this.phases.resolve(Types.GeoMapPhase.Loaded);
+
     return mapResult;
   }
 
@@ -61,7 +63,10 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     this.phases.resolve(Types.GeoMapPhase.Mounting);
 
     this.map = new this.api.Map(el, {
-      center: mountInit.center,
+      center:
+        mountInit.center && isGeoPoint(mountInit.center)
+          ? mountInit.center
+          : undefined,
       zoom: mountInit.zoom || 1,
       minZoom: this.config.minZoom,
       maxZoom: this.config.maxZoom,
@@ -72,6 +77,11 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
       disableDefaultUI: true
     });
 
+    if (mountInit.center && isGeoBounds(mountInit.center)) {
+      this.map.fitBounds(mountInit.center);
+      this.map.setZoom(mountInit.zoom || this.map.getZoom());
+    }
+
     if (mountInit.layer) {
       this.setLayer(mountInit.layer);
     }
@@ -79,7 +89,9 @@ export class GeoMapGoogle implements Types.GeoMapImplementation {
     this.phases.resolve(Types.GeoMapPhase.Mounted);
     this.phases.resolve(Types.GeoMapPhase.Layouting);
 
-    await this.setCenter(mountInit.center);
+    if (mountInit.center && isGeoPoint(mountInit.center)) {
+      await this.setCenter(mountInit.center);
+    }
 
     // Disable default POI click handling
     this.map.addListener('click', e => e.placeId && e.stop());

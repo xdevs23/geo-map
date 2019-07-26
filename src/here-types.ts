@@ -163,6 +163,16 @@ interface LatLng {
   longitude: number;
 }
 
+export interface GeocoderLatLng {
+  Latitude: number;
+  Longitude: number;
+}
+
+export interface GeocoderLatLngBounds {
+  BottomRight: GeocoderLatLng;
+  TopLeft: GeocoderLatLng;
+}
+
 export type Country =
   | 'ABW'
   | 'AFG'

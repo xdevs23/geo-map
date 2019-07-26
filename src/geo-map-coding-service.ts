@@ -52,6 +52,10 @@ export class GeoMapCodingService {
     this.implementation = init.implementation;
   }
 
+  public geocode(search: Types.GeocoderRequest): Promise<Types.GeocoderResult> {
+    return this.implementation.geocode(search);
+  }
+
   public async reverse(
     location: Types.GeoPoint
   ): Promise<Types.Result<Types.GeoMapPlaceDetails[]>> {

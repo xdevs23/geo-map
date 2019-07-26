@@ -3,6 +3,7 @@ import { GeoMarkerHere } from './geo-marker-here';
 import { GeoMapPhases } from './geo-map-phases';
 import { GeoRectHere } from './geo-rect-here';
 import { loadMapApi } from './load-map-api';
+import { isGeoPoint, isGeoBounds } from './util/type-guards';
 import * as Types from './types';
 
 export interface GeoMapHereInit {
@@ -18,6 +19,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   private layer: Types.GeoLayer = Types.GeoLayer.None;
   private tainted: boolean;
+  private loadResult: Promise<Types.LoadHereMapResult>;
   private context: Types.GeoMapContext;
   private config: Types.LoadHereMapConfig;
   private mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
@@ -49,10 +51,16 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
     const load = this.context.load ? this.context.load : loadMapApi;
 
-    const mapResult = await load(this.config, this.context);
+    this.loadResult = this.loadResult || load(this.config, this.context);
+    const mapResult = await this.loadResult;
 
     if (mapResult.result.type === Types.ResultType.Success) {
       this.api = mapResult.result.payload;
+      this.platform = new this.api.service.Platform({
+        app_code: this.config.appCode,
+        app_id: this.config.appId,
+        useHTTPS: true
+      });
     }
 
     this.phases.resolve(Types.GeoMapPhase.Loaded);
@@ -66,12 +74,6 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     this.phases.resolve(Types.GeoMapPhase.Mounting);
 
     const { api } = this;
-
-    this.platform = new this.api.service.Platform({
-      app_code: this.config.appCode,
-      app_id: this.config.appId,
-      useHTTPS: true
-    });
 
     this.mapType = mountInit.type || Types.GeoMapType.Roadmap;
     this.layer = mountInit.layer || Types.GeoLayer.None;
@@ -92,8 +94,24 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       }
     );
 
+    const bounds =
+      mountInit.center && isGeoBounds(mountInit.center)
+        ? new this.api.geo.Rect(
+            mountInit.center.north,
+            mountInit.center.west,
+            mountInit.center.south,
+            mountInit.center.east
+          )
+        : undefined;
+
+    const center =
+      mountInit.center && isGeoPoint(mountInit.center)
+        ? mountInit.center
+        : undefined;
+
     this.map = new api.Map(el, layer, {
-      center: mountInit.center,
+      center,
+      bounds,
       zoom: mountInit.zoom,
       noWrap: Boolean(this.config.noWrap)
     } as H.Map.Options);

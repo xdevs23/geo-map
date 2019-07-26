@@ -193,8 +193,10 @@ export interface GeoPoint {
   lng: number;
 }
 
+export type GeoMapCenter = GeoPoint | GeoBounds;
+
 export interface GeoMapMountInit {
-  center: GeoPoint;
+  center?: GeoMapCenter;
   type?: GeoMapType;
   layer?: GeoLayer;
   zoom?: number;
@@ -396,8 +398,21 @@ export type GeoEventHandler<T extends GeoEventPayload | void = any> = (
   e?: T
 ) => void;
 
+export interface GeocoderResult {
+  position: GeoPoint;
+  viewBounds: GeoBounds;
+}
+
+export interface StructuredGeocoderRequest {
+  /** ISO 3166 Alpha-2 Country Code */
+  country?: string;
+}
+
+export type GeocoderRequest = string | StructuredGeocoderRequest;
+
 export interface GeoMapCodingServiceImplementation {
   reverse(point: GeoPoint): Promise<Types.Result<GeoMapPlaceDetails[]>>;
+  geocode(search: GeocoderRequest): Promise<GeocoderResult>;
 }
 
 export interface GeoMapDirectionResult {

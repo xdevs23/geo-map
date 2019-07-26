@@ -17,6 +17,23 @@ export class GeoMapCodingServiceGoogle
     this.api = init.api;
   }
 
+  public geocode(search: Types.GeocoderRequest): Promise<Types.GeocoderResult> {
+    return new Promise((resolve, reject) => {
+      const geocoder = new this.api.Geocoder();
+
+      geocoder.geocode(
+        geocoderRequestToGoogleGeocoderRequest(search),
+        (results, status) => {
+          if (status === this.api.GeocoderStatus.OK) {
+            resolve(googleGeocoderResultToGeocoderResult(results[0]));
+          } else {
+            reject(status);
+          }
+        }
+      );
+    });
+  }
+
   public async reverse(
     location: Types.GeoPoint
   ): Promise<Types.Result<Types.GeoMapPlaceDetails[]>> {
@@ -34,6 +51,31 @@ export class GeoMapCodingServiceGoogle
       });
     });
   }
+}
+
+function geocoderRequestToGoogleGeocoderRequest(
+  search: Types.GeocoderRequest
+): google.maps.GeocoderRequest {
+  if (typeof search === 'string') {
+    return {
+      address: search
+    };
+  }
+
+  return {
+    componentRestrictions: {
+      country: search.country
+    }
+  };
+}
+
+function googleGeocoderResultToGeocoderResult(
+  result: google.maps.GeocoderResult
+): Types.GeocoderResult {
+  return {
+    position: result.geometry.location.toJSON(),
+    viewBounds: result.geometry.viewport.toJSON()
+  };
 }
 
 function googleToGeoPlace(
