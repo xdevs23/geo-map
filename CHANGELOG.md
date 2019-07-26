@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/marionebl/geo-map/compare/v1.12.4...v1.13.0) (2019-07-26)
+
+
+### Bug Fixes
+
+* update dependency @types/googlemaps to v3.30.20 ([#209](https://github.com/marionebl/geo-map/issues/209)) ([f280f51](https://github.com/marionebl/geo-map/commit/f280f51))
+* update dependency @types/googlemaps to v3.36.0 ([#219](https://github.com/marionebl/geo-map/issues/219)) ([028b1bc](https://github.com/marionebl/geo-map/commit/028b1bc))
+* update dependency @types/googlemaps to v3.36.1 ([#222](https://github.com/marionebl/geo-map/issues/222)) ([fc82768](https://github.com/marionebl/geo-map/commit/fc82768))
+* update dependency @types/googlemaps to v3.36.2 ([#223](https://github.com/marionebl/geo-map/issues/223)) ([73fdb1c](https://github.com/marionebl/geo-map/commit/73fdb1c))
+
+
+### Features
+
+* retrieve GeoBounds from geocoder & center using GeoBounds ([#247](https://github.com/marionebl/geo-map/issues/247)) ([63a370e](https://github.com/marionebl/geo-map/commit/63a370e))
+
+
+
 ### [1.12.4](https://github.com/marionebl/geo-map/compare/v1.12.3...v1.12.4) (2019-05-07)
 
 
