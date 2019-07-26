@@ -3,6 +3,7 @@ import { GeoMarkerHere } from './geo-marker-here';
 import { GeoMapPhases } from './geo-map-phases';
 import { GeoRectHere } from './geo-rect-here';
 import { loadMapApi } from './load-map-api';
+import { isGeoPoint, isGeoBounds } from './util/type-guards';
 import * as Types from './types';
 
 export interface GeoMapHereInit {
@@ -93,8 +94,24 @@ export class GeoMapHere implements Types.GeoMapImplementation {
       }
     );
 
+    const bounds =
+      mountInit.center && isGeoBounds(mountInit.center)
+        ? new this.api.geo.Rect(
+            mountInit.center.north,
+            mountInit.center.west,
+            mountInit.center.south,
+            mountInit.center.east
+          )
+        : undefined;
+
+    const center =
+      mountInit.center && isGeoPoint(mountInit.center)
+        ? mountInit.center
+        : undefined;
+
     this.map = new api.Map(el, layer, {
-      center: mountInit.center,
+      center,
+      bounds,
       zoom: mountInit.zoom,
       noWrap: Boolean(this.config.noWrap)
     } as H.Map.Options);

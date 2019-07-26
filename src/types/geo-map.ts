@@ -193,8 +193,10 @@ export interface GeoPoint {
   lng: number;
 }
 
+export type GeoMapCenter = GeoPoint | GeoBounds;
+
 export interface GeoMapMountInit {
-  center: GeoPoint;
+  center?: GeoMapCenter;
   type?: GeoMapType;
   layer?: GeoLayer;
   zoom?: number;
