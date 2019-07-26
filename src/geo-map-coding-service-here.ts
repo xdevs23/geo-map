@@ -20,6 +20,22 @@ export class GeoMapCodingServiceHere
     this.platform = init.platform;
   }
 
+  public async geocode(
+    search: Types.GeocoderRequest
+  ): Promise<Types.GeocoderResult> {
+    return new Promise((resolve, reject) => {
+      const geoCoder = this.platform.getGeocodingService();
+
+      geoCoder.geocode(
+        geocoderRequestToHereServiceParameters(search),
+        result => {
+          resolve(hereServiceResultToGeocoderResult(result));
+        },
+        error => reject(error)
+      );
+    });
+  }
+
   public async reverse(
     location: Types.GeoPoint
   ): Promise<Types.Result<Types.GeoMapPlaceDetails[]>> {
@@ -63,6 +79,51 @@ export class GeoMapCodingServiceHere
       );
     });
   }
+}
+
+function geocoderRequestToHereServiceParameters(
+  search: Types.GeocoderRequest
+): H.service.ServiceParameters {
+  if (typeof search === 'string') {
+    return {
+      searchText: search
+    };
+  }
+
+  return {
+    country: search.country
+  };
+}
+
+function hereServiceResultToGeocoderResult(
+  result: H.service.ServiceResult
+): Types.GeocoderResult {
+  const firstResult = result.Response.View[0].Result[0];
+
+  return {
+    position: hereLatLngToGeoPoint(firstResult.Location.DisplayPosition),
+    viewBounds: hereLatLngBoundsToGeoBounds(firstResult.Location.MapView)
+  };
+}
+
+function hereLatLngToGeoPoint(
+  latlng: HereTypes.GeocoderLatLng
+): Types.GeoPoint {
+  return {
+    lat: latlng.Latitude,
+    lng: latlng.Longitude
+  };
+}
+
+function hereLatLngBoundsToGeoBounds(
+  bounds: HereTypes.GeocoderLatLngBounds
+): Types.GeoBounds {
+  return {
+    east: bounds.BottomRight.Longitude,
+    north: bounds.TopLeft.Latitude,
+    south: bounds.BottomRight.Latitude,
+    west: bounds.TopLeft.Longitude
+  };
 }
 
 function herePlaceToGeoPlace(

@@ -18,6 +18,7 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
   private layer: Types.GeoLayer = Types.GeoLayer.None;
   private tainted: boolean;
+  private loadResult: Promise<Types.LoadHereMapResult>;
   private context: Types.GeoMapContext;
   private config: Types.LoadHereMapConfig;
   private mapType: Types.GeoMapType = Types.GeoMapType.Unknown;
@@ -49,10 +50,16 @@ export class GeoMapHere implements Types.GeoMapImplementation {
 
     const load = this.context.load ? this.context.load : loadMapApi;
 
-    const mapResult = await load(this.config, this.context);
+    this.loadResult = this.loadResult || load(this.config, this.context);
+    const mapResult = await this.loadResult;
 
     if (mapResult.result.type === Types.ResultType.Success) {
       this.api = mapResult.result.payload;
+      this.platform = new this.api.service.Platform({
+        app_code: this.config.appCode,
+        app_id: this.config.appId,
+        useHTTPS: true
+      });
     }
 
     this.phases.resolve(Types.GeoMapPhase.Loaded);
@@ -66,12 +73,6 @@ export class GeoMapHere implements Types.GeoMapImplementation {
     this.phases.resolve(Types.GeoMapPhase.Mounting);
 
     const { api } = this;
-
-    this.platform = new this.api.service.Platform({
-      app_code: this.config.appCode,
-      app_id: this.config.appId,
-      useHTTPS: true
-    });
 
     this.mapType = mountInit.type || Types.GeoMapType.Roadmap;
     this.layer = mountInit.layer || Types.GeoLayer.None;

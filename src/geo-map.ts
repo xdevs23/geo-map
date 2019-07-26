@@ -168,12 +168,9 @@ export class GeoMap {
   //   return this.implementation.coversLocation(point);
   // }
 
-  public async reverseGeocode(
-    point: Types.GeoPoint
-  ): Promise<Types.Result<Types.GeoMapPlaceDetails[]>> {
-    await this.phase(Types.GeoMapPhase.Loaded);
+  public async getGeocodingService(): Promise<GeoMapCodingService> {
+    await this.load();
 
-    // TODO: Move out of here when splitting GeoMap into Geo -> Map, Geo -> Code, Geo -> ...
     if (this.provider === Types.GeoMapProvider.Here) {
       const hereService = GeoMapCodingService.create({
         type: this.provider as Types.GeoMapProvider.Here,
@@ -181,7 +178,7 @@ export class GeoMap {
         platform: (this.implementation as GeoMapHere).platform
       });
 
-      return hereService.reverse(point);
+      return hereService;
     }
 
     const googleService = GeoMapCodingService.create({
@@ -189,7 +186,15 @@ export class GeoMap {
       api: (this.implementation as GeoMapGoogle).api
     });
 
-    return googleService.reverse(point);
+    return googleService;
+  }
+
+  public async reverseGeocode(
+    point: Types.GeoPoint
+  ): Promise<Types.Result<Types.GeoMapPlaceDetails[]>> {
+    const service = await this.getGeocodingService();
+    const result = await service.reverse(point);
+    return result;
   }
 
   private async getPlacesService(): Promise<GeoMapPlacesService> {
