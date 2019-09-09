@@ -6,7 +6,7 @@ export {
   HERE_APP_ID
 } from '../constants';
 
-export const S2_BER = { lat: 52.507533, lng: 13.468957 };
+export const S2_BER = { lat: 52.50758, lng: 13.46837 };
 export const S2_FRA = { lat: 50.110078, lng: 8.710492 };
 export const S2_HAM = { lat: 53.5572754, lng: 9.9263859 };
 export const S2_MUC = { lat: 48.152071, lng: 11.583761 };
